@@ -1,0 +1,11 @@
+prefix=${pcfiledir}/../..
+exec_prefix=${prefix}
+includedir=${prefix}/include/ocaml-freestanding/include
+libdir=${exec_prefix}/lib/ocaml-freestanding
+
+Name: ocaml-freestanding
+Version: 1.0.0
+URL: https://github.com/mirage/mirage-platform/
+Description: Freestanding OCaml runtime
+Cflags: -I${includedir}
+Libs: ${libdir}/libasmrun.a ${libdir}/libotherlibs.a ${libdir}/libnolibc.a ${libdir}/libopenlibm.a
