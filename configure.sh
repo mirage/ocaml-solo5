@@ -12,7 +12,7 @@ fi
 PKG_CONFIG_DEPS=
 pkg_exists solo5-kernel-ukvm && PKG_CONFIG_DEPS=solo5-kernel-ukvm
 pkg_exists solo5-kernel-virtio && PKG_CONFIG_DEPS=solo5-kernel-virtio
-if [ -z "${PKG_CONFIG_DEPS} "]; then
+if [ -z "${PKG_CONFIG_DEPS}" ]; then
     echo "ERROR: No supported kernel package found." 1>&2
     echo "ERROR: solo5-kernel-ukvm or solo5-kernel-virtio must be installed." 1>&2
     exit 1
