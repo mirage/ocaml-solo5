@@ -65,7 +65,6 @@ build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
 	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)"
 
-# TODO This is not optimal as solo5.o will be linked last.
 ocaml-freestanding.pc: ocaml-freestanding.pc.in
 	cp ocaml-freestanding.pc.in ocaml-freestanding.pc
 	echo "Requires: $(PKG_CONFIG_DEPS)" >>ocaml-freestanding.pc
