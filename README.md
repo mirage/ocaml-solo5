@@ -22,3 +22,22 @@ In `PREFIX/include/ocaml-freestanding/include/caml`:
 Downstream packages should use `pkg-config --cflags ocaml-freestanding` when
 compiling C code using these components and `pkg-config --libs
 ocaml-freestanding` during the link step.
+
+## Supported compiler versions
+
+Tested against OCaml 4.02.3 and 4.03.0. Other versions will require changing
+`configure.sh`.
+
+## Porting to a different (uni)kernel base layer
+
+Assuming your unikernel base layer is packaged for OPAM in a similar
+fashion to Solo5 this should be as simple as:
+
+1. Adding the appropriate clauses to determine the OPAM packages required
+   and `FREESTANDING_CFLAGS` for compilation to `configure.sh`.
+2. Implementing a `nolibc/sysdeps_yourkernel.c`.
+
+Note that the nolibc code is intentionally strict about namespacing of APIs
+and header files. If your base layer exports symbols or defines types which
+conflict with nolibc then the recommended course of action is to fix your
+base layer to not export anything defined by "POSIX" or "standard C".
