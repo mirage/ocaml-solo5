@@ -34,9 +34,13 @@ build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/m.x86_64.h build/ocaml/config/m.h
 	cp config/Makefile.x86_64 build/ocaml/config/Makefile
 
-OCAML_CFLAGS=-O2 -Wall -USYS_linux $(FREESTANDING_CFLAGS)
+# Needed for OCaml 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
+build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
+	cp config/version.h $@
+
+OCAML_CFLAGS=-O2 -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/src
-build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile
+build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    NATIVECCCOMPOPTS="$(OCAML_CFLAGS)" \

@@ -1,11 +1,19 @@
-#include <nolibc.h>
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define STUB_ABORT(function) \
     int __unsup_##function(void) __asm__(#function) __attribute__((noreturn)); \
     int __unsup_##function(void) \
     { \
         printf("STUB: abort: %s() called\n", #function); \
-	exit(1); \
+	abort(); \
     }
 
 #define STUB_WARN_ONCE(type, function, ret) \
@@ -31,6 +39,7 @@
 
 /* stdio.h */
 STUB_WARN_ONCE(int, fflush, 0);
+STUB_ABORT(rename);
 STUB_ABORT(sscanf); /* Used only for parsing OCAMLRUNPARAM, never called */
 
 /* stdlib.h */
@@ -43,6 +52,7 @@ STUB_ABORT(close);
 STUB_ABORT(getcwd);
 STUB_WARN_ONCE(pid_t, getpid, 2);
 STUB_WARN_ONCE(pid_t, getppid, 1);
+STUB_IGNORE(int, isatty, 0);
 STUB_IGNORE(off_t, lseek, -1);
 STUB_ABORT(read);
 STUB_IGNORE(int, readlink, -1);
@@ -56,9 +66,6 @@ STUB_WARN_ONCE(struct dirent *, readdir, NULL);
 /* fcntl.h */
 STUB_ABORT(fcntl);
 STUB_WARN_ONCE(int, open, -1);
-
-/* stdio.h */
-STUB_ABORT(rename);
 
 /* signal.h */
 STUB_IGNORE(int, sigaction, -1);

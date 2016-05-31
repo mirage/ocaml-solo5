@@ -1,5 +1,12 @@
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <unistd.h>
+
 #include <solo5.h>
-#include <nolibc.h>
 
 /*
  * Global errno lives in this module.
@@ -29,6 +36,12 @@ ssize_t write(int fd, const void *buf, size_t count)
 
 void exit(int status)
 {
+    solo5_exit();
+}
+
+void abort(void)
+{
+    solo5_console_write("Aborted\n", 8);
     solo5_exit();
 }
 

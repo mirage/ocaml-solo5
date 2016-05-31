@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <errno.h>
 #include <ctype.h>
 #include <limits.h>
@@ -5,6 +6,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include <float.h>
+#include <stdint.h>
 
 /* Some useful macros */
 

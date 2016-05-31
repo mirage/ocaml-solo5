@@ -19,8 +19,22 @@ if [ -z "${PKG_CONFIG_DEPS}" ]; then
 fi
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
+
+case $(ocamlopt -version) in
+    4.02.03)
+        ;;
+    4.03.0)
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        ;;
+    *)
+        echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
+        exit 1
+        ;;
+esac
+
 cat <<EOM >Makeconf
 FREESTANDING_CFLAGS=${FREESTANDING_CFLAGS}
 NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 PKG_CONFIG_DEPS=${PKG_CONFIG_DEPS}
+OCAML_EXTRA_DEPS=${OCAML_EXTRA_DEPS}
 EOM
