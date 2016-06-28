@@ -11,5 +11,11 @@ void *memset(void *, int, size_t);
 int strcmp(const char *, const char *);
 size_t strlen(const char *);
 char *strerror(int);
+/*
+ * The following definitions are not required by the OCaml runtime, but are
+ * needed to build the freestanding version of GMP used by Mirage.
+ */
+char *strncpy(char *, const char *, size_t);
+char *strchr(const char *, int);
 
 #endif

@@ -29,5 +29,9 @@ extern FILE *stdin;
 size_t fread(void *, size_t, size_t, FILE *);
 int getc(FILE *);
 int ungetc(int, FILE *);
+size_t fwrite(const void *, size_t, size_t, FILE *);
+int fputc(int, FILE *);
+int putc(int, FILE *);
+int ferror(FILE *);
 
 #endif
