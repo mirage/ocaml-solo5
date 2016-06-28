@@ -18,5 +18,11 @@ int sigemptyset(sigset_t *set);
 #define SIG_BLOCK 0
 #define SIG_SETMASK 0
 int sigprocmask(int, const sigset_t *, sigset_t *);
+/*
+ * The following definitions are not required by the OCaml runtime, but are
+ * needed to build the freestanding version of GMP used by Mirage.
+ */
+#define SIGFPE 1
+int raise(int);
 
 #endif

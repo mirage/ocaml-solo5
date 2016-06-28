@@ -20,5 +20,14 @@ int sscanf(const char *, const char *, ...);
 int snprintf(char *, size_t, const char *, ...);
 int vfprintf(FILE *, const char *, va_list);
 int vsnprintf(char *, size_t, const char *, va_list);
+/*
+ * The following definitions are not required by the OCaml runtime, but are
+ * needed to build the freestanding version of GMP used by Mirage.
+ */
+#define EOF (-1)
+extern FILE *stdin;
+size_t fread(void *, size_t, size_t, FILE *);
+int getc(FILE *);
+int ungetc(int, FILE *);
 
 #endif

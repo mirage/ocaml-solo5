@@ -41,6 +41,13 @@
 STUB_WARN_ONCE(int, fflush, 0);
 STUB_ABORT(rename);
 STUB_ABORT(sscanf); /* Used only for parsing OCAMLRUNPARAM, never called */
+/*
+ * The following stubs are not required by the OCaml runtime, but are
+ * needed to build the freestanding version of GMP used by Mirage.
+ */
+STUB_WARN_ONCE(int, fread, 0);
+STUB_WARN_ONCE(int, getc, EOF);
+STUB_WARN_ONCE(int, ungetc, EOF);
 
 /* stdlib.h */
 STUB_WARN_ONCE(char *, getenv, NULL);
@@ -74,6 +81,11 @@ STUB_IGNORE(int, sigaddset, -1);
 STUB_IGNORE(int, sigdelset, -1);
 STUB_IGNORE(int, sigemptyset, -1);
 STUB_IGNORE(int, sigprocmask, -1);
+/*
+ * The following stubs are not required by the OCaml runtime, but are
+ * needed to build the freestanding version of GMP used by Mirage.
+ */
+STUB_ABORT(raise);
 
 /* string.h */
 STUB_ABORT(strerror);
