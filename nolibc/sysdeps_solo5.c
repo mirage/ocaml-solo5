@@ -83,13 +83,13 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 	tv->tv_usec = (now % NSEC_PER_SEC) / 1000ULL;
     }
     if (tz != NULL) {
-	memset(tz, 0, sizeof tz);
+	memset(tz, 0, sizeof(*tz));
     }
     return 0;
 }
 
 clock_t times(struct tms *buf)
 {
-    memset(buf, 0, sizeof buf);
+    memset(buf, 0, sizeof(*buf));
     return (clock_t)solo5_clock_monotonic();
 }
