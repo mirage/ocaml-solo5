@@ -5,7 +5,7 @@ ifeq ($(SYSDEP_OBJS),)
     $(error SYSDEP_OBJS not set)
 endif
 
-CC=gcc
+CC?=cc
 CFLAGS=-O2 -std=c99 -Wall -Wno-maybe-uninitialized -Wno-parentheses -Werror
 CFLAGS+=$(FREESTANDING_CFLAGS)
 
