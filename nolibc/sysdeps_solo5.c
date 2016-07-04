@@ -70,15 +70,13 @@ void *realloc(void *p, size_t size)
 
 /*
  * System time.
- *
- * TODO: gettimeofday() to use wallclock once Solo5 has it.
  */
 #define NSEC_PER_SEC 1000000000ULL
 
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
     if (tv != NULL) {
-	uint64_t now = solo5_clock_monotonic();
+	uint64_t now = solo5_clock_wall();
 	tv->tv_sec = now / NSEC_PER_SEC;
 	tv->tv_usec = (now % NSEC_PER_SEC) / 1000ULL;
     }
