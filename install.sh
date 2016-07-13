@@ -9,7 +9,7 @@ DESTLIB=${prefix}/lib/ocaml-freestanding
 mkdir -p ${DESTINC} ${DESTLIB}
 
 # "nolibc"
-cp -dr build/nolibc/include/* ${DESTINC}
+cp -r build/nolibc/include/* ${DESTINC}
 cp build/nolibc/libnolibc.a ${DESTLIB}
 
 # Openlibm
