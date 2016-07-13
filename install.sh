@@ -13,10 +13,8 @@ cp -r build/nolibc/include/* ${DESTINC}
 cp build/nolibc/libnolibc.a ${DESTLIB}
 
 # Openlibm
-cp -r build/openlibm/src/openlibm.h \
-    build/openlibm/src/openlibm_complex.h \
-    build/openlibm/src/complex.h \
-    ${DESTINC}
+cp -r build/openlibm/include/*  ${DESTINC}
+cp build/openlibm/src/*h ${DESTINC}
 cp build/openlibm/libopenlibm.a ${DESTLIB}
 
 # Ocaml runtime

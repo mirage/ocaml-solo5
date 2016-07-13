@@ -14,7 +14,7 @@ Makeconf:
 TOP=$(abspath .)
 FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include
 
-OPENLIBM_URL=https://github.com/talex5/openlibm/archive/v0.4.1-tal1.tar.gz
+OPENLIBM_URL=https://github.com/JuliaLang/openlibm/archive/v0.5.1.tar.gz
 openlibm.tar.gz:
 	curl -sL -o $@ $(OPENLIBM_URL)
 
@@ -40,7 +40,7 @@ build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 	cp config/version.h $@
 
 OCAML_CFLAGS=-O2 -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
-OCAML_CFLAGS+=-I$(TOP)/build/openlibm/src
+OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
@@ -64,7 +64,7 @@ build/nolibc/Makefile:
 	mkdir -p build
 	cp -r nolibc build
 
-NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src
+NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src -isystem $(TOP)/build/openlibm/include
 build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
 	$(MAKE) -C build/nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
