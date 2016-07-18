@@ -80,7 +80,7 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	rm -rf build
+	rm -rf build openlibm.tar.gz
 
 distclean: clean
 	rm -f Makeconf openlibm.tar.gz ocaml-freestanding.pc
