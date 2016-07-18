@@ -21,6 +21,7 @@ openlibm.tar.gz:
 build/openlibm/Makefile: openlibm.tar.gz
 	mkdir -p build/openlibm
 	tar -C build/openlibm --strip-components=1 -xzf openlibm.tar.gz
+	touch $@
 
 build/openlibm/libopenlibm.a: build/openlibm/Makefile
 	$(MAKE) -C build/openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
