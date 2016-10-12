@@ -30,9 +30,9 @@ build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/m.x86_64.h build/ocaml/config/m.h
 	cp config/Makefile.$(shell uname -s).x86_64 build/ocaml/config/Makefile
 
-# Needed for OCaml 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
+# Needed for OCaml >= 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
-	cp config/version.h $@
+	build/ocaml/tools/make-version-header.sh > $@
 
 OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src

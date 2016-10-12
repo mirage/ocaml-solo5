@@ -21,9 +21,12 @@ fi
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
 
 case $(ocamlopt -version) in
-    4.02.3)
+    4.02.[3-9])
         ;;
-    4.03.0)
+    4.03.[0-9])
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        ;;
+    4.04.[0-9]|4.04.[0-9]+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         ;;
     *)
