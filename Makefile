@@ -33,7 +33,7 @@ build/ocaml/Makefile:
 build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/s.h build/ocaml/config/s.h
 	cp config/m.x86_64.h build/ocaml/config/m.h
-	cp config/Makefile.x86_64 build/ocaml/config/Makefile
+	cp config/Makefile.$(shell uname -s).x86_64 build/ocaml/config/Makefile
 
 # Needed for OCaml 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
