@@ -39,7 +39,7 @@ build/ocaml/config/Makefile: build/ocaml/Makefile
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 	cp config/version.h $@
 
-OCAML_CFLAGS=-O2 -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
+OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
