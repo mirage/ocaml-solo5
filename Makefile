@@ -33,13 +33,13 @@ build/ocaml/Makefile:
 build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/s.h build/ocaml/config/s.h
 	cp config/m.x86_64.h build/ocaml/config/m.h
-	cp config/Makefile.x86_64 build/ocaml/config/Makefile
+	cp config/Makefile.$(shell uname -s).x86_64 build/ocaml/config/Makefile
 
 # Needed for OCaml 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 	cp config/version.h $@
 
-OCAML_CFLAGS=-O2 -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
+OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
@@ -81,7 +81,4 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	rm -rf build openlibm.tar.gz
-
-distclean: clean
-	rm -f Makeconf openlibm.tar.gz ocaml-freestanding.pc
+	rm -rf build Makeconf openlibm.tar.gz ocaml-freestanding.pc

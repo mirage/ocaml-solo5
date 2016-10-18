@@ -9,18 +9,21 @@ RANLIB=ranlib
 RANLIBCMD=ranlib
 ARCMD=ar
 SHARPBANGSCRIPTS=true
+UNIX_OR_WIN32=unix
+UNIXLIB=unix
+GRAPHLIB=graph
 BNG_ARCH=amd64
 BNG_ASM_LEVEL=1
-PTHREAD_LINK=-cclib -lpthread
-X11_INCLUDES=
-X11_LINK=-lX11 
-TK_DEFS=-I/usr/include/tcl8.5 -I/usr/include/tk8.5 $(X11_INCLUDES)
-TK_LINK= -ltk8.5 -ltcl8.5  -ldl $(X11_LINK)
+PTHREAD_LINK=-lpthread
+PTHREAD_CAML_LINK=-cclib -lpthread
+X11_INCLUDES=not found
+X11_LINK=not found
 LIBBFD_LINK=
+LIBBFD_INCLUDE=
 BYTECC=gcc
-BYTECCCOMPOPTS=-fno-defer-pop -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT
+BYTECCCOMPOPTS=-O2 -fno-strict-aliasing -fwrapv -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT
 BYTECCLINKOPTS= -Wl,-E
-BYTECCLIBS= -lm  -ldl -lcurses -lpthread
+BYTECCLIBS= -lm  -ldl -lcurses -lpthread                  
 BYTECCRPATH=-Wl,-rpath,
 EXE=
 SUPPORTS_SHARED_LIBRARIES=true
@@ -32,13 +35,15 @@ SYSLIB=-l$(1)
 
 ### How to build a static library
 MKLIB=ar rc $(1) $(2); ranlib $(1)
-#ml let mklib out files opts = Printf.sprintf "ar rc %s %s %s; ranlib %s" out opts files out;;
+#ml let mklib out files opts =      (* "" *)
+#ml   Printf.sprintf "ar rc %s %s %s; ranlib %s"
+#ml                  out opts files out;;
 ARCH=amd64
 MODEL=default
 SYSTEM=linux
 NATIVECC=gcc
-NATIVECCCOMPOPTS=-Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT
-NATIVECCPROFOPTS=-Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT
+NATIVECCCOMPOPTS=-O2 -fno-strict-aliasing -fwrapv -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT
+NATIVECCPROFOPTS=
 NATIVECCLINKOPTS=
 NATIVECCRPATH=-Wl,-rpath,
 NATIVECCLIBS= -lm  -ldl
@@ -47,8 +52,7 @@ ASPP=gcc -c
 ASPPPROFFLAGS=-DPROFILING
 PROFILING=prof
 DYNLINKOPTS= -ldl
-OTHERLIBRARIES=unix str num dynlink bigarray systhreads threads graph labltk
-DEBUGGER=ocamldebugger
+OTHERLIBRARIES=unix str num dynlink bigarray systhreads threads
 CC_PROFILE=-pg
 SYSTHREAD_SUPPORT=true
 PARTIALLD=ld -r
@@ -72,6 +76,13 @@ MKEXEDEBUGFLAG=-g
 MKDLL=gcc -shared
 MKMAINDLL=gcc -shared
 RUNTIMED=noruntimed
-CAMLP4=camlp4
+SHARED=shared
+RUNTIMEI=false
+WITH_DEBUGGER=ocamldebugger
+WITH_OCAMLDOC=ocamldoc
 ASM_CFI_SUPPORTED=true
 WITH_FRAME_POINTERS=false
+TARGET=x86_64-unknown-linux-gnu
+HOST=x86_64-unknown-linux-gnu
+FLAMBDA=false
+MAX_TESTSUITE_DIR_RETRIES=0
