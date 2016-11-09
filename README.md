@@ -41,3 +41,14 @@ Note that the nolibc code is intentionally strict about namespacing of APIs
 and header files. If your base layer exports symbols or defines types which
 conflict with nolibc then the recommended course of action is to fix your
 base layer to not export anything defined by "POSIX" or "standard C".
+
+## Upgrading the vendored copy of OpenLibm
+
+OpenLibm is "vendored" into this repository using `git subtree`:
+
+    git subtree add --prefix openlibm https://github.com/JuliaLang/openlibm.git v0.5.4 --squash
+
+To update the vendored copy of OpenLibm to the newer upstream version `TAG`,
+use the following command _on a branch_ and then file a PR:
+
+    git subtree pull --prefix openlibm https://github.com/JuliaLang/openlibm.git TAG --squash
