@@ -14,14 +14,9 @@ Makeconf:
 TOP=$(abspath .)
 FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include
 
-OPENLIBM_URL=https://github.com/JuliaLang/openlibm/archive/v0.5.1.tar.gz
-openlibm.tar.gz:
-	curl -sL -o $@ $(OPENLIBM_URL)
-
-build/openlibm/Makefile: openlibm.tar.gz
+build/openlibm/Makefile:
 	mkdir -p build/openlibm
-	tar -C build/openlibm --strip-components=1 -xzf openlibm.tar.gz
-	touch $@
+	cp -r openlibm build
 
 build/openlibm/libopenlibm.a: build/openlibm/Makefile
 	$(MAKE) -C build/openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
@@ -81,4 +76,4 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	rm -rf build Makeconf openlibm.tar.gz ocaml-freestanding.pc
+	rm -rf build Makeconf ocaml-freestanding.pc
