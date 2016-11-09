@@ -98,3 +98,9 @@ THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
 WARRANTY.  IN PARTICULAR, NEITHER THE AUTHOR NOR LUCENT MAKES ANY
 REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
 OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+
+----------------------------------------------------------------------
+
+The files in the openlibm/ directory are a local git subtree of
+https://github.com/JuliaLang/openlibm.git and are subject to the OpenLibm
+license(s) listed in openlibm/LICENSE.md.
