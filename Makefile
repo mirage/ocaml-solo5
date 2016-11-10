@@ -47,13 +47,9 @@ build/ocaml/otherlibs/libotherlibs.a: build/ocaml/config/Makefile
 	$(MAKE) -C build/ocaml/otherlibs/bigarray \
 	    CFLAGS="$(FREESTANDING_CFLAGS) -I../../byterun" \
 	    bigarray_stubs.o mmap_unix.o
-	$(MAKE) -C build/ocaml/otherlibs/str \
-	    CFLAGS="$(FREESTANDING_CFLAGS) -I../../byterun" \
-	    strstubs.o
 	$(AR) rcs $@ \
 	    build/ocaml/otherlibs/bigarray/bigarray_stubs.o \
-	    build/ocaml/otherlibs/bigarray/mmap_unix.o \
-	    build/ocaml/otherlibs/str/strstubs.o
+	    build/ocaml/otherlibs/bigarray/mmap_unix.o
 
 build/nolibc/Makefile:
 	mkdir -p build
