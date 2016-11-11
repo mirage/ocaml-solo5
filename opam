@@ -19,5 +19,5 @@ depends: [
 ]
 
 available: [
-  ocaml-version >= "4.02.3" & ocaml-version <= "4.03.0" & (arch = "x86_64" | arch = "amd64")
+  ocaml-version >= "4.02.3" & ocaml-version <= "4.05.0" & (arch = "x86_64" | arch = "amd64")
 ]

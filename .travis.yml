@@ -8,6 +8,8 @@ env:
         - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
         - TESTS=false
     matrix:
+        - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-kernel-ukvm"
+        - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-kernel-virtio"
         - OCAML_VERSION=4.03 EXTRA_DEPS="solo5-kernel-ukvm"
         - OCAML_VERSION=4.03 EXTRA_DEPS="solo5-kernel-virtio"
         - OCAML_VERSION=4.02 EXTRA_DEPS="solo5-kernel-ukvm"

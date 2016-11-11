@@ -26,6 +26,9 @@ case $(ocamlopt -version) in
     4.03.0)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         ;;
+    4.04.[0-9]|4.04.[0-9]+*)
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
         exit 1
