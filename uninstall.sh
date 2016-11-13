@@ -5,7 +5,6 @@ if [ "$prefix" = "" ]; then
   prefix=`opam config var prefix`
 fi
 
-odir=$prefix/lib
-rm -f $odir/pkgconfig/ocaml-freestanding.pc
-rm -rf $odir/ocaml-freestanding
+rm -f $prefix/share/pkgconfig/ocaml-freestanding.pc
+rm -rf $prefix/lib/ocaml-freestanding
 rm -rf $prefix/include/ocaml-freestanding
