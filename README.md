@@ -1,9 +1,21 @@
-# Freestanding OCaml runtime
+# ocaml-freestanding -- Freestanding OCaml runtime
 
-This package builds a freestanding OCaml runtime suitable for linking with a
-unikernel base layer (currently only Solo5 is supported).
+This package provides a freestanding OCaml runtime suitable for linking with a
+unikernel base layer. Currently only [Solo5](https://github.com/Solo5/solo5) is
+supported.
 
-The following components are installed:
+## License and contributions
+
+All original contributions to this package are licensed under the standard MIT
+license.
+
+This package incorporates components derived or copied from musl libc, OpenBSD,
+OpenLibm and other third parties. For full details of the licenses of these
+third party components refer to the included LICENSE file.
+
+## Components
+
+The following components are built and installed:
 
 In `PREFIX/lib/ocaml-freestanding`:
 
@@ -25,8 +37,8 @@ ocaml-freestanding` during the link step.
 
 ## Supported compiler versions
 
-Tested against OCaml 4.02.3 and 4.03.0. Other versions will require changing
-`configure.sh`.
+Tested against OCaml 4.02.3, 4.03.0 and 4.04.0. Other versions will require
+changing `configure.sh`.
 
 ## Porting to a different (uni)kernel base layer
 
@@ -42,7 +54,7 @@ and header files. If your base layer exports symbols or defines types which
 conflict with nolibc then the recommended course of action is to fix your
 base layer to not export anything defined by "POSIX" or "standard C".
 
-## Upgrading the vendored copy of OpenLibm
+## Updating the vendored copy of OpenLibm
 
 OpenLibm is "vendored" into this repository using `git subtree`:
 

@@ -10,6 +10,7 @@ license:      "MIT"
 build:   [make]
 install: [make "install" "PREFIX=%{prefix}%"]
 remove:  [make "uninstall" "PREFIX=%{prefix}%"]
+tags:    ["org:mirage"]
 
 depends: [
   "conf-pkg-config"
