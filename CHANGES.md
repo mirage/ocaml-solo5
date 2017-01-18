@@ -1,3 +1,7 @@
+## v0.2.1 (2017-01-18)
+
+* Declare `OCAML_OS_TYPE` as `freestanding` (@hannesm, #14)
+
 ## v0.2.0 (2017-01-18)
 
 * FreeBSD support (@mato, @hannesm)
