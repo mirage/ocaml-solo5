@@ -16,8 +16,8 @@ third party components refer to the included LICENSE file.
 The OCaml runtime ("OCaml Core System") built by this package is distributed
 under the terms of the GNU LGPL version 2.1 with a special exception for static
 or dynamic linking to produce an executable file. For details refer to the
-LICENSE file included in the version of the `ocaml-src` installed on your
-system as a dependency when you build this package.
+LICENSE file included in the version of the `ocaml-src` OPAM package installed
+on your system as a dependency when you build this package.
 
 ## Components
 
