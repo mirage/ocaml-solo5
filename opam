@@ -13,7 +13,7 @@ depends: [
   "conf-pkg-config"
   "ocamlfind"
   "ocaml-src"
-  ("solo5-kernel-ukvm" | "solo5-kernel-virtio")
+  ("solo5-kernel-ukvm" | "solo5-kernel-virtio" | "solo5-kernel-muen")
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}
