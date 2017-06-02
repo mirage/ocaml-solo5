@@ -36,5 +36,5 @@ cp build/ocaml/otherlibs/bigarray/bigarray.h ${DESTINC}/caml/bigarray.h
 cp build/ocaml/otherlibs/libotherlibs.a ${DESTLIB}/libotherlibs.a
 
 # pkg-config
-mkdir -p ${prefix}/lib/pkgconfig
-cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
+mkdir -p ${prefix}/share/pkgconfig
+cp ocaml-freestanding.pc ${prefix}/share/pkgconfig/ocaml-freestanding.pc
