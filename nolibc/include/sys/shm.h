@@ -1,6 +1,7 @@
 #ifndef _SYS_SHM_H
 #define _SYS_SHM_H
 
+#include <sys/types.h>
 #include <sys/time.h>
 #include <sys/ipc.h>
 

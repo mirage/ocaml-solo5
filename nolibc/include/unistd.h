@@ -1,10 +1,11 @@
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
+#include <sys/types.h>
+
 int chdir(const char *);
 int close(int);
 char *getcwd(char *, size_t);
-typedef int pid_t;
 pid_t getpid(void);
 pid_t getppid(void);
 int isatty(int);
