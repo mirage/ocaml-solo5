@@ -15,5 +15,6 @@ ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
 ssize_t readlink(const char *, char *, size_t);
 int unlink(const char *);
+pid_t fork(void);
 
 #endif

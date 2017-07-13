@@ -73,6 +73,7 @@ STUB_IGNORE(off_t, lseek, -1);
 STUB_ABORT(read);
 STUB_IGNORE(int, readlink, -1);
 STUB_ABORT(unlink);
+STUB_ABORT(fork);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
@@ -90,6 +91,7 @@ STUB_IGNORE(int, sigaddset, -1);
 STUB_IGNORE(int, sigdelset, -1);
 STUB_IGNORE(int, sigemptyset, -1);
 STUB_IGNORE(int, sigprocmask, -1);
+STUB_ABORT(kill)
 /*
  * The following stubs are not required by the OCaml runtime, but are
  * needed to build the freestanding version of GMP used by Mirage.
@@ -101,3 +103,9 @@ STUB_ABORT(strerror);
 
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
+
+/* sys/shm.h */
+STUB_ABORT(shmat);
+
+/* sys/wait.h */
+STUB_ABORT(waitpid);
