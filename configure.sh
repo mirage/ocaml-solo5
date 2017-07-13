@@ -33,6 +33,10 @@ case $(ocamlopt -version) in
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         ;;
+    4.05.[0-9]|4.05.[0-9]+*)
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
         exit 1
