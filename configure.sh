@@ -21,6 +21,7 @@ fi
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
 
+cp -r config.in config
 case $(ocamlopt -version) in
     4.02.3)
         echo '#define OCAML_OS_TYPE "Unix"' >> config/s.h

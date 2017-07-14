@@ -1,3 +1,4 @@
 Makeconf
 build/
-openlibm.tar.gz
+config/
+ocaml-freestanding.pc
