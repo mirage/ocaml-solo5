@@ -5,9 +5,10 @@ install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/ma
 script: bash -ex .travis-opam.sh
 env:
     global:
-        - EXTRA_REMOTES="https://github.com/mirage/mirage-dev.git"
         - TESTS=false
     matrix:
+        - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-kernel-ukvm"
+        - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-kernel-virtio"
         - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-kernel-ukvm"
         - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-kernel-virtio"
         - OCAML_VERSION=4.03 EXTRA_DEPS="solo5-kernel-ukvm"
