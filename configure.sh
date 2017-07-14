@@ -18,6 +18,7 @@ if [ -z "${PKG_CONFIG_DEPS}" ]; then
     echo "ERROR: solo5-kernel-ukvm, solo5-kernel-virtio or solo5-kernel-muen must be installed." 1>&2
     exit 1
 fi
+ocamlfind query ocaml-src >/dev/null || exit 1
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
 
@@ -38,6 +39,14 @@ case $(ocamlopt -version) in
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.x86_64.h
+        ;;
+    4.05.[0-9]|4.05.[0-9]+*)
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.x86_64.h
+        # Use __ANDROID__ here to disable the AFL code, otherwise we'd have to
+        # add many more stubs to ocaml-freestanding.
+        echo 'afl.o: CFLAGS+=-D__ANDROID__' >> config/Makefile.$(uname -s).x86_64
         ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
