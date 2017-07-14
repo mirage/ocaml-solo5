@@ -60,6 +60,7 @@ STUB_WARN_ONCE(int, ferror, 1);
 
 /* stdlib.h */
 STUB_WARN_ONCE(char *, getenv, NULL);
+STUB_WARN_ONCE(char *, secure_getenv, NULL);
 STUB_ABORT(system);
 
 /* unistd.h */

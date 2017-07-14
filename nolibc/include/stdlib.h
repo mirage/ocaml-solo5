@@ -10,6 +10,7 @@ void free(void *);
 void *calloc(size_t, size_t);
 void *realloc(void *, size_t);
 char *getenv(const char *);
+char *secure_getenv(const char *);
 int system(const char *);
 double strtod(const char *, char **);
 long strtol(const char *, char **, int);
