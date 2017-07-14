@@ -1,3 +1,11 @@
+## v0.2.2 (2017-07-14)
+
+* Support OCaml 4.05.0 (@mato, #23)
+* Fixes for OCaml 4.04.1+ (@mato, #22)
+* Silence STUB: warnings by default (@mato, #19)
+* Add support for solo5-kernel-muen, not exposed in Solo5 or MirageOS yet
+  (@Kensan, #18)
+
 ## v0.2.1 (2017-01-18)
 
 * Declare `OCAML_OS_TYPE` as `freestanding` (@hannesm, #14)
