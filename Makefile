@@ -72,4 +72,4 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	rm -rf build Makeconf ocaml-freestanding.pc
+	rm -rf build config Makeconf ocaml-freestanding.pc

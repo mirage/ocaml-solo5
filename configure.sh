@@ -21,6 +21,7 @@ fi
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
 
+cp -r config.in config
 case $(ocamlopt -version) in
     4.02.3)
         echo '#define OCAML_OS_TYPE "Unix"' >> config/s.h
@@ -29,9 +30,14 @@ case $(ocamlopt -version) in
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "Unix"' >> config/s.h
         ;;
-    4.04.[0-9]|4.04.[0-9]+*)
+    4.04.0|4.04.0+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        ;;
+    4.04.[1-9]|4.04.[1-9]+*)
+        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.x86_64.h
         ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
