@@ -13,8 +13,6 @@ Makeconf:
 
 TOP=$(abspath .)
 FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include
-ARCH=$(shell uname -m)
-OS=$(shell uname -s)
 
 build/openlibm/Makefile:
 	mkdir -p build/openlibm
@@ -29,8 +27,8 @@ build/ocaml/Makefile:
 
 build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/s.h build/ocaml/config/s.h
-	cp config/m.$(ARCH).h build/ocaml/config/m.h
-	cp config/Makefile.$(OS).$(ARCH) build/ocaml/config/Makefile
+	cp config/m.$(BUILD_ARCH).h build/ocaml/config/m.h
+	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) build/ocaml/config/Makefile
 
 # Needed for OCaml >= 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
