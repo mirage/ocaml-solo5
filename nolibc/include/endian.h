@@ -3,7 +3,7 @@
 
 #define __LITTLE_ENDIAN 1234
 #define __BIG_ENDIAN 4321
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(__aarch64__)
 #define __BYTE_ORDER __LITTLE_ENDIAN
 #else
 #error Unsupported architecture

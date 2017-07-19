@@ -4,7 +4,7 @@ FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/otherlibs/libotherlibs.a \
 		  build/nolibc/libnolibc.a
 
-all:	$(FREESTANDING_LIBS)
+all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc
 
 include Makeconf
 
@@ -13,6 +13,8 @@ Makeconf:
 
 TOP=$(abspath .)
 FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include
+ARCH=$(shell uname -m)
+OS=$(shell uname -s)
 
 build/openlibm/Makefile:
 	mkdir -p build/openlibm
@@ -27,8 +29,8 @@ build/ocaml/Makefile:
 
 build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/s.h build/ocaml/config/s.h
-	cp config/m.x86_64.h build/ocaml/config/m.h
-	cp config/Makefile.$(shell uname -s).x86_64 build/ocaml/config/Makefile
+	cp config/m.$(ARCH).h build/ocaml/config/m.h
+	cp config/Makefile.$(OS).$(ARCH) build/ocaml/config/Makefile
 
 # Needed for OCaml >= 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
@@ -61,11 +63,12 @@ build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
 	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)"
 
-ocaml-freestanding.pc: ocaml-freestanding.pc.in
-	cp ocaml-freestanding.pc.in ocaml-freestanding.pc
-	echo "Requires: $(PKG_CONFIG_DEPS)" >>ocaml-freestanding.pc
+ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
+	sed -e 's!@@PKG_CONFIG_DEPS@@!$(PKG_CONFIG_DEPS)!' \
+	    -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
+	    ocaml-freestanding.pc.in > $@
 
-install: ocaml-freestanding.pc
+install: all
 	./install.sh
 
 uninstall:

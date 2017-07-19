@@ -3,7 +3,7 @@
 
 #define INT_MAX  0x7fffffff
 #define INT_MIN  (-1-0x7fffffff)
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(__aarch64__)
 #define LONG_MAX  0x7fffffffffffffffL
 #define LLONG_MAX  0x7fffffffffffffffLL
 #else
