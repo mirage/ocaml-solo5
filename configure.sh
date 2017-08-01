@@ -21,6 +21,23 @@ fi
 ocamlfind query ocaml-src >/dev/null || exit 1
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
+BUILD_ARCH=$(uname -m)
+BUILD_OS=$(uname -s)
+
+# FreeBSD uses amd64, unify to x86_64 here.
+if [ "${BUILD_ARCH}" = "amd64" ]; then
+    BUILD_ARCH="x86_64"
+fi
+
+if [ ! -f config.in/Makefile.${BUILD_OS}.${BUILD_ARCH} ]; then
+    echo "ERROR: Unsupported build OS/architecture combination: ${BUILD_OS}/${BUILD_ARCH}" 1>&2
+    exit 1
+fi
+
+PKG_CONFIG_EXTRA_LIBS=
+if [ "${BUILD_ARCH}" = "aarch64" ]; then
+    PKG_CONFIG_EXTRA_LIBS="$(gcc -print-libgcc-file-name)" || exit 1
+fi
 
 cp -r config.in config
 case $(ocamlopt -version) in
@@ -38,15 +55,15 @@ case $(ocamlopt -version) in
     4.04.[1-9]|4.04.[1-9]+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
-        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.x86_64.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         ;;
     4.05.[0-9]|4.05.[0-9]+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
-        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.x86_64.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         # Use __ANDROID__ here to disable the AFL code, otherwise we'd have to
         # add many more stubs to ocaml-freestanding.
-        echo 'afl.o: CFLAGS+=-D__ANDROID__' >> config/Makefile.$(uname -s).x86_64
+        echo 'afl.o: CFLAGS+=-D__ANDROID__' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
@@ -56,7 +73,10 @@ esac
 
 cat <<EOM >Makeconf
 FREESTANDING_CFLAGS=${FREESTANDING_CFLAGS}
+BUILD_ARCH=${BUILD_ARCH}
+BUILD_OS=${BUILD_OS}
 NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 PKG_CONFIG_DEPS=${PKG_CONFIG_DEPS}
+PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
 OCAML_EXTRA_DEPS=${OCAML_EXTRA_DEPS}
 EOM

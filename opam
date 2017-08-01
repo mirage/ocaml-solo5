@@ -20,5 +20,6 @@ conflicts: [
 ]
 available: [
   ocaml-version >= "4.02.3" & ocaml-version < "4.06.0" &
-  (arch = "x86_64" | arch = "amd64")
+  ((os = "linux" & (arch = "x86_64" | arch = "aarch64") |
+   (os = "freebsd" & arch = "amd64")))
 ]
