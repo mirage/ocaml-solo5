@@ -17,5 +17,6 @@ char *strerror(int);
  */
 char *strncpy(char *, const char *, size_t);
 char *strchr(const char *, int);
+char *strstr(const char *, const char *);
 
 #endif
