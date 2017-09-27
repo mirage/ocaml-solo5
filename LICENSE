@@ -23,8 +23,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The files ctype.c, fprintf.c, memchr.c, memcmp.c, memcpy.c, memmove.c,
 memset.c, printf.c, snprintf.c, stpncpy.c, strchr.c, strchrnul.c, strcmp.c,
-strncpy.c, strlen.c, vfprintf.c, vsnprintf.c in the nolibc/ directory are
-derived from musl libc, licensed under the following standard MIT license:
+strncpy.c, strlen.c, strstr.c, vfprintf.c, vsnprintf.c in the nolibc/ directory
+are derived from musl libc, licensed under the following standard MIT license:
 
 Copyright © 2005-2014 Rich Felker, et al.
 

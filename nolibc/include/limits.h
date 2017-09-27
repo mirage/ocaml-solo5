@@ -1,8 +1,12 @@
 #ifndef _LIMITS_H
 #define _LIMITS_H
 
-#define INT_MAX  0x7fffffff
-#define INT_MIN  (-1-0x7fffffff)
+#define INT_MAX   0x7fffffff
+#define INT_MIN   (-1-0x7fffffff)
+#define UINT_MAX  0xffffffffU
+#define SHRT_MAX  0x7fff
+#define SHRT_MIN  (-1-0x7fff)
+#define USHRT_MAX 0xffff
 #if defined(__x86_64__) || defined(__aarch64__)
 #define LONG_MAX  0x7fffffffffffffffL
 #define LLONG_MAX  0x7fffffffffffffffLL
