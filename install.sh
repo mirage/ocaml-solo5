@@ -21,18 +21,26 @@ cp build/openlibm/libopenlibm.a ${DESTLIB}
 OCAML_INCLUDES="alloc.h callback.h config.h custom.h fail.h hash.h intext.h \
   memory.h misc.h mlvalues.h printexc.h signals.h compatibility.h"
 mkdir -p ${DESTINC}/caml
-# Ocaml public headers need to be cleaned up before installation:
-# 'cleanup-header' uses relative paths to read headers in "../config", hence the
-# nested shell and use of 'cd' here.
-(
-    cd build/ocaml/byterun
+# Prior to OCaml 4.06.0, public headers need to be cleaned up before
+# installation: 'cleanup-header' uses relative paths to read headers in
+# "../config", hence the nested shell and use of 'cd' here.
+if [ -f build/ocaml/tools/cleanup-header ]; then
+    (
+        cd build/ocaml/byterun
+        for f in ${OCAML_INCLUDES}; do
+            sed -f ../tools/cleanup-header caml/${f} >${DESTINC}/caml/${f}
+        done
+    )
+    cp build/ocaml/otherlibs/bigarray/bigarray.h ${DESTINC}/caml/bigarray.h
+else
+# Assume OCaml >= 4.06.0 here.
+    OCAML_INCLUDES="${OCAML_INCLUDES} bigarray.h m.h s.h"
     for f in ${OCAML_INCLUDES}; do
-	sed -f ../tools/cleanup-header caml/${f} >${DESTINC}/caml/${f}
+        cp build/ocaml/byterun/caml/${f} ${DESTINC}/caml/${f}
     done
-)
+fi
 cp build/ocaml/asmrun/libasmrun.a ${DESTLIB}/libasmrun.a
 # OCaml "otherlibs"
-cp build/ocaml/otherlibs/bigarray/bigarray.h ${DESTINC}/caml/bigarray.h
 cp build/ocaml/otherlibs/libotherlibs.a ${DESTLIB}/libotherlibs.a
 
 # pkg-config
