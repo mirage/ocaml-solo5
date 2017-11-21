@@ -28,6 +28,12 @@
 #error Unsupported architecture
 #endif
 
+/* Force Flt_Rounds to 1, avoiding pulling in __flt_rounds via FLT_ROUNDS on
+ * FreeBSD. A fixed value of 1 is used by GCC on Linux and previous versions of
+ * this code, so we should be fine here.
+ */
+#define Flt_Rounds 1
+
 /* Compile only strtod() and its dependencies
  */
 #define STRTOD_ONLY
