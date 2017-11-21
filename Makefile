@@ -26,7 +26,7 @@ build/ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` build/ocaml
 
 build/ocaml/config/Makefile: build/ocaml/Makefile
-ifeq ($(OCAML_NEW_MAKEFILES),yes)
+ifeq ($(OCAML_GTE_4_06_0),yes)
 	cp config/s.h build/ocaml/byterun/caml/s.h
 	cp config/m.$(BUILD_ARCH).h build/ocaml/byterun/caml/m.h
 else
@@ -42,7 +42,7 @@ build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
-ifeq ($(OCAML_NEW_MAKEFILES),yes)
+ifeq ($(OCAML_GTE_4_06_0),yes)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    CFLAGS="$(OCAML_CFLAGS)" \
@@ -56,7 +56,7 @@ else
 endif
 
 build/ocaml/otherlibs/libotherlibs.a: build/ocaml/config/Makefile
-ifeq ($(OCAML_NEW_MAKEFILES),yes)
+ifeq ($(OCAML_GTE_4_06_0),yes)
 	$(MAKE) -C build/ocaml/otherlibs/bigarray \
 	    OUTPUTOBJ=-o \
 	    CFLAGS="$(FREESTANDING_CFLAGS) -DIN_OCAML_BIGARRAY -I../../byterun" \
