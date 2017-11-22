@@ -17,6 +17,8 @@ OBJS=ctype.o \
      stubs.o \
      vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
 
+dtoa.o: CFLAGS+=-fno-strict-aliasing
+
 libnolibc.a: $(OBJS) $(SYSDEP_OBJS)
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
 
