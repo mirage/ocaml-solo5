@@ -1,3 +1,11 @@
+## v0.2.3 (2017-11-22)
+
+* Update dtoa.c to fix #18 (`string_of_float` incorrectly returns `-nan`)
+  (@mato, #28).
+* Support OCaml 4.06.0 (@mato, #27)
+* Add additional stubs needed by newer gmp (@hannesm, #26)
+* aarch64 support (@mato, #25)
+
 ## v0.2.2 (2017-07-14)
 
 * Support OCaml 4.05.0 (@mato, #23)
