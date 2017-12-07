@@ -6,6 +6,7 @@ script: bash -ex .travis-opam.sh
 env:
     global:
         - TESTS=false
+        - PINS="solo5-kernel-ukvm:https://github.com/djwillia/solo5.git#malloc solo5-kernel-virtio:https://github.com/djwillia/solo5.git#malloc"
     matrix:
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-ukvm"
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-virtio"
