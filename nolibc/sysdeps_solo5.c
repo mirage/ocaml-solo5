@@ -46,29 +46,6 @@ void abort(void)
 }
 
 /*
- * Malloc family of functions directly wrap Solo5 interfaces.
- */
-void *malloc(size_t size)
-{
-    return solo5_malloc(size);
-}
-
-void free(void *p)
-{
-    solo5_free(p);
-}
-
-void *calloc(size_t n, size_t size)
-{
-    return solo5_calloc(n, size);
-}
-
-void *realloc(void *p, size_t size)
-{
-    return solo5_realloc(p, size);
-}
-
-/*
  * System time.
  */
 #define NSEC_PER_SEC 1000000000ULL
@@ -90,4 +67,33 @@ clock_t times(struct tms *buf)
 {
     memset(buf, 0, sizeof(*buf));
     return (clock_t)solo5_clock_monotonic();
+}
+
+
+static struct solo5_info info;
+/*
+ * Called by dlmalloc to allocate or free memory.
+ */
+void *sbrk(intptr_t increment)
+{
+    static uint64_t heap_top;
+    uint64_t prev, brk;
+
+    if (!heap_top) {
+        solo5_get_info(&info);
+        heap_top = info.heap_start;
+    }
+
+    prev = brk = heap_top;
+
+    /*
+     * dlmalloc guarantees increment values less than half of size_t, so this
+     * is safe from overflow.
+     */
+    brk += increment;
+    if (brk >= info.heap_end || brk < info.heap_start)
+        return (void *)-1;
+
+    heap_top = brk;
+    return (void *)prev;
 }

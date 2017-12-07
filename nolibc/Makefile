@@ -11,7 +11,7 @@ CFLAGS+=$(FREESTANDING_CFLAGS)
 
 OBJS=ctype.o \
      dtoa.o \
-     memchr.o memcmp.o memcpy.o memmove.o memset.o \
+     malloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o \
      strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
      strstr.o \
      stubs.o \
