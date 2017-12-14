@@ -46,29 +46,6 @@ void abort(void)
 }
 
 /*
- * Malloc family of functions directly wrap Solo5 interfaces.
- */
-void *malloc(size_t size)
-{
-    return solo5_malloc(size);
-}
-
-void free(void *p)
-{
-    solo5_free(p);
-}
-
-void *calloc(size_t n, size_t size)
-{
-    return solo5_calloc(n, size);
-}
-
-void *realloc(void *p, size_t size)
-{
-    return solo5_realloc(p, size);
-}
-
-/*
  * System time.
  */
 #define NSEC_PER_SEC 1000000000ULL
@@ -90,4 +67,43 @@ clock_t times(struct tms *buf)
 {
     memset(buf, 0, sizeof(*buf));
     return (clock_t)solo5_clock_monotonic();
+}
+
+
+static struct solo5_mem_info info;
+/*
+ * Called by dlmalloc to allocate or free memory.
+ */
+void *sbrk(intptr_t increment)
+{
+    static uint64_t heap_top, stack_guard_size;
+
+    /* One-time initialization. */
+    if ((!heap_top) || (!stack_guard_size)) {
+        solo5_mem_info(&info);
+        heap_top = info.heap_start;
+
+        /*
+         * If we have <1MB of free memory then don't let the heap grow
+         * to more than roughly half of free memory, otherwise don't
+         * let it grow to within 1MB of the stack.
+         */
+        stack_guard_size = (info.mem_size - info.heap_start >= 0x100000) ?
+            0x100000 : ((info.mem_size - info.heap_start) / 2);
+    }
+
+    uint64_t prev, brk;
+    uint64_t heap_max = (uint64_t)&prev - stack_guard_size;
+    prev = brk = heap_top;
+
+    /*
+     * dlmalloc guarantees increment values less than half of size_t, so this
+     * is safe from overflow.
+     */
+    brk += increment;
+    if (brk >= heap_max || brk < info.heap_start)
+        return (void *)-1;
+
+    heap_top = brk;
+    return (void *)prev;
 }
