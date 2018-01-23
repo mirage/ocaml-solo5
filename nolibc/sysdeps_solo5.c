@@ -36,13 +36,13 @@ ssize_t write(int fd, const void *buf, size_t count)
 
 void exit(int status)
 {
-    solo5_exit();
+    solo5_exit(status);
 }
 
 void abort(void)
 {
     solo5_console_write("Aborted\n", 8);
-    solo5_exit();
+    solo5_exit(SOLO5_EXIT_FAILURE);
 }
 
 /*
