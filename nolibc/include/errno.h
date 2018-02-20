@@ -8,5 +8,6 @@ extern int errno;
 #define EOVERFLOW 4
 #define ENOENT 5
 #define EINVAL 6
+#define ENOMEM 7
 
 #endif
