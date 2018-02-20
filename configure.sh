@@ -42,17 +42,6 @@ fi
 cp -r config.in config
 OCAML_GTE_4_06_0=no
 case $(ocamlopt -version) in
-    4.02.3)
-        echo '#define OCAML_OS_TYPE "Unix"' >> config/s.h
-        ;;
-    4.03.0)
-        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
-        echo '#define OCAML_OS_TYPE "Unix"' >> config/s.h
-        ;;
-    4.04.0|4.04.0+*)
-        OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
-        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
-        ;;
     4.04.[1-9]|4.04.[1-9]+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h

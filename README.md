@@ -43,7 +43,7 @@ ocaml-freestanding` during the link step.
 
 ## Supported compiler versions
 
-Tested against OCaml 4.02.3, 4.03.0 and 4.04.0. Other versions will require
+Tested against OCaml 4.04.2, 4.05.0 and 4.06.0. Other versions will require
 changing `configure.sh`.
 
 ## Porting to a different (uni)kernel base layer
