@@ -17,9 +17,10 @@ int errno;
  * Standard output and error "streams".
  */
 static size_t console_write(FILE *f __attribute__((unused)), const char *s,
-	size_t l)
+        size_t l)
 {
-    return solo5_console_write(s, l);
+    solo5_console_write(s, l);
+    return l;
 }
 
 static FILE console = { .write = console_write };
@@ -28,8 +29,10 @@ FILE *stdout = &console;
 
 ssize_t write(int fd, const void *buf, size_t count)
 {
-    if (fd == 1 || fd == 2)
-	return solo5_console_write(buf, count);
+    if (fd == 1 || fd == 2) {
+        solo5_console_write(buf, count);
+        return count;
+    }
     errno = ENOSYS;
     return -1;
 }
@@ -53,12 +56,12 @@ void abort(void)
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
     if (tv != NULL) {
-	uint64_t now = solo5_clock_wall();
-	tv->tv_sec = now / NSEC_PER_SEC;
-	tv->tv_usec = (now % NSEC_PER_SEC) / 1000ULL;
+        solo5_time_t now = solo5_clock_wall();
+        tv->tv_sec = now / NSEC_PER_SEC;
+        tv->tv_usec = (now % NSEC_PER_SEC) / 1000ULL;
     }
     if (tz != NULL) {
-	memset(tz, 0, sizeof(*tz));
+        memset(tz, 0, sizeof(*tz));
     }
     return 0;
 }
@@ -88,7 +91,7 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
      * grow to within 1MB of the stack.
      */
     sbrk_guard_size = (heap_size >= 0x100000) ?
-	0x100000 : (heap_size / 2);
+        0x100000 : (heap_size / 2);
 
     sbrk_start = sbrk_cur = heap_start;
 }
