@@ -6,9 +6,9 @@ default: all
 OS := $(shell uname)
 # Do not forget to bump SOMINOR when changing VERSION,
 # and SOMAJOR when breaking ABI in a backward-incompatible way
-VERSION = 0.5.4
+VERSION = 0.5.5
 SOMAJOR = 2
-SOMINOR = 3
+SOMINOR = 4
 DESTDIR =
 prefix = /usr/local
 bindir = $(prefix)/bin
@@ -24,12 +24,7 @@ endif
 USEGCC = 1
 USECLANG = 0
 
-ifeq ($(OS), Darwin)
-USEGCC = 0
-USECLANG = 1
-endif
-
-ifeq ($(OS), FreeBSD)
+ifneq (,$(findstring $(OS),Darwin FreeBSD OpenBSD))
 USEGCC = 0
 USECLANG = 1
 endif
@@ -39,7 +34,7 @@ AR = ar
 ifeq ($(USECLANG),1)
 USEGCC = 0
 CC = clang
-CFLAGS_add += -fno-builtin
+CFLAGS_add += -fno-builtin -fno-strict-aliasing
 endif
 
 ifeq ($(USEGCC),1)
@@ -125,8 +120,12 @@ SFLAGS_add  += $(SFLAGS_arch)
 LDFLAGS_add += $(LDFLAGS_arch)
 
 CFLAGS_add += -std=c99 -Wall -I$(OPENLIBM_HOME) -I$(OPENLIBM_HOME)/include -I$(OPENLIBM_HOME)/$(ARCH) -I$(OPENLIBM_HOME)/src -DASSEMBLER -D__BSD_VISIBLE -Wno-implicit-function-declaration
-ifneq ($(filter $(ARCH),i387 amd64 aarch64 powerpc),)
+ifneq ($(filter $(ARCH),i387 amd64 powerpc),)
 CFLAGS_add += -I$(OPENLIBM_HOME)/ld80
+else
+ifneq ($(filter $(ARCH),aarch64),)
+CFLAGS_add += -I$(OPENLIBM_HOME)/ld128
+endif
 endif
 
 
