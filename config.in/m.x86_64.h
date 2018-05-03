@@ -3,8 +3,13 @@
 #define SIZEOF_LONG 8
 #define SIZEOF_PTR 8
 #define SIZEOF_SHORT 2
-#define ARCH_INT64_TYPE long
-#define ARCH_UINT64_TYPE unsigned long
+#if defined(__OpenBSD__)
+    #define ARCH_INT64_TYPE long long
+    #define ARCH_UINT64_TYPE unsigned long long
+#else
+    #define ARCH_INT64_TYPE long
+    #define ARCH_UINT64_TYPE unsigned long
+#endif
 #define ARCH_INT64_PRINTF_FORMAT "l"
 #undef ARCH_BIG_ENDIAN
 #undef ARCH_ALIGN_DOUBLE
