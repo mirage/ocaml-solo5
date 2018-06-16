@@ -6,7 +6,6 @@ script: bash -ex .travis-opam.sh
 env:
     global:
         - TESTS=false
-        - EXTRA_REMOTES="git://github.com/Solo5/opam-solo5"
     matrix:
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-ukvm"
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-virtio"
