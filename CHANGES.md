@@ -1,3 +1,9 @@
+## v0.3.0 (2018-06-16)
+
+* Update to Solo5 v0.3.0 APIs (@hannesm/@mato #30, #32, #34)
+* Update openlibm to a844d58@master (@mato, #37)
+* Add OpenBSD support (@adamsteen, #35)
+
 ## v0.2.3 (2017-11-22)
 
 * Update dtoa.c to fix #18 (`string_of_float` incorrectly returns `-nan`)
