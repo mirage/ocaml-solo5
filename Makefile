@@ -1,12 +1,19 @@
 .PHONY: all clean install
+
+include Makeconf
+
+ifeq ($(OCAML_GTE_4_07_0),yes)
+FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
+		  build/ocaml/asmrun/libasmrun.a \
+		  build/nolibc/libnolibc.a
+else
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/asmrun/libasmrun.a \
 		  build/ocaml/otherlibs/libotherlibs.a \
 		  build/nolibc/libnolibc.a
+endif
 
 all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc
-
-include Makeconf
 
 Makeconf:
 	./configure.sh

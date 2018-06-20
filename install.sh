@@ -40,8 +40,12 @@ else
     done
 fi
 cp build/ocaml/asmrun/libasmrun.a ${DESTLIB}/libasmrun.a
-# OCaml "otherlibs"
-cp build/ocaml/otherlibs/libotherlibs.a ${DESTLIB}/libotherlibs.a
+
+# Prior to OCaml 4.07.0, "otherlibs" contained the bigarray implementation.
+# OCaml >= 4.07.0 includes bigarray as part of stdlib/libasmrun.a
+if [ -f build/ocaml/otherlibs/libotherlibs.a ]; then
+    cp build/ocaml/otherlibs/libotherlibs.a ${DESTLIB}/libotherlibs.a
+fi
 
 # pkg-config
 mkdir -p ${prefix}/lib/pkgconfig
