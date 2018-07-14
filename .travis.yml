@@ -6,7 +6,11 @@ script: bash -ex .travis-opam.sh
 env:
     global:
         - TESTS=false
+        - PACKAGE="ocaml-freestanding"
     matrix:
+        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-kernel-ukvm"
+        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-kernel-virtio"
+        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-kernel-muen"
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-ukvm"
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-virtio"
         - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-kernel-muen"
