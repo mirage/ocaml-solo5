@@ -84,6 +84,10 @@ endif
 build/nolibc/Makefile:
 	mkdir -p build
 	cp -r nolibc build
+ifeq ($(OCAML_GTE_4_07_0),yes)
+	echo '/* automatically added by configure.sh */' >> build/nolibc/stubs.c
+	echo 'STUB_ABORT(caml_ba_map_file);' >> build/nolibc/stubs.c
+endif
 
 NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src -isystem $(TOP)/build/openlibm/include
 build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
