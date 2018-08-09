@@ -1,12 +1,19 @@
 .PHONY: all clean install
+
+include Makeconf
+
+ifeq ($(OCAML_GTE_4_07_0),yes)
+FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
+		  build/ocaml/asmrun/libasmrun.a \
+		  build/nolibc/libnolibc.a
+else
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/asmrun/libasmrun.a \
 		  build/ocaml/otherlibs/libotherlibs.a \
 		  build/nolibc/libnolibc.a
+endif
 
 all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc
-
-include Makeconf
 
 Makeconf:
 	./configure.sh
@@ -77,6 +84,10 @@ endif
 build/nolibc/Makefile:
 	mkdir -p build
 	cp -r nolibc build
+ifeq ($(OCAML_GTE_4_07_0),yes)
+	echo '/* automatically added by configure.sh */' >> build/nolibc/stubs.c
+	echo 'STUB_ABORT(caml_ba_map_file);' >> build/nolibc/stubs.c
+endif
 
 NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src -isystem $(TOP)/build/openlibm/include
 build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
