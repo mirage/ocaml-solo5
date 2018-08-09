@@ -1,3 +1,7 @@
+## v0.3.1 (2018-08-09)
+
+* Support OCaml 4.07.0 (@hannesm, #39)
+
 ## v0.3.0 (2018-06-16)
 
 * Update to Solo5 v0.3.0 APIs (@hannesm/@mato #30, #32, #34)
