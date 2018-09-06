@@ -4,7 +4,7 @@ prefix=${1:-$PREFIX}
 if [ "$prefix" = "" ]; then
     prefix=`opam config var prefix`
 fi
-DESTINC=${prefix}/include/ocaml-freestanding/include
+DESTINC=${prefix}/include/ocaml-freestanding
 DESTLIB=${prefix}/lib/ocaml-freestanding
 mkdir -p ${DESTINC} ${DESTLIB}
 
