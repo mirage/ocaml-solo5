@@ -1,3 +1,7 @@
+## v0.4.0 (2018-09-14)
+
+* Update to Solo5 0.4.0 OPAM package and target names (@mato, #41)
+
 ## v0.3.1 (2018-08-09)
 
 * Support OCaml 4.07.0 (@hannesm, #39)
