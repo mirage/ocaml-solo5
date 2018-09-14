@@ -4,18 +4,18 @@ export PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig
 pkg_exists() {
     pkg-config --exists "$@"
 }
-if pkg_exists solo5-kernel-ukvm solo5-kernel-virtio solo5-kernel-muen; then
+if pkg_exists solo5-bindings-hvt solo5-bindings-virtio solo5-bindings-muen; then
     echo "ERROR: Conflicting packages." 1>&2
-    echo "ERROR: Only one of solo5-kernel-ukvm, solo5-kernel-virtio, solo5-kernel-muen can be installed." 1>&2
+    echo "ERROR: Only one of solo5-bindings-hvt, solo5-bindings-virtio, solo5-bindings-muen can be installed." 1>&2
     exit 1
 fi
 PKG_CONFIG_DEPS=
-pkg_exists solo5-kernel-ukvm && PKG_CONFIG_DEPS=solo5-kernel-ukvm
-pkg_exists solo5-kernel-muen && PKG_CONFIG_DEPS=solo5-kernel-muen
-pkg_exists solo5-kernel-virtio && PKG_CONFIG_DEPS=solo5-kernel-virtio
+pkg_exists solo5-bindings-hvt && PKG_CONFIG_DEPS=solo5-bindings-hvt
+pkg_exists solo5-bindings-muen && PKG_CONFIG_DEPS=solo5-bindings-muen
+pkg_exists solo5-bindings-virtio && PKG_CONFIG_DEPS=solo5-bindings-virtio
 if [ -z "${PKG_CONFIG_DEPS}" ]; then
-    echo "ERROR: No supported kernel package found." 1>&2
-    echo "ERROR: solo5-kernel-ukvm, solo5-kernel-virtio or solo5-kernel-muen must be installed." 1>&2
+    echo "ERROR: No supported Solo5 bindings package found." 1>&2
+    echo "ERROR: solo5-bindings-hvt, solo5-bindings-virtio or solo5-bindings-muen must be installed." 1>&2
     exit 1
 fi
 ocamlfind query ocaml-src >/dev/null || exit 1

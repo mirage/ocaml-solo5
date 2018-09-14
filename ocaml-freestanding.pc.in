@@ -1,6 +1,6 @@
 prefix=${pcfiledir}/../..
 exec_prefix=${prefix}
-includedir=${prefix}/include/ocaml-freestanding/include
+includedir=${prefix}/include/ocaml-freestanding
 libdir=${exec_prefix}/lib/ocaml-freestanding
 
 Name: ocaml-freestanding
