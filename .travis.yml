@@ -7,7 +7,6 @@ env:
     global:
         - TESTS=false
         - PACKAGE="ocaml-freestanding"
-        - OPAM_VERSION=1.2.2
     matrix:
         - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt"
         - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-virtio"
