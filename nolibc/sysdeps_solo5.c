@@ -73,6 +73,7 @@ clock_t times(struct tms *buf)
 }
 
 static uintptr_t sbrk_start;
+static uintptr_t sbrk_end;
 static uintptr_t sbrk_cur;
 static uintptr_t sbrk_guard_size;
 
@@ -94,6 +95,7 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
         0x100000 : (heap_size / 2);
 
     sbrk_start = sbrk_cur = heap_start;
+    sbrk_end = heap_start + heap_size;
 }
 
 /*
@@ -110,7 +112,7 @@ void *sbrk(intptr_t increment)
      * is safe from overflow.
      */
     brk += increment;
-    if (brk >= max || brk < sbrk_start)
+    if (brk >= max || brk >= sbrk_end || brk < sbrk_start)
         return (void *)-1;
 
     sbrk_cur = brk;
