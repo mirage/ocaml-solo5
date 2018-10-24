@@ -47,6 +47,10 @@ if [ -f build/ocaml/otherlibs/libotherlibs.a ]; then
     cp build/ocaml/otherlibs/libotherlibs.a ${DESTLIB}/libotherlibs.a
 fi
 
+# META: ocamlfind and other build utilities test for existance ${DESTLIB}/META
+# when figuring out whether a library is installed
+touch ${DESTLIB}/META
+
 # pkg-config
 mkdir -p ${prefix}/lib/pkgconfig
 cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
