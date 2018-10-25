@@ -1,3 +1,9 @@
+## v0.4.1 (2018-10-25)
+
+* Migrate to OPAM2 (@hannesm, #44)
+* Correctly check heap bounds if heap + stack are not contiguous (@ehmry, #43)
+* Install an empty META file to keep ocamlfind etc. happy (@hannesm, #45)
+
 ## v0.4.0 (2018-09-14)
 
 * Update to Solo5 0.4.0 OPAM package and target names (@mato, #41)
