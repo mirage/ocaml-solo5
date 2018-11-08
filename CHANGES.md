@@ -1,3 +1,7 @@
+## v0.4.2 (2018-11-08)
+
+* Solo5 bindings for Genode (@ehmry, #46)
+
 ## v0.4.1 (2018-10-25)
 
 * Migrate to OPAM2 (@hannesm, #44)
