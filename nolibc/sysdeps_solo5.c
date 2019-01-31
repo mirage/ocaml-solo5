@@ -45,7 +45,7 @@ void exit(int status)
 void abort(void)
 {
     solo5_console_write("Aborted\n", 8);
-    solo5_exit(SOLO5_EXIT_FAILURE);
+    solo5_abort();
 }
 
 /*
