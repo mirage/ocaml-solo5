@@ -40,6 +40,7 @@ else
     done
 fi
 cp build/ocaml/asmrun/libasmrun.a ${DESTLIB}/libasmrun.a
+ln -s ${DESTLIB}/libasmrun.a ${prefix}/lib/ocaml/libasmrunfreestanding.a
 
 # Prior to OCaml 4.07.0, "otherlibs" contained the bigarray implementation.
 # OCaml >= 4.07.0 includes bigarray as part of stdlib/libasmrun.a
@@ -54,3 +55,5 @@ touch ${DESTLIB}/META
 # pkg-config
 mkdir -p ${prefix}/lib/pkgconfig
 cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
+cp flags/cflags ${DESTLIB}
+cp flags/libs ${DESTLIB}
