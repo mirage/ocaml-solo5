@@ -1,3 +1,9 @@
+## v0.4.3 (2019-03-14)
+
+* Use solo5\_abort in abort() (@hannesm, #49)
+* Expose flags through files and enable the use of -runtime-variant
+  (@TheLortex, #50)
+
 ## v0.4.2 (2018-11-08)
 
 * Solo5 bindings for Genode (@ehmry, #46)
