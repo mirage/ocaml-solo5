@@ -1,4 +1,9 @@
-## v0.4.3 (2019-03-14)
+## v0.4.4 (2019-03-17)
+
+* Fix system compiler, add system switch to Travis CI via INSTALL\_LOCAL.
+  Reverts part of #50. (@hannesm, #51).
+
+## v0.4.3 (2019-03-14) (not published to OPAM)
 
 * Use solo5\_abort in abort() (@hannesm, #49)
 * Expose flags through files and enable the use of -runtime-variant
