@@ -9,4 +9,3 @@ odir=$prefix/lib
 rm -f $odir/pkgconfig/ocaml-freestanding.pc
 rm -rf $odir/ocaml-freestanding
 rm -rf $prefix/include/ocaml-freestanding
-rm -f $odir/ocaml/libasmrunfreestanding.a
