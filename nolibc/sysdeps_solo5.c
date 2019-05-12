@@ -133,7 +133,7 @@ void *sbrk(intptr_t increment)
 #else
 #undef assert
 #define assert(x)
-#define NO_MALLINFO 1
+#define STRUCT_MALLINFO_DECLARED 1
 #endif
 
 #undef WIN32
