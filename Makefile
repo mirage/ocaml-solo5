@@ -100,6 +100,9 @@ ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
 	    -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
 	    ocaml-freestanding.pc.in > $@
 
+flags/libs.tmp:
+	opam config subst $@
+
 flags/libs: flags/libs.tmp Makeconf
 	sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
 	    flags/libs.tmp > flags/libs.tmp2
@@ -108,6 +111,9 @@ flags/libs: flags/libs.tmp Makeconf
 		env PKG_CONFIG_PATH=$(shell opam config var prefix)/lib/pkgconfig pkg-config $$PKG --libs >> flags/libs.tmp2;\
 	done
 	echo "("`cat flags/libs.tmp2`")" > flags/libs
+
+flags/cflags.tmp:
+	opam config subst $@
 
 flags/cflags: flags/cflags.tmp Makeconf
 	for PKG in $(PKG_CONFIG_DEPS); do \
@@ -126,3 +132,5 @@ uninstall:
 
 clean:
 	rm -rf build config Makeconf ocaml-freestanding.pc
+	rm -rf flags/libs flags/libs.tmp flags/libs.tmp2
+	rm -rf flags/cflags flags/cflags.tmp
