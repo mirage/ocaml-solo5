@@ -1,5 +1,5 @@
 #define OCAML_STDLIB_DIR "/usr/local/lib/ocaml"
-#define POSIX_SIGNALS
+//#define POSIX_SIGNALS
 //#define HAS_GETRUSAGE
 #define HAS_TIMES
 //#define HAS_SOCKETS
