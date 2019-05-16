@@ -100,23 +100,26 @@ ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
 	    -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
 	    ocaml-freestanding.pc.in > $@
 
+flags/libs.tmp: flags/libs.tmp.in
+	opam config subst $@
+
 flags/libs: flags/libs.tmp Makeconf
-	sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
-	    flags/libs.tmp > flags/libs.tmp2
-	for PKG in $(PKG_CONFIG_DEPS); do \
-		echo " " >> flags/libs.tmp2;\
-		env PKG_CONFIG_PATH=$(shell opam config var prefix)/lib/pkgconfig pkg-config $$PKG --libs >> flags/libs.tmp2;\
-	done
-	echo "("`cat flags/libs.tmp2`")" > flags/libs
+	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
+	    pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
+	sed -e '1i (' \
+            -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
+	    -e '$$a )' \
+	    $< > $@
+
+flags/cflags.tmp: flags/cflags.tmp.in
+	opam config subst $@
 
 flags/cflags: flags/cflags.tmp Makeconf
-	for PKG in $(PKG_CONFIG_DEPS); do \
-		echo " " >> flags/cflags.tmp;\
-		env PKG_CONFIG_PATH=$(shell opam config var prefix)/lib/pkgconfig pkg-config $$PKG --cflags >> flags/cflags.tmp;\
-	done
-	echo "("`cat flags/cflags.tmp`")" > flags/cflags
-
-
+	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
+	    pkg-config $(PKG_CONFIG_DEPS) --cflags >> $<
+	sed -e '1i (' \
+	    -e '$$a )' \
+	    $< > $@
 
 install: all
 	./install.sh
@@ -126,3 +129,5 @@ uninstall:
 
 clean:
 	rm -rf build config Makeconf ocaml-freestanding.pc
+	rm -rf flags/libs flags/libs.tmp
+	rm -rf flags/cflags flags/cflags.tmp
