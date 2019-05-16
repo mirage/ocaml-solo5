@@ -105,18 +105,21 @@ flags/libs.tmp: flags/libs.tmp.in
 
 flags/libs: flags/libs.tmp Makeconf
 	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --libs >> flags/libs.tmp
-	echo "("`cat flags/libs.tmp`")" \
-	    | sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
-	    > flags/libs
+	    pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
+	sed -e '1i (' \
+            -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
+	    -e '$$a )' \
+	    $< > $@
 
 flags/cflags.tmp: flags/cflags.tmp.in
 	opam config subst $@
 
 flags/cflags: flags/cflags.tmp Makeconf
 	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --cflags >> flags/cflags.tmp
-	echo "("`cat flags/cflags.tmp`")" > flags/cflags
+	    pkg-config $(PKG_CONFIG_DEPS) --cflags >> $<
+	sed -e '1i (' \
+	    -e '$$a )' \
+	    $< > $@
 
 install: all
 	./install.sh
