@@ -18,6 +18,3 @@ env:
         - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-hvt" MODE="hvt"
         - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-virtio" MODE="virtio"
         - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-muen" MODE="muen"
-        - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-bindings-hvt" MODE="hvt"
-        - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-bindings-virtio" MODE="virtio"
-        - OCAML_VERSION=4.04 EXTRA_DEPS="solo5-bindings-muen" MODE="muen"
