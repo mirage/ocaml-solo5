@@ -85,12 +85,8 @@ STUB_ABORT(fcntl);
 STUB_WARN_ONCE(int, open, -1);
 
 /* signal.h */
-STUB_IGNORE(int, sigaction, -1);
-STUB_IGNORE(int, sigsetjmp, 0);
-STUB_IGNORE(int, sigaddset, -1);
-STUB_IGNORE(int, sigdelset, -1);
-STUB_IGNORE(int, sigemptyset, -1);
-STUB_IGNORE(int, sigprocmask, -1);
+STUB_IGNORE(int, setjmp, 0);
+STUB_ABORT(signal);
 /*
  * The following stubs are not required by the OCaml runtime, but are
  * needed to build the freestanding version of GMP used by Mirage.
