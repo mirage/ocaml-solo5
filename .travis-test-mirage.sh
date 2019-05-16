@@ -6,4 +6,4 @@ eval `opam config env`
 opam install mirage lwt
 
 cd mirage-test
-mirage configure -t ${MODE} && make depend && mirage build
+mirage configure -t ${MIRAGE_TEST_MODE} && make depend && mirage build
