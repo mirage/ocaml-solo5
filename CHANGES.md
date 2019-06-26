@@ -1,3 +1,7 @@
+## dev
+
+* Add support for OCaml 4.08.0 (@avsm)
+
 ## v0.4.4 (2019-03-17)
 
 * Fix system compiler, add system switch to Travis CI via INSTALL\_LOCAL.

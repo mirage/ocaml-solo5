@@ -2,7 +2,11 @@
 
 include Makeconf
 
-ifeq ($(OCAML_GTE_4_07_0),yes)
+ifeq ($(OCAML_GTE_4_08_0),yes)
+FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
+		  build/ocaml/runtime/libasmrun.a \
+		  build/nolibc/libnolibc.a
+else ifeq ($(OCAML_GTE_4_07_0),yes)
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/asmrun/libasmrun.a \
 		  build/nolibc/libnolibc.a
@@ -33,7 +37,10 @@ build/ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` build/ocaml
 
 build/ocaml/config/Makefile: build/ocaml/Makefile
-ifeq ($(OCAML_GTE_4_06_0),yes)
+ifeq ($(OCAML_GTE_4_08_0),yes)
+	cp config/s.h build/ocaml/runtime/caml/s.h
+	cp config/m.$(BUILD_ARCH).h build/ocaml/runtime/caml/m.h
+else ifeq ($(OCAML_GTE_4_06_0),yes)
 	cp config/s.h build/ocaml/byterun/caml/s.h
 	cp config/m.$(BUILD_ARCH).h build/ocaml/byterun/caml/m.h
 else
@@ -42,19 +49,41 @@ else
 endif
 	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) build/ocaml/config/Makefile
 
-# Needed for OCaml >= 4.03.0, triggered by OCAML_EXTRA_DEPS via Makeconf
+build/ocaml/Makefile.config: build/ocaml/Makefile
+	cp config/s.h build/ocaml/runtime/caml/s.h
+	cp config/m.$(BUILD_ARCH).h build/ocaml/runtime/caml/m.h
+	touch build/ocaml/Makefile.config
+	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) $@
+
+build/ocaml/Makefile.common: build/ocaml/Makefile
+	mkdir -p build/ocaml
+	@touch $@
+
+# Needed for OCaml >= 4.08.0, triggered by OCAML_EXTRA_DEPS via Makeconf
+build/ocaml/runtime/caml/version.h: build/ocaml/config/Makefile
+	build/ocaml/tools/make-version-header.sh > $@
+
+# Needed for OCaml >= 4.03.0 < 4.08.0, triggered by OCAML_EXTRA_DEPS via Makeconf
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 	build/ocaml/tools/make-version-header.sh > $@
 
 OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
+ifeq ($(OCAML_GTE_4_08_0),yes)
+build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefile.config build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
+	$(MAKE) -C build/ocaml/runtime \
+	    OUTPUTOBJ=-o \
+	    UNIX_OR_WIN32=unix \
+	    OC_CFLAGS="$(OCAML_CFLAGS)" \
+	    libasmrun.a
+else ifeq ($(OCAML_GTE_4_06_0),yes)
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
-ifeq ($(OCAML_GTE_4_06_0),yes)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
 else
+build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    NATIVECCCOMPOPTS="$(OCAML_CFLAGS)" \
