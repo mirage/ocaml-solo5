@@ -39,6 +39,7 @@ fi
 cp -r config.in config
 OCAML_GTE_4_06_0=no
 OCAML_GTE_4_07_0=no
+OCAML_GTE_4_08_0=no
 case $(ocamlopt -version) in
     4.05.[0-9]|4.05.[0-9]+*)
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
@@ -59,6 +60,15 @@ case $(ocamlopt -version) in
         OCAML_GTE_4_06_0=yes
         OCAML_GTE_4_07_0=yes
         OCAML_EXTRA_DEPS=build/ocaml/byterun/caml/version.h
+        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
+        echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
+        ;;
+    4.08.[0-9]|4.07.[0-9]+*)
+        OCAML_GTE_4_06_0=yes
+        OCAML_GTE_4_07_0=yes
+        OCAML_GTE_4_08_0=yes
+        OCAML_EXTRA_DEPS=build/ocaml/runtime/caml/version.h
         echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
@@ -89,4 +99,5 @@ PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
 OCAML_EXTRA_DEPS=${OCAML_EXTRA_DEPS}
 OCAML_GTE_4_06_0=${OCAML_GTE_4_06_0}
 OCAML_GTE_4_07_0=${OCAML_GTE_4_07_0}
+OCAML_GTE_4_08_0=${OCAML_GTE_4_08_0}
 EOM

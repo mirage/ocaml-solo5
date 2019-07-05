@@ -9,6 +9,9 @@ env:
         - PACKAGE="ocaml-freestanding"
         - POST_INSTALL_HOOK="./.travis-test-mirage.sh"
     matrix:
+        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
+        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
+        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
         - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
         - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
         - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
