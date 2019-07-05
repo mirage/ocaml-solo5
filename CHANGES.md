@@ -1,6 +1,11 @@
-## dev
+## v0.4.5 (2019-07-05)
 
-* Add support for OCaml 4.08.0 (@avsm)
+* Add support for OCaml 4.08.0 (@avsm, @hannesm, @mato)
+* Add support for upcoming Solo5 "spt" target (@mato)
+* dlmalloc: expose struct mallinfo and mallinfo() (@hannesm)
+* Various build system changes for "non-OPAM" (dune) support (@mato, @hannesm)
+* Add a link test to Travis CI (@hannesm, fixes #24)
+* Remove support for OCaml < 4.05.0, matching MirageOS requirements (@hannesm)
 
 ## v0.4.4 (2019-03-17)
 
