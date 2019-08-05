@@ -64,7 +64,7 @@ case $(ocamlopt -version) in
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
-    4.08.[0-9]|4.07.[0-9]+*)
+    4.08.[0-9]|4.08.[0-9]+*)
         OCAML_GTE_4_06_0=yes
         OCAML_GTE_4_07_0=yes
         OCAML_GTE_4_08_0=yes
