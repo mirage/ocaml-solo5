@@ -1,3 +1,7 @@
+## v0.4.6 (2019-08-09)
+
+* Fix support for OCaml 4.08.1+ (@hannesm)
+
 ## v0.4.5 (2019-07-05)
 
 * Add support for OCaml 4.08.0 (@avsm, @hannesm, @mato)
