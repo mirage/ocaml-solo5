@@ -73,6 +73,15 @@ case $(ocamlopt -version) in
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
+    4.09.[0-9]|4.09.[0-9]+*)
+        OCAML_GTE_4_06_0=yes
+        OCAML_GTE_4_07_0=yes
+        OCAML_GTE_4_08_0=yes
+        OCAML_EXTRA_DEPS=build/ocaml/runtime/caml/version.h
+        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
+        echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
+        echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
+        ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
         exit 1
