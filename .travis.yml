@@ -1,26 +1,25 @@
 language: c
-sudo: required
-dist: trusty
-install: wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-opam.sh
-script: bash -ex .travis-opam.sh
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-docker.sh
+script: bash -ex .travis-docker.sh
+services:
+  - docker
+sudo: false
 env:
-    global:
-        - TESTS=false
-        - PACKAGE="ocaml-freestanding"
-        - POST_INSTALL_HOOK="./.travis-test-mirage.sh"
-    matrix:
-        - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
-        - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
-        - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
-        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
-        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
-        - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
-        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
-        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
-        - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
-        - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
-        - OCAML_VERSION=4.06 INSTALL_LOCAL=1 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
-        - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
-        - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-hvt" MIRAGE_TEST_MODE="hvt"
-        - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-virtio" MIRAGE_TEST_MODE="virtio"
-        - OCAML_VERSION=4.05 EXTRA_DEPS="solo5-bindings-muen" MIRAGE_TEST_MODE="muen"
+ global:
+   - TESTS=false
+   - PACKAGE="ocaml-freestanding"
+   - POST_INSTALL_HOOK="./.travis-test-mirage.sh"
+   - DISTRO=alpine
+ matrix:
+   - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
+   - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
+   - OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"
+   - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
+   - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
+   - OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"
+   - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
+   - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
+   - OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"
+   - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
+   - OCAML_VERSION=4.06 INSTALL_LOCAL=1 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
+   - OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"

@@ -39,13 +39,8 @@ build/ocaml/Makefile:
 # Used to configure OCaml < 4.08.0
 ifneq ($(OCAML_GTE_4_08_0),yes)
 build/ocaml/config/Makefile: build/ocaml/Makefile
-ifeq ($(OCAML_GTE_4_06_0),yes)
 	cp config/s.h build/ocaml/byterun/caml/s.h
 	cp config/m.$(BUILD_ARCH).h build/ocaml/byterun/caml/m.h
-else
-	cp config/s.h build/ocaml/config/s.h
-	cp config/m.$(BUILD_ARCH).h build/ocaml/config/m.h
-endif
 	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) build/ocaml/config/Makefile
 endif
 
@@ -78,23 +73,15 @@ build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefil
 	    UNIX_OR_WIN32=unix \
 	    OC_CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
-else ifeq ($(OCAML_GTE_4_06_0),yes)
+else
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
-else
-build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
-	$(MAKE) -C build/ocaml/asmrun \
-	    UNIX_OR_WIN32=unix \
-	    NATIVECCCOMPOPTS="$(OCAML_CFLAGS)" \
-	    NATIVECCPROFOPTS="$(OCAML_CFLAGS)" \
-	    libasmrun.a
 endif
 
 build/ocaml/otherlibs/libotherlibs.a: build/ocaml/config/Makefile
-ifeq ($(OCAML_GTE_4_06_0),yes)
 	$(MAKE) -C build/ocaml/otherlibs/bigarray \
 	    OUTPUTOBJ=-o \
 	    CFLAGS="$(FREESTANDING_CFLAGS) -DIN_OCAML_BIGARRAY -I../../byterun" \
@@ -103,14 +90,6 @@ ifeq ($(OCAML_GTE_4_06_0),yes)
 	    build/ocaml/otherlibs/bigarray/bigarray_stubs.o \
 	    build/ocaml/otherlibs/bigarray/mmap_ba.o \
 	    build/ocaml/otherlibs/bigarray/mmap.o
-else
-	$(MAKE) -C build/ocaml/otherlibs/bigarray \
-	    CFLAGS="$(FREESTANDING_CFLAGS) -I../../byterun" \
-	    bigarray_stubs.o mmap_unix.o
-	$(AR) rcs $@ \
-	    build/ocaml/otherlibs/bigarray/bigarray_stubs.o \
-	    build/ocaml/otherlibs/bigarray/mmap_unix.o
-endif
 
 build/nolibc/Makefile:
 	mkdir -p build
