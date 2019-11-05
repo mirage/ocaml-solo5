@@ -6,7 +6,7 @@ ifeq ($(OCAML_GTE_4_08_0),yes)
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/runtime/libasmrun.a \
 		  build/nolibc/libnolibc.a
-else ifeq ($(OCAML_GTE_4_07_0),yes)
+else ifeq ($(OCAML_4_07_0),yes)
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/asmrun/libasmrun.a \
 		  build/nolibc/libnolibc.a
@@ -90,7 +90,7 @@ build/ocaml/otherlibs/libotherlibs.a: build/ocaml/config/Makefile
 build/nolibc/Makefile:
 	mkdir -p build
 	cp -r nolibc build
-ifeq ($(OCAML_GTE_4_07_0),yes)
+ifeq ($(OCAML_4_07_0),yes)
 	echo '/* automatically added by configure.sh */' >> build/nolibc/stubs.c
 	echo 'STUB_ABORT(caml_ba_map_file);' >> build/nolibc/stubs.c
 endif

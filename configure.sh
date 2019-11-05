@@ -37,7 +37,7 @@ if [ ! -f config.in/Makefile.${BUILD_OS}.${BUILD_ARCH} ]; then
 fi
 
 cp -r config.in config
-OCAML_GTE_4_07_0=no
+OCAML_4_07_0=no
 OCAML_GTE_4_08_0=no
 PKG_CONFIG_EXTRA_LIBS=
 case $(ocamlopt -version) in
@@ -46,16 +46,14 @@ case $(ocamlopt -version) in
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.07.[0-9]|4.07.[0-9]+*)
-        OCAML_GTE_4_07_0=yes
+        OCAML_4_07_0=yes
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.08.[0-9]|4.08.[0-9]+*)
-        OCAML_GTE_4_07_0=yes
         OCAML_GTE_4_08_0=yes
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.09.[0-9]|4.09.[0-9]+*)
-        OCAML_GTE_4_07_0=yes
         OCAML_GTE_4_08_0=yes
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
@@ -77,6 +75,6 @@ BUILD_OS=${BUILD_OS}
 NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 PKG_CONFIG_DEPS=${PKG_CONFIG_DEPS}
 PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
-OCAML_GTE_4_07_0=${OCAML_GTE_4_07_0}
+OCAML_4_07_0=${OCAML_4_07_0}
 OCAML_GTE_4_08_0=${OCAML_GTE_4_08_0}
 EOM
