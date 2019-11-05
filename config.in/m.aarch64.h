@@ -12,3 +12,4 @@
 #undef ARCH_ALIGN_INT64
 #define ASM_CFI_SUPPORTED
 #define PROFINFO_WIDTH 26
+#define INT64_LITERAL(s) s ## LL
