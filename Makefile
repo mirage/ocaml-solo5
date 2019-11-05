@@ -56,25 +56,23 @@ build/ocaml/Makefile.common: build/ocaml/Makefile
 	@touch $@
 endif
 
-# Needed for OCaml >= 4.08.0, triggered by OCAML_EXTRA_DEPS via Makeconf
-build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
-	build/ocaml/tools/make-version-header.sh > $@
-
-# Needed for OCaml >= 4.03.0 < 4.08.0, triggered by OCAML_EXTRA_DEPS via Makeconf
-build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
-	build/ocaml/tools/make-version-header.sh > $@
-
 OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
 OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 ifeq ($(OCAML_GTE_4_08_0),yes)
-build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefile.config build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
+build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
+	build/ocaml/tools/make-version-header.sh > $@
+
+build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
 	$(MAKE) -C build/ocaml/runtime \
 	    OUTPUTOBJ=-o \
 	    UNIX_OR_WIN32=unix \
 	    OC_CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
 else
-build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile $(OCAML_EXTRA_DEPS)
+build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
+	build/ocaml/tools/make-version-header.sh > $@
+
+build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile build/ocaml/byterun/caml/version.h
 	$(MAKE) -C build/ocaml/asmrun \
 	    UNIX_OR_WIN32=unix \
 	    CFLAGS="$(OCAML_CFLAGS)" \
