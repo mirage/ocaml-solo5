@@ -41,27 +41,23 @@ OCAML_GTE_4_07_0=no
 OCAML_GTE_4_08_0=no
 case $(ocamlopt -version) in
     4.06.[0-9]|4.06.[0-9]+*)
-        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.07.[0-9]|4.07.[0-9]+*)
         OCAML_GTE_4_07_0=yes
-        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.08.[0-9]|4.08.[0-9]+*)
         OCAML_GTE_4_07_0=yes
         OCAML_GTE_4_08_0=yes
-        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.09.[0-9]|4.09.[0-9]+*)
         OCAML_GTE_4_07_0=yes
         OCAML_GTE_4_08_0=yes
-        echo '#define OCAML_OS_TYPE "freestanding"' >> config/s.h
         echo '#define INT64_LITERAL(s) s ## LL' >> config/m.${BUILD_ARCH}.h
         echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
