@@ -65,7 +65,6 @@ build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
 build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
 	$(MAKE) -C build/ocaml/runtime \
 	    OUTPUTOBJ=-o \
-	    UNIX_OR_WIN32=unix \
 	    OC_CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
 else
@@ -74,7 +73,6 @@ build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 
 build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile build/ocaml/byterun/caml/version.h
 	$(MAKE) -C build/ocaml/asmrun \
-	    UNIX_OR_WIN32=unix \
 	    CFLAGS="$(OCAML_CFLAGS)" \
 	    libasmrun.a
 endif
