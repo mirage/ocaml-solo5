@@ -51,11 +51,9 @@ case $(ocamlopt -version) in
         ;;
     4.08.[0-9]|4.08.[0-9]+*)
         OCAML_GTE_4_08_0=yes
-        echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.09.[0-9]|4.09.[0-9]+*)
         OCAML_GTE_4_08_0=yes
-        echo 'SYSTEM=freestanding' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2

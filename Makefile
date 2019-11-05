@@ -36,24 +36,18 @@ build/ocaml/Makefile:
 	mkdir -p build
 	cp -r `ocamlfind query ocaml-src` build/ocaml
 
+# Used to configure OCaml >= 4.08.0
+ifeq ($(OCAML_GTE_4_08_0),yes)
+build/ocaml/Makefile.config: build/ocaml/Makefile
+	cd build/ocaml && ./configure
+	echo 'SYSTEM=freestanding' >> build/ocaml/Makefile.config
+	cp config/s.h build/ocaml/runtime/caml/s.h
 # Used to configure OCaml < 4.08.0
-ifneq ($(OCAML_GTE_4_08_0),yes)
+else
 build/ocaml/config/Makefile: build/ocaml/Makefile
 	cp config/s.h build/ocaml/byterun/caml/s.h
 	cp config/m.$(BUILD_ARCH).h build/ocaml/byterun/caml/m.h
 	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) build/ocaml/config/Makefile
-endif
-
-# Used to configure OCaml >= 4.08.0
-ifeq ($(OCAML_GTE_4_08_0),yes)
-build/ocaml/Makefile.config: build/ocaml/Makefile
-	cp config/s.h build/ocaml/runtime/caml/s.h
-	cp config/m.$(BUILD_ARCH).h build/ocaml/runtime/caml/m.h
-	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) $@
-
-build/ocaml/Makefile.common: build/ocaml/Makefile
-	mkdir -p build/ocaml
-	@touch $@
 endif
 
 OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
@@ -62,7 +56,7 @@ ifeq ($(OCAML_GTE_4_08_0),yes)
 build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
 	build/ocaml/tools/make-version-header.sh > $@
 
-build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.common build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
+build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
 	$(MAKE) -C build/ocaml/runtime \
 	    OUTPUTOBJ=-o \
 	    OC_CFLAGS="$(OCAML_CFLAGS)" \
