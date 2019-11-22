@@ -17,7 +17,7 @@ FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/nolibc/libnolibc.a
 endif
 
-all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc flags/libs flags/cflags
+all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc flags/libs flags/cflags flags/ld flags/libdir flags/ldflags
 
 Makeconf:
 	./configure.sh
@@ -130,6 +130,22 @@ flags/cflags: flags/cflags.tmp Makeconf
 	awk -v RS= -- '{ \
 	    print "(", $$0, ")" \
 	    }' $< >$@
+
+flags/libdir: Makeconf
+	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
+		pkg-config $(PKG_CONFIG_DEPS) --variable=libdir >> $@
+	sed -i -e '1 s/$$/\/src/' $@
+
+flags/ld: Makeconf
+	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
+		pkg-config $(PKG_CONFIG_DEPS) --variable=libdir >> $@
+	sed -ni 's/\n/ /g' "$@"
+	if [ ! -s $@ ]; then echo "ld" >> $@; fi
+
+flags/ldflags: Makeconf
+	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
+		pkg-config $(PKG_CONFIG_DEPS) --variable=ldflags >> $@
+	sed -i "$@" -e 's/(\ )+/\n/g'
 
 install: all
 	./install.sh

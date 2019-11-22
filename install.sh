@@ -66,3 +66,6 @@ mkdir -p ${prefix}/lib/pkgconfig
 cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
 cp flags/cflags ${DESTLIB}
 cp flags/libs ${DESTLIB}
+cp flags/libdir ${DESTLIB}
+cp flags/ld ${DESTLIB}
+cp flags/ldflags ${DESTLIB}
