@@ -1,1 +1,1 @@
--L%{ocaml-freestanding:lib}% -lasmrun -lnolibc -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@
+-I %{ocaml-freestanding:lib}% -cclib -lasmrun -cclib -lnolibc -cclib -lopenlibm
