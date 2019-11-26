@@ -39,8 +39,8 @@ case "${BUILD_ARCH}" in
         ;;
     *)
         echo "ERROR: Unsupported architecture: ${BUILD_ARCH}" 1>&2
-	exit 1
-	;;
+        exit 1
+        ;;
 esac
 
 # TODO: Remove once we drop support for OCaml < 4.08.0
