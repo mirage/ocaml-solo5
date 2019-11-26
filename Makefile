@@ -36,32 +36,59 @@ build/ocaml/Makefile:
 	mkdir -p build
 	cp -r `ocamlfind query ocaml-src` build/ocaml
 
-# Used to configure OCaml >= 4.08.0
 ifeq ($(OCAML_GTE_4_08_0),yes)
-build/ocaml/Makefile.config: build/ocaml/Makefile
-	cd build/ocaml && ./configure
-	echo 'SYSTEM=freestanding' >> build/ocaml/Makefile.config
-	cp config/s.h build/ocaml/runtime/caml/s.h
-# Used to configure OCaml < 4.08.0
-else
-build/ocaml/config/Makefile: build/ocaml/Makefile
-	cp config/s.h build/ocaml/byterun/caml/s.h
-	cp config/m.$(BUILD_ARCH).h build/ocaml/byterun/caml/m.h
-	cp config/Makefile.$(BUILD_OS).$(BUILD_ARCH) build/ocaml/config/Makefile
-endif
+# OCaml >= 4.08.0 uses an autotools-based build system. In this case we
+# convince it to think it's using the Solo5 compiler as a cross compiler, and
+# let the build system do its work with as little additional changes on our
+# side as possible.
+#
+# Notes:
+#
+# - CPPFLAGS must be set for configure as well as CC, otherwise it complains
+#   about headers due to differences of opinion between the preprocessor and
+#   compiler.
+# - ARCH must be overridden manually in Makefile.config due to the use of
+#   hardcoded combinations in the OCaml configure.
+# - HAS_XXX must be defined manually since our invocation of configure cannot
+#   link against nolibc (which would need to produce complete Solo5 binaries).
+# - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
+# - When configured for <ARCH>-<VENDOR>-<OS>, OCaml will attempt to build
+#   <OS>.c, so we provide an empty none.c to suit.
+OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 
-OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
-OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
-ifeq ($(OCAML_GTE_4_08_0),yes)
+build/ocaml/Makefile.config: build/ocaml/Makefile
+	cd build/ocaml && \
+	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
+	    AS="as" \
+	    ASPP="cc $(OCAML_CFLAGS) -c" \
+	    LD="ld" \
+	    CPPFLAGS="$(OCAML_CFLAGS)" \
+	    ./configure --host=$(BUILD_ARCH)-unknown-none \
+	        --disable-debugger --disable-systhreads --disable-unix-lib --without-libunwind
+	echo "ARCH=$(OCAML_BUILD_ARCH)" >> build/ocaml/Makefile.config
+	echo '#define HAS_GETTIMEOFDAY' >> build/ocaml/runtime/caml/s.h
+	echo '#define HAS_SECURE_GETENV' >> build/ocaml/runtime/caml/s.h
+	echo '#define HAS_TIMES' >> build/ocaml/runtime/caml/s.h
+	echo '#undef OCAML_OS_TYPE' >> build/ocaml/runtime/caml/s.h
+	echo '#define OCAML_OS_TYPE "None"' >> build/ocaml/runtime/caml/s.h
+	touch build/ocaml/runtime/none.c
+
 build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
 	build/ocaml/tools/make-version-header.sh > $@
 
 build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
-	$(MAKE) -C build/ocaml/runtime \
-	    OUTPUTOBJ=-o \
-	    OC_CFLAGS="$(OCAML_CFLAGS)" \
-	    libasmrun.a
+	$(MAKE) -C build/ocaml/runtime libasmrun.a
+
 else
+# OCaml < 4.08.0 use the old build system, so just do what used to work here.
+OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
+OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
+
+build/ocaml/config/Makefile: build/ocaml/Makefile
+	cp config/s.h build/ocaml/byterun/caml/s.h
+	cp config/m.$(OCAML_BUILD_ARCH).h build/ocaml/byterun/caml/m.h
+	cp config/Makefile.$(BUILD_OS).$(OCAML_BUILD_ARCH) build/ocaml/config/Makefile
+
 build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
 	build/ocaml/tools/make-version-header.sh > $@
 
