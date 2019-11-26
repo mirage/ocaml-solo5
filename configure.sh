@@ -55,10 +55,12 @@ PKG_CONFIG_EXTRA_LIBS=
 case $(ocamlopt -version) in
     4.06.[0-9]|4.06.[0-9]+*)
         PKG_CONFIG_EXTRA_LIBS="-lotherlibs"
+        cp -r config.in config
         echo 'SYSTEM=none' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.07.[0-9]|4.07.[0-9]+*)
         OCAML_4_07_0=yes
+        cp -r config.in config
         echo 'SYSTEM=none' >> config/Makefile.${BUILD_OS}.${BUILD_ARCH}
         ;;
     4.08.[0-9]|4.08.[0-9]+*)
@@ -72,10 +74,6 @@ case $(ocamlopt -version) in
         exit 1
         ;;
 esac
-
-if [ "${OCAML_GTE_4_08_0}" = "no" ]; then
-    cp -r config.in config
-fi
 
 if [ "${BUILD_ARCH}" = "aarch64" ]; then
     PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $(gcc -print-libgcc-file-name)" || exit 1
