@@ -52,8 +52,6 @@ ifeq ($(OCAML_GTE_4_08_0),yes)
 # - HAS_XXX must be defined manually since our invocation of configure cannot
 #   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-# - When configured for <ARCH>-<VENDOR>-<OS>, OCaml will attempt to build
-#   <OS>.c, so we provide an empty none.c to suit.
 OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
 
 build/ocaml/Makefile.config: build/ocaml/Makefile
@@ -63,15 +61,13 @@ build/ocaml/Makefile.config: build/ocaml/Makefile
 	    ASPP="cc $(OCAML_CFLAGS) -c" \
 	    LD="ld" \
 	    CPPFLAGS="$(OCAML_CFLAGS)" \
-	    ./configure --host=$(BUILD_ARCH)-unknown-none \
-	        --disable-debugger --disable-systhreads --disable-unix-lib --without-libunwind
+	    ./configure --host=$(BUILD_ARCH)-unknown-none
 	echo "ARCH=$(OCAML_BUILD_ARCH)" >> build/ocaml/Makefile.config
 	echo '#define HAS_GETTIMEOFDAY' >> build/ocaml/runtime/caml/s.h
 	echo '#define HAS_SECURE_GETENV' >> build/ocaml/runtime/caml/s.h
 	echo '#define HAS_TIMES' >> build/ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> build/ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> build/ocaml/runtime/caml/s.h
-	touch build/ocaml/runtime/none.c
 
 build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
 	build/ocaml/tools/make-version-header.sh > $@
