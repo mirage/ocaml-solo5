@@ -16,3 +16,4 @@
 #undef ARCH_ALIGN_INT64
 #undef NONSTANDARD_DIV_MOD
 #define PROFINFO_WIDTH 26
+#define INT64_LITERAL(s) s ## LL
