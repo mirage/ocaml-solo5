@@ -145,7 +145,7 @@ flags/ld: Makeconf
 flags/ldflags: Makeconf
 	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
 		pkg-config $(PKG_CONFIG_DEPS) --variable=ldflags >> $@
-#	sed -i "$@" -e 's/(\ )+/\n/g'
+	sed -i "$@" -E -e 's/[[:blank:]]+/\n/g'
 
 install: all
 	./install.sh
