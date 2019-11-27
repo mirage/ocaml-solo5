@@ -12,43 +12,47 @@ env:
     - DISTRO=alpine
 jobs:
   include:
-    - name: OCaml 4.09, Linux/x86_64, Solo5/hvt
+    - name: OCaml 4.09, Solo5/hvt
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Linux/x86_64, Solo5/hvt, system switch
+    - name: OCaml 4.09, Solo5/hvt, system switch
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.09 INSTALL_LOCAL=1 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Linux/x86_64, Solo5/spt
+    - name: OCaml 4.09, Solo5/spt
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-spt" EXTRA_ENV="MIRAGE_TEST_MODE=spt"
-    - name: OCaml 4.09, Linux/x86_64, Solo5/virtio
+    - name: OCaml 4.09, Solo5/virtio
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
-    - name: OCaml 4.09, Linux/x86_64, Solo5/muen
+    - name: OCaml 4.09, Solo5/muen
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"
-    - name: OCaml 4.09, Linux/ARM64, Solo5/hvt
+    - name: OCaml 4.09, Solo5/hvt
       os: linux
       arch: arm64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Linux/ARM64, Solo5/spt
+    - name: OCaml 4.09, Solo5/spt
       os: linux
       arch: arm64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-spt" EXTRA_ENV="MIRAGE_TEST_MODE=spt"
-    - name: OCaml 4.08, Linux/x86_64, Solo5/hvt
+    - name: OCaml 4.08, Solo5/hvt
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.07, Linux/x86_64, Solo5/hvt
+    - name: OCaml 4.07, Solo5/hvt
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.06, Linux/x86_64, Solo5/hvt
+    - name: OCaml 4.07, Solo5/hvt
+      os: linux
+      arch: arm64
+      env: OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
+    - name: OCaml 4.06, Solo5/hvt
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
