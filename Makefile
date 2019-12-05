@@ -115,7 +115,7 @@ flags/libs.tmp: flags/libs.tmp.in
 
 flags/libs.sexp: flags/libs.tmp Makeconf
 	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
+	    pkg-config $(PKG_CONFIG_DEPS) --static --libs >> $<
 	awk -v RS= -- '{ \
 	    sub("@@PKG_CONFIG_EXTRA_LIBS@@", "$(PKG_CONFIG_EXTRA_LIBS)", $$0); \
 	    print "(", $$0, ")" \
