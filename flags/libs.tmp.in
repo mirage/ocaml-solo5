@@ -1,1 +1,1 @@
--I %{ocaml-freestanding:lib}% -cclib -lasmrun -cclib -lnolibc -cclib -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@
+-I %{ocaml-freestanding:lib}% -cclib -lasmrun -cclib -lnolibc -cclib -lopenlibm libmirage-solo5_bindings.a @@PKG_CONFIG_EXTRA_LIBS@@
