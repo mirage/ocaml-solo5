@@ -12,6 +12,10 @@ env:
     - DISTRO=alpine
 jobs:
   include:
+    - name: OCaml 4.10, Solo5/hvt
+      os: linux
+      arch: amd64
+      env: OCAML_VERSION=4.10 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
     - name: OCaml 4.09, Solo5/hvt
       os: linux
       arch: amd64
