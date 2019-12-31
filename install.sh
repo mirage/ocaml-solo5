@@ -20,7 +20,7 @@ cp build/openlibm/libopenlibm.a ${DESTLIB}
 # Ocaml runtime
 OCAML_INCLUDES="alloc.h callback.h config.h custom.h fail.h hash.h intext.h \
   memory.h misc.h mlvalues.h printexc.h signals.h compatibility.h bigarray.h \
-  m.h s.h"
+  m.h s.h domain.h domain_state.h domain_state.tbl memprof.h"
 mkdir -p ${DESTINC}/caml
 
 # Prior to OCaml 4.08.0, the headers are in byterun/
