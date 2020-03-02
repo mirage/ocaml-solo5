@@ -1,3 +1,10 @@
+## v0.5.0 (2020-03-02)
+
+* Drop support for OCaml 4.05.0. (#64, @hannesm)
+* Add FreeBSD CI using Cirrus CI. (#67, @hannesm)
+* Build system cleanups. Move to fully using autotools for OCaml >= 4.08.0. Improves portability to less common platforms, such as OpenBSD. (#65, @hannesm / @mato)
+* OCaml 4.10.0 support. (#68, @kit-ty-kate)
+
 ## v0.4.7 (2019-09-19)
 
 * Add support for OCaml 4.09.0 (@hannesm)
