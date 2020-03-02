@@ -69,6 +69,9 @@ case $(ocamlopt -version) in
     4.09.[0-9]|4.09.[0-9]+*)
         OCAML_GTE_4_08_0=yes
         ;;
+    4.10.[0-9]|4.10.[0-9]+*)
+        OCAML_GTE_4_08_0=yes
+        ;;
     *)
         echo "ERROR: Unsupported OCaml version: $(ocamlopt -version)." 1>&2
         exit 1
