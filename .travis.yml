@@ -48,15 +48,3 @@ jobs:
       os: linux
       arch: amd64
       env: OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.07, Solo5/hvt
-      os: linux
-      arch: amd64
-      env: OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.07, Solo5/hvt
-      os: linux
-      arch: arm64
-      env: OCAML_VERSION=4.07 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.06, Solo5/hvt
-      os: linux
-      arch: amd64
-      env: OCAML_VERSION=4.06 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
