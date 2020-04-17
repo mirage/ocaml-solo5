@@ -1,9 +1,10 @@
 language: c
+os: linux
+dist: xenial
 install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-docker.sh
 script: bash -ex .travis-docker.sh
 services:
   - docker
-sudo: false
 env:
   global:
     - TESTS=false
@@ -12,39 +13,30 @@ env:
     - DISTRO=alpine
 jobs:
   include:
-    - name: OCaml 4.10, Solo5/hvt
-      os: linux
+    - name: OCaml 4.10, Solo5/hvt (amd64)
       arch: amd64
       env: OCAML_VERSION=4.10.0 EXTRA_DEPS="solo5-bindings-hvt"
-    - name: OCaml 4.09, Solo5/hvt
-      os: linux
+    - name: OCaml 4.09, Solo5/hvt (amd64)
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Solo5/hvt, system switch
-      os: linux
+    - name: OCaml 4.09, Solo5/hvt, system switch (amd64)
       arch: amd64
       env: OCAML_VERSION=4.09 INSTALL_LOCAL=1 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Solo5/spt
-      os: linux
+    - name: OCaml 4.09, Solo5/spt (amd64)
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-spt" EXTRA_ENV="MIRAGE_TEST_MODE=spt"
-    - name: OCaml 4.09, Solo5/virtio
-      os: linux
+    - name: OCaml 4.09, Solo5/virtio (amd64)
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-virtio" EXTRA_ENV="MIRAGE_TEST_MODE=virtio"
-    - name: OCaml 4.09, Solo5/muen
-      os: linux
+    - name: OCaml 4.09, Solo5/muen (amd64)
       arch: amd64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-muen" EXTRA_ENV="MIRAGE_TEST_MODE=muen"
-    - name: OCaml 4.09, Solo5/hvt
-      os: linux
+    - name: OCaml 4.09, Solo5/hvt (arm64)
       arch: arm64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
-    - name: OCaml 4.09, Solo5/spt
-      os: linux
+    - name: OCaml 4.09, Solo5/spt (arm64)
       arch: arm64
       env: OCAML_VERSION=4.09 EXTRA_DEPS="solo5-bindings-spt" EXTRA_ENV="MIRAGE_TEST_MODE=spt"
-    - name: OCaml 4.08, Solo5/hvt
-      os: linux
+    - name: OCaml 4.08, Solo5/hvt (amd64)
       arch: amd64
       env: OCAML_VERSION=4.08 EXTRA_DEPS="solo5-bindings-hvt" EXTRA_ENV="MIRAGE_TEST_MODE=hvt"
