@@ -2,20 +2,9 @@
 
 include Makeconf
 
-ifeq ($(OCAML_GTE_4_08_0),yes)
 FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
 		  build/ocaml/runtime/libasmrun.a \
 		  build/nolibc/libnolibc.a
-else ifeq ($(OCAML_4_07_0),yes)
-FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
-		  build/ocaml/asmrun/libasmrun.a \
-		  build/nolibc/libnolibc.a
-else
-FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
-		  build/ocaml/asmrun/libasmrun.a \
-		  build/ocaml/otherlibs/libotherlibs.a \
-		  build/nolibc/libnolibc.a
-endif
 
 all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc flags/libs flags/cflags
 
@@ -36,7 +25,6 @@ build/ocaml/Makefile:
 	mkdir -p build
 	cp -r `ocamlfind query ocaml-src` build/ocaml
 
-ifeq ($(OCAML_GTE_4_08_0),yes)
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
 # convince it to think it's using the Solo5 compiler as a cross compiler, and
 # let the build system do its work with as little additional changes on our
@@ -75,42 +63,9 @@ build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
 build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
 	$(MAKE) -C build/ocaml/runtime libasmrun.a
 
-else
-# OCaml < 4.08.0 use the old build system, so just do what used to work here.
-OCAML_CFLAGS=-O2 -fno-strict-aliasing -fwrapv -Wall -USYS_linux -DHAS_UNISTD $(FREESTANDING_CFLAGS)
-OCAML_CFLAGS+=-I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
-
-build/ocaml/config/Makefile: build/ocaml/Makefile
-	cp config/s.h build/ocaml/byterun/caml/s.h
-	cp config/m.$(OCAML_BUILD_ARCH).h build/ocaml/byterun/caml/m.h
-	cp config/Makefile.$(BUILD_OS).$(OCAML_BUILD_ARCH) build/ocaml/config/Makefile
-
-build/ocaml/byterun/caml/version.h: build/ocaml/config/Makefile
-	build/ocaml/tools/make-version-header.sh > $@
-
-build/ocaml/asmrun/libasmrun.a: build/ocaml/config/Makefile build/openlibm/Makefile build/ocaml/byterun/caml/version.h
-	$(MAKE) -C build/ocaml/asmrun \
-	    CFLAGS="$(OCAML_CFLAGS)" \
-	    libasmrun.a
-endif
-
-build/ocaml/otherlibs/libotherlibs.a: build/ocaml/config/Makefile
-	$(MAKE) -C build/ocaml/otherlibs/bigarray \
-	    OUTPUTOBJ=-o \
-	    CFLAGS="$(FREESTANDING_CFLAGS) -DIN_OCAML_BIGARRAY -I../../byterun" \
-	    bigarray_stubs.o mmap_ba.o mmap.o
-	$(AR) rcs $@ \
-	    build/ocaml/otherlibs/bigarray/bigarray_stubs.o \
-	    build/ocaml/otherlibs/bigarray/mmap_ba.o \
-	    build/ocaml/otherlibs/bigarray/mmap.o
-
 build/nolibc/Makefile:
 	mkdir -p build
 	cp -r nolibc build
-ifeq ($(OCAML_4_07_0),yes)
-	echo '/* automatically added by configure.sh */' >> build/nolibc/stubs.c
-	echo 'STUB_ABORT(caml_ba_map_file);' >> build/nolibc/stubs.c
-endif
 
 NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src -isystem $(TOP)/build/openlibm/include
 build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
