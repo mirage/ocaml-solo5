@@ -1,45 +1,30 @@
 #ifndef _ENDIAN_H
 #define _ENDIAN_H
 
-#define __LITTLE_ENDIAN 1234
-#define __BIG_ENDIAN 4321
+#define LITTLE_ENDIAN 1234
+#define BIG_ENDIAN 4321
 #if defined(__x86_64__) || defined(__aarch64__)
-#define __BYTE_ORDER __LITTLE_ENDIAN
+#define BYTE_ORDER LITTLE_ENDIAN
 #else
 #error Unsupported architecture
 #endif
 
-static __inline uint16_t __bswap16(uint16_t __x)
-{
-  return __x<<8 | __x>>8;
-}
+#define bswap16(x) __builtin_bswap16(x)
+#define bswap32(x) __builtin_bswap32(x)
+#define bswap64(x) __builtin_bswap64(x)
 
-static __inline uint32_t __bswap32(uint32_t __x)
-{
-  return __x>>24 | (__x>>8&0xff00) | (__x<<8&0xff0000) | __x<<24;
-}
+#if BYTE_ORDER == LITTLE_ENDIAN
 
-static __inline uint64_t __bswap64(uint64_t __x)
-{
-  return (__bswap32(__x)+0ULL)<<32 | __bswap32(__x>>32);
-}
-
-#define bswap16(x) __bswap16(x)
-#define bswap32(x) __bswap32(x)
-#define bswap64(x) __bswap64(x)
-
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-
-#define htobe16(x) __bswap16(x)
-#define htobe32(x) __bswap32(x)
-#define htobe64(x) __bswap64(x)
+#define htobe16(x) bswap16(x)
+#define htobe32(x) bswap32(x)
+#define htobe64(x) bswap64(x)
 #define htole16(x) (uint16_t)(x)
 #define htole32(x) (uint32_t)(x)
 #define htole64(x) (uint64_t)(x)
 
-#define be16toh(x) __bswap16(x)
-#define be32toh(x) __bswap32(x)
-#define be64toh(x) __bswap64(x)
+#define be16toh(x) bswap16(x)
+#define be32toh(x) bswap32(x)
+#define be64toh(x) bswap64(x)
 #define le16toh(x) (uint16_t)(x)
 #define le32toh(x) (uint32_t)(x)
 #define le64toh(x) (uint64_t)(x)
@@ -49,16 +34,16 @@ static __inline uint64_t __bswap64(uint64_t __x)
 #define htobe16(x) (uint16_t)(x)
 #define htobe32(x) (uint32_t)(x)
 #define htobe64(x) (uint64_t)(x)
-#define htole16(x) __bswap16(x)
-#define htole32(x) __bswap32(x)
-#define htole64(x) __bswap64(x)
+#define htole16(x) bswap16(x)
+#define htole32(x) bswap32(x)
+#define htole64(x) bswap64(x)
 
 #define be16toh(x) (uint16_t)(x)
 #define be32toh(x) (uint32_t)(x)
 #define be64toh(x) (uint64_t)(x)
-#define le16toh(x) __bswap16(x)
-#define le32toh(x) __bswap32(x)
-#define le64toh(x) __bswap64(x)
+#define le16toh(x) bswap16(x)
+#define le32toh(x) bswap32(x)
+#define le64toh(x) bswap64(x)
 
 #endif /* BYTE_ORDER == _LITTLE_ENDIAN */
 
