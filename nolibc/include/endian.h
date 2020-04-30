@@ -1,4 +1,10 @@
+/* Solo5 used to copy <sys/endian.h> on BSD systems into the std include path.
+   To avoid multiple definitions of the same symbol, this header file is
+   guarded by both _SYS_ENDIAN_H and _ENDIAN_H. */
+
+#ifndef _SYS_ENDIAN_H
 #ifndef _ENDIAN_H
+#define _SYS_ENDIAN_H
 #define _ENDIAN_H
 
 #define LITTLE_ENDIAN 1234
@@ -47,4 +53,5 @@
 
 #endif /* BYTE_ORDER == _LITTLE_ENDIAN */
 
-#endif
+#endif /* _ENDIAN_H */
+#endif /* _SYS_ENDIAN_H */
