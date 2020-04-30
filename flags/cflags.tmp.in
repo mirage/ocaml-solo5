@@ -1,1 +1,1 @@
--D__freestanding__ -I%{prefix}%/include/ocaml-freestanding
+-D__ocaml_freestanding__ -I%{prefix}%/include/ocaml-freestanding
