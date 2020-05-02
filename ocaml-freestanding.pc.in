@@ -7,6 +7,6 @@ Name: ocaml-freestanding
 Version: 1.0.0
 URL: https://github.com/mirage/ocaml-freestanding/
 Description: Freestanding OCaml runtime
-Cflags: -D__ocaml_freestanding__ -I${includedir}
+Cflags: -U__linux__ -U__linux -Ulinux -U__gnu_linux__ -U__FreeBSD__ -U__OpenBSD__ -D__ocaml_freestanding__ -I${includedir}
 Libs: -L${libdir} -lasmrun -lnolibc -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@
 Requires: @@PKG_CONFIG_DEPS@@

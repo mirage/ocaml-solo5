@@ -1,1 +1,1 @@
--D__ocaml_freestanding__ -I%{prefix}%/include/ocaml-freestanding
+-U__linux__ -U__linux -Ulinux -U__gnu_linux__ -U__FreeBSD__ -U__OpenBSD__ -D__ocaml_freestanding__ -I%{prefix}%/include/ocaml-freestanding
