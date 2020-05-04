@@ -12,7 +12,7 @@ Makeconf:
 	./configure.sh
 
 TOP=$(abspath .)
-FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include
+FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include -include _freestanding/overrides.h
 
 build/openlibm/Makefile:
 	mkdir -p build/openlibm

@@ -1,1 +1,1 @@
--I%{prefix}%/include/ocaml-freestanding
+-I%{prefix}%/include/ocaml-freestanding -include _freestanding/overrides.h
