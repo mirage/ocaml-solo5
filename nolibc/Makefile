@@ -5,6 +5,13 @@ ifeq ($(SYSDEP_OBJS),)
     $(error SYSDEP_OBJS not set)
 endif
 
+all: libnolibc.a
+
+.PHONY: all clean
+
+clean:
+	$(RM) libnolibc.a *.o
+
 CC=cc
 CFLAGS=-O2 -std=c99 -Wall -Wno-parentheses -Werror
 CFLAGS+=$(FREESTANDING_CFLAGS)
@@ -21,4 +28,3 @@ dtoa.o: CFLAGS+=-fno-strict-aliasing
 
 libnolibc.a: $(OBJS) $(SYSDEP_OBJS)
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
-

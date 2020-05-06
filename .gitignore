@@ -1,8 +1,9 @@
 Makeconf
-build/
-config/
 ocaml-freestanding.pc
 flags/cflags
 flags/cflags.tmp
 flags/libs
 flags/libs.tmp
+nolibc/*.o
+nolibc/*.a
+ocaml/

@@ -2,9 +2,9 @@
 
 include Makeconf
 
-FREESTANDING_LIBS=build/openlibm/libopenlibm.a \
-		  build/ocaml/runtime/libasmrun.a \
-		  build/nolibc/libnolibc.a
+FREESTANDING_LIBS=openlibm/libopenlibm.a \
+		  ocaml/runtime/libasmrun.a \
+		  nolibc/libnolibc.a
 
 all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc flags/libs flags/cflags
 
@@ -12,18 +12,13 @@ Makeconf:
 	./configure.sh
 
 TOP=$(abspath .)
-FREESTANDING_CFLAGS+=-isystem $(TOP)/nolibc/include -include _freestanding/overrides.h
+FREESTANDING_CFLAGS+=-I$(TOP)/nolibc/include -include _freestanding/overrides.h
 
-build/openlibm/Makefile:
-	mkdir -p build/openlibm
-	cp -r openlibm build
+openlibm/libopenlibm.a:
+	$(MAKE) -C openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
 
-build/openlibm/libopenlibm.a: build/openlibm/Makefile
-	$(MAKE) -C build/openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
-
-build/ocaml/Makefile:
-	mkdir -p build
-	cp -r `ocamlfind query ocaml-src` build/ocaml
+ocaml/Makefile:
+	cp -r `ocamlfind query ocaml-src` ./ocaml
 
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
 # convince it to think it's using the Solo5 compiler as a cross compiler, and
@@ -40,36 +35,32 @@ build/ocaml/Makefile:
 # - HAS_XXX must be defined manually since our invocation of configure cannot
 #   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/build/openlibm/include -I$(TOP)/build/openlibm/src
+OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
 
-build/ocaml/Makefile.config: build/ocaml/Makefile
-	cd build/ocaml && \
+ocaml/Makefile.config: ocaml/Makefile
+	cd ocaml && \
 	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
 	    AS="as" \
 	    ASPP="cc $(OCAML_CFLAGS) -c" \
 	    LD="ld" \
 	    CPPFLAGS="$(OCAML_CFLAGS)" \
 	    ./configure --host=$(BUILD_ARCH)-unknown-none
-	echo "ARCH=$(OCAML_BUILD_ARCH)" >> build/ocaml/Makefile.config
-	echo '#define HAS_GETTIMEOFDAY' >> build/ocaml/runtime/caml/s.h
-	echo '#define HAS_SECURE_GETENV' >> build/ocaml/runtime/caml/s.h
-	echo '#define HAS_TIMES' >> build/ocaml/runtime/caml/s.h
-	echo '#undef OCAML_OS_TYPE' >> build/ocaml/runtime/caml/s.h
-	echo '#define OCAML_OS_TYPE "None"' >> build/ocaml/runtime/caml/s.h
+	echo "ARCH=$(OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
+	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
+	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
+	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
+	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
 
-build/ocaml/runtime/caml/version.h: build/ocaml/Makefile.config
-	build/ocaml/tools/make-version-header.sh > $@
+ocaml/runtime/caml/version.h: ocaml/Makefile.config
+	ocaml/tools/make-version-header.sh > $@
 
-build/ocaml/runtime/libasmrun.a: build/ocaml/Makefile.config build/openlibm/Makefile build/ocaml/runtime/caml/version.h
-	$(MAKE) -C build/ocaml/runtime libasmrun.a
+ocaml/runtime/libasmrun.a: ocaml/Makefile.config ocaml/runtime/caml/version.h
+	$(MAKE) -C ocaml/runtime libasmrun.a
 
-build/nolibc/Makefile:
-	mkdir -p build
-	cp -r nolibc build
-
-NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -isystem $(TOP)/build/openlibm/src -isystem $(TOP)/build/openlibm/include
-build/nolibc/libnolibc.a: build/nolibc/Makefile build/openlibm/Makefile
-	$(MAKE) -C build/nolibc \
+NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
+nolibc/libnolibc.a:
+	$(MAKE) -C nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
 	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)"
 
@@ -106,6 +97,12 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	rm -rf build config Makeconf ocaml-freestanding.pc
-	rm -rf flags/libs flags/libs.tmp
-	rm -rf flags/cflags flags/cflags.tmp
+	$(MAKE) -C ocaml/runtime clean
+	$(MAKE) -C openlibm clean
+	$(MAKE) -C nolibc \
+	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
+	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)" \
+	    clean
+	$(RM) Makeconf ocaml-freestanding.pc
+	$(RM) flags/libs flags/libs.tmp
+	$(RM) flags/cflags flags/cflags.tmp
