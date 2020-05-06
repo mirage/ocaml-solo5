@@ -1,3 +1,15 @@
+## v0.6.0 (2020-05-06)
+
+* Drop support for OCaml 4.06 and 4.07. (#72, @hannesm)
+* Define an `__ocaml_freestanding__` preprocessor macro, undefine leaky host toolchain preprocessor macros (`__linux__`, `__FreeBSD__`, `__OpenBSD__` et al.), provide an `<endian.h>`. (#74, @mato)
+* Install all OCaml runtime headers. (#75, @hannesm)
+* Provide a minimal `<inttypes.h>`. (#76, @mato, fixes #60)
+* Various build system improvements and cleanups. (part of #74, #76, @mato)
+
+Note that #74 may break downstream C code that uses `#if...#elif...#endif` chains to detect the system it is built on. Such code should be explicitly adapted to detect the presence of ocaml-freestanding by testing for the `__ocaml_freestanding__` preprocessor macro.
+
+Further, downstream OPAM packages with C code that wish to use the interfaces/headers added in this release should depend on `ocaml-freestanding { >= 0.6.0 }`.
+
 ## v0.5.0 (2020-03-02)
 
 * Drop support for OCaml 4.05.0. (#64, @hannesm)
