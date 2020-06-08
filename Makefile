@@ -37,6 +37,18 @@ ocaml/Makefile:
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
 
+# We should specify $(SYSTEM) strictly for aarch32
+ifeq ($(OCAML_BUILD_ARCH),arm)
+HOST="--host=$(BUILD_ARCH)-unknown-linux-gnueabihf"
+UNDEF_SDL=echo '\#undef SUPPORT_DYNAMIC_LINKING' >> ocaml/runtime/caml/s.h
+# TODO: This is not a good way to pass the TARGET_XX and SYS_XX check in ./build/ocaml/runtime/signals_osdep.h
+DROP_TARGET=sed -i -e 's/(TARGET_arm)/(TARGET)/' ocaml/runtime/signals_osdep.h
+else
+HOST="--host=$(BUILD_ARCH)-unknown-none"
+UNDEF_SDL=
+DROP_TARGET=
+endif
+
 ocaml/Makefile.config: ocaml/Makefile
 	cd ocaml && \
 	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
@@ -44,13 +56,15 @@ ocaml/Makefile.config: ocaml/Makefile
 	    ASPP="cc $(OCAML_CFLAGS) -c" \
 	    LD="ld" \
 	    CPPFLAGS="$(OCAML_CFLAGS)" \
-	    ./configure --host=$(BUILD_ARCH)-unknown-none
+	    ./configure $(HOST)
 	echo "ARCH=$(OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
+	$(UNDEF_SDL)
+	$(DROP_TARGET)
 
 ocaml/runtime/caml/version.h: ocaml/Makefile.config
 	ocaml/tools/make-version-header.sh > $@
