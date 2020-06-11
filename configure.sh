@@ -1,6 +1,11 @@
 #!/bin/sh
 
-export PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig
+PREFIX=${1:-$PREFIX}
+if [ "$PREFIX" = "" ]; then
+  PREFIX="$(opam config var prefix)"
+fi
+
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 pkg_exists() {
     pkg-config --exists "$@"
 }
