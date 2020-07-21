@@ -1,3 +1,10 @@
+## v0.6.1 (2020-07-21)
+
+* Add support for Solo5/xen bindings, `posix_memalign()`. (#81, @mato)
+* nolibc: Implement `assert()` which was previously a no-op. (#80, @mato)
+
+Downstream OPAM packages with C code that wish to use the interfaces/headers added in this release should depend on `ocaml-freestanding { >= 0.6.1 }`.
+
 ## v0.6.0 (2020-05-06)
 
 * Drop support for OCaml 4.06 and 4.07. (#72, @hannesm)
