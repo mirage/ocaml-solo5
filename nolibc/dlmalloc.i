@@ -927,8 +927,9 @@ DLMALLOC_EXPORT void* dlmemalign(size_t, size_t);
   Allocates a chunk of n bytes, aligned in accord with the alignment
   argument. Differs from memalign only in that it (1) assigns the
   allocated memory to *pp rather than returning it, (2) fails and
-  returns EINVAL if the alignment is not a power of two (3) fails and
-  returns ENOMEM if memory cannot be allocated.
+  returns -1, setting errno to EINVAL if the alignment is not a
+  power of two (3) fails and returns -1, setting errno to ENOMEM if
+  memory cannot be allocated.
 */
 DLMALLOC_EXPORT int dlposix_memalign(void**, size_t, size_t);
 
@@ -5269,16 +5270,20 @@ int dlposix_memalign(void** pp, size_t alignment, size_t bytes) {
   else {
     size_t d = alignment / sizeof(void*);
     size_t r = alignment % sizeof(void*);
-    if (r != 0 || d == 0 || (d & (d-SIZE_T_ONE)) != 0)
-      return EINVAL;
+    if (r != 0 || d == 0 || (d & (d-SIZE_T_ONE)) != 0) {
+      errno = EINVAL;
+      return -1;
+    }
     else if (bytes <= MAX_REQUEST - alignment) {
       if (alignment <  MIN_CHUNK_SIZE)
         alignment = MIN_CHUNK_SIZE;
       mem = internal_memalign(gm, alignment, bytes);
     }
   }
-  if (mem == 0)
-    return ENOMEM;
+  if (mem == 0) {
+    errno = ENOMEM;
+    return -1;
+  }
   else {
     *pp = mem;
     return 0;
