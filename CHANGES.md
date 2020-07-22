@@ -1,3 +1,7 @@
+## v0.6.2 (2020-07-22)
+
+* Fix `posix_memalign()` return values in failure cases. (#82, @mato)
+
 ## v0.6.1 (2020-07-21)
 
 * Add support for Solo5/xen bindings, `posix_memalign()`. (#81, @mato)
