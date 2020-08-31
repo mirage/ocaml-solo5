@@ -1,0 +1,85 @@
+# -*- Makefile -*-
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*            Xavier Leroy, projet Cristal, INRIA Rocquencourt            *
+#*                                                                        *
+#*   Copyright 2002 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# This file lists all standard library modules.
+# It is used in particular to know what to expunge in toplevels.
+
+P ?= stdlib__
+
+# Modules should be listed in dependency order.
+
+STDLIB_MODULES=\
+  camlinternalFormatBasics \
+  stdlib \
+  $(P)pervasives \
+  $(P)seq \
+  $(P)option \
+  $(P)result \
+  $(P)bool \
+  $(P)char \
+  $(P)uchar \
+  $(P)sys \
+  $(P)list \
+  $(P)bytes \
+  $(P)string \
+  $(P)unit \
+  $(P)marshal \
+  $(P)obj \
+  $(P)array \
+  $(P)float \
+  $(P)int \
+  $(P)int32 \
+  $(P)int64 \
+  $(P)nativeint \
+  $(P)lexing \
+  $(P)parsing \
+  $(P)set \
+  $(P)map \
+  $(P)stack \
+  $(P)queue \
+  camlinternalLazy \
+  $(P)lazy \
+  $(P)stream \
+  $(P)buffer \
+  camlinternalFormat \
+  $(P)printf \
+  $(P)arg \
+  $(P)printexc \
+  $(P)fun \
+  $(P)gc \
+  $(P)digest \
+  $(P)random \
+  $(P)hashtbl \
+  $(P)weak \
+  $(P)format \
+  $(P)scanf \
+  $(P)callback \
+  camlinternalOO \
+  $(P)oo \
+  camlinternalMod \
+  $(P)genlex \
+  $(P)ephemeron \
+  $(P)filename \
+  $(P)complex \
+  $(P)arrayLabels \
+  $(P)listLabels \
+  $(P)bytesLabels \
+  $(P)stringLabels \
+  $(P)moreLabels \
+  $(P)stdLabels \
+  $(P)spacetime \
+  $(P)bigarray
