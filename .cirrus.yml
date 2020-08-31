@@ -11,9 +11,8 @@ freebsd_task:
       - OCAML_VERSION: 4.10.0
   pkg_install_script: pkg install -y ocaml-opam gmp gmake pkgconf bash
   ocaml_script: opam init -a --comp=$OCAML_VERSION
-  solo5_script: eval `opam env` && opam install solo5-bindings-hvt
   dependencies_script: eval `opam env` && opam install --deps-only .
-  build_script: eval `opam env` && opam pin add ocaml-freestanding .
+  build_script: eval `opam env` && opam pin add solo5-bindings.dev . && opam pin add solo5-bindings-hvt.dev .
   env:
     MIRAGE_TEST_MODE: hvt
   mirage_script: ./.travis-test-mirage.sh
