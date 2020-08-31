@@ -1,0 +1,89 @@
+(data_only_dirs vendor)
+
+(library
+ (public_name solo5-bindings)
+ (name solo5_bindings)
+ (modules))
+
+(rule
+ (targets cflags)
+ (deps %{lib:solo5-bindings:dune-package})
+ (action
+  (with-stdout-to
+   %{targets}
+   (progn
+    (echo "(-isystem ")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \"$(realpath $(dirname %{lib:solo5-bindings:dune-package}))/crt\"")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \" -I$(realpath $(dirname %{lib:solo5-bindings:dune-package})))\"")))))
+
+(install
+ (section lib)
+ (package solo5-bindings)
+ (files cflags))
+
+(subdir
+ vendor/solo5
+ (rule
+  (targets elf_abi.h hvt_abi.h mft_abi.h solo5.h solo5_version.h spt_abi.h
+    crt solo5-elftool)
+  (package solo5-bindings)
+  (deps
+   (source_tree .))
+  (action
+   (progn
+    (with-stdout-to
+     configure.logs
+     (bash "./configure.sh"))
+    (with-stdout-to
+     make.logs
+     (run %{make} CONFIG_HVT= CONFIG_SPT= CONFIG_VIRTIO= CONFIG_MUEN=
+       CONFIG_GENODE=))
+    (run %{make} elftool/solo5-elftool)
+    (bash "cp include/solo5/*.h .")
+    (bash "cp -R include/crt .")
+    (bash "cp elftool/solo5-elftool ."))))
+ (install
+  (section bin)
+  (package solo5-bindings)
+  (files solo5-elftool))
+ (install
+  (section lib)
+  (package solo5-bindings)
+  (files elf_abi.h hvt_abi.h mft_abi.h solo5.h solo5_version.h spt_abi.h crt)))
+
+(subdir
+ nolibc/include
+ (dirs :standard _freestanding)
+ (install
+  (section lib)
+  (package solo5-bindings)
+  (files
+   assert.h
+   ctype.h
+   dirent.h
+   endian.h
+   errno.h
+   fcntl.h
+   features.h
+   inttypes.h
+   limits.h
+   math.h
+   setjmp.h
+   signal.h
+   stdio.h
+   stdlib.h
+   string.h
+   time.h
+   unistd.h
+   (_freestanding/byteorder.h as _freestanding/byteorder.h)
+   (_freestanding/overrides.h as _freestanding/overrides.h)
+   (sys/ioctl.h as sys/ioctl.h)
+   (sys/stat.h as sys/stat.h)
+   (sys/time.h as sys/time.h)
+   (sys/times.h as sys/times.h)
+   (sys/types.h as sys/types.h)
+   (sys/wait.h as sys/wait.h))))

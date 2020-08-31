@@ -1,0 +1,15 @@
+(rule
+ (deps
+  (source_tree .)
+  (source_tree caml)
+  ../VERSION
+  ../Makefile.config
+  ../Makefile.common
+  ../s.h
+  ../m.h
+  ../version.h)
+ (targets libasmrun.a)
+ (action
+  (progn
+   (run cp ../s.h ../m.h ../version.h caml)
+   (run %{make} libasmrun.a))))

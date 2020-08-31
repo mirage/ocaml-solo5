@@ -1,0 +1,279 @@
+(data_only_dirs solo5)
+
+(library
+ (public_name solo5-bindings-spt)
+ (name spt)
+ (libraries solo5-bindings)
+ (modules))
+
+(rule
+ (targets cflags)
+ (deps solo5/cflags.pc %{lib:solo5-bindings-spt:dune-package})
+ (action
+  (with-stdout-to
+   %{targets}
+   (progn
+    (bash "echo \"($(cat solo5/cflags.pc) -isystem \"")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \"$(realpath $(dirname %{lib:solo5-bindings:dune-package}))/crt\"")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \" -I$(realpath $(dirname %{lib:solo5-bindings:dune-package}))\"")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \" -I$(realpath $(dirname %{lib:solo5-bindings-spt:dune-package}))\"")
+    (echo " -include _freestanding/overrides.h)")))))
+
+(rule
+ (targets ldflags)
+ (deps %{lib:solo5-bindings-spt:dune-package})
+ (action
+  (with-stdout-to
+   %{targets}
+   (progn
+    (echo "%{read:solo5/ldflags.pc}")
+    (bash "echo \" -T $(realpath %{lib:solo5-bindings-spt:solo5_spt.lds})\"")
+    (bash "echo \" $(realpath %{lib:solo5-bindings-spt:solo5_spt.o})\"")
+    (bash
+     ; FIXME: do not use realpath and dirname
+     "echo \" -L$(realpath $(dirname %{lib:solo5-bindings-spt:dune-package}))\"")
+    (echo " -lasmrun -lnolibc -lopenlibm")))))
+
+(install
+ (files cflags ldflags)
+ (section lib)
+ (package solo5-bindings-spt))
+
+(subdir
+ solo5
+ ;; SPT
+ (rule
+  (targets cflags.pc)
+  (package solo5-bindings-spt)
+  (deps
+   (source_tree .)
+   ../../../files/cflags.pc.in)
+  (action
+   (progn
+    (with-stdout-to
+     cflags.logs
+     (bash "cp ../../../files/cflags.pc.in ."))
+    (with-stdout-to
+     cflags.logs
+     (bash "./configure.sh"))
+    (with-stdout-to
+     cflags.logs
+     (run %{make} CONFIG_HVT= CONFIG_SPT=1 CONFIG_VIRTIO= CONFIG_MUEN=
+       CONFIG_GENODE= CONFIG_XEN= %{targets})))))
+ (rule
+  (targets ldflags.pc)
+  (package solo5-bindings-spt)
+  (deps
+   (source_tree .)
+   ../../../files/ldflags.pc.in)
+  (action
+   (progn
+    (with-stdout-to
+     ldflags.logs
+     (bash "cp ../../../files/ldflags.pc.in ."))
+    (with-stdout-to
+     ldflags.logs
+     (bash "./configure.sh"))
+    (with-stdout-to
+     ldflags.logs
+     (run %{make} CONFIG_HVT= CONFIG_SPT=1 CONFIG_VIRTIO= CONFIG_MUEN=
+       CONFIG_GENODE= CONFIG_XEN= %{targets})))))
+ (rule
+  (targets solo5-spt solo5_spt.o solo5_spt.lds)
+  (package solo5-bindings-spt)
+  (deps
+   (source_tree .))
+  (action
+   (progn
+    (with-stdout-to
+     configure.logs
+     (bash "./configure.sh"))
+    (with-stdout-to
+     make.logs
+     (run %{make} CONFIG_HVT= CONFIG_SPT=1 CONFIG_VIRTIO= CONFIG_MUEN=
+       CONFIG_GENODE= CONFIG_XEN=))
+    (bash "cp -R tenders/spt/solo5-spt .")
+    (bash "cp -R bindings/spt/solo5_spt.o .")
+    (bash "cp -R bindings/spt/solo5_spt.lds ."))))
+ (install
+  (files solo5_spt.o solo5_spt.lds)
+  (section lib)
+  (package solo5-bindings-spt))
+ (install
+  (files solo5-spt)
+  (section bin)
+  (package solo5-bindings-spt)))
+
+(subdir
+ nolibc
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    -nostdlib
+    -I./include
+    -include
+    _freestanding/overrides.h
+    -I../openlibm/src
+    -I../openlibm/include)))
+ (subdir
+  include
+  (dirs :standard _freestanding))
+ (rule
+  (target libnolibc.a)
+  (package solo5-bindings-spt)
+  (deps
+   %{lib:solo5-bindings:crt}
+   %{lib:solo5-bindings:solo5.h}
+   (source_tree .)
+   (source_tree ../openlibm))
+  (action
+   (with-stdout-to
+    build-nolibc.logs
+    (run ../../../scripts/build-nolibc.sh %{cc}))))
+ (install
+  (section lib)
+  (package solo5-bindings-spt)
+  (files libnolibc.a)))
+
+(subdir
+ openlibm
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    -nostdlib
+    -I../nolibc/include
+    -include
+    _freestanding/overrides.h)))
+ (rule
+  (deps
+   (source_tree .)
+   (source_tree ../nolibc)
+   %{lib:solo5-bindings:crt}
+   %{lib:solo5-bindings:solo5.h})
+  (targets libopenlibm.a)
+  (package solo5-bindings-spt)
+  (action
+   (with-stdout-to
+    build-openlibm.logs
+    (run ../../../scripts/build-openlibm.sh %{cc}))))
+ (install
+  (section lib)
+  (package solo5-bindings-spt)
+  (files libopenlibm.a include/openlibm.h include/openlibm_complex.h
+    include/openlibm_fenv.h include/openlibm_fenv_amd64.h
+    include/openlibm_fenv_arm.h include/openlibm_fenv_i387.h
+    include/openlibm_fenv_powerpc.h include/openlibm_math.h
+    src/aarch64_fpmath.h src/fpmath.h src/math_private.h src/amd64_fpmath.h
+    src/i386_fpmath.h src/math_private_openbsd.h src/bsd_cdefs.h src/k_log.h
+    src/powerpc_fpmath.h src/cdefs-compat.h src/k_logf.h src/types-compat.h)))
+
+(subdir
+ ocaml
+ ; FIXME: See ocaml/dune#3387 for better rules
+ (subdir
+  runtime/caml
+  (copy_files ../../../../../vendor/ocaml/%{ocaml_version}/runtime/caml/**))
+ (subdir
+  runtime
+  (copy_files ../../../../vendor/ocaml/%{ocaml_version}/runtime/**))
+ (subdir
+  tools
+  (copy_files ../../../../vendor/ocaml/%{ocaml_version}/tools/**))
+ (subdir
+  build-aux
+  (copy_files ../../../../vendor/ocaml/%{ocaml_version}/build-aux/**))
+ (copy_files ../../../vendor/ocaml/%{ocaml_version}/**)
+ (rule
+  (targets cflags)
+  (deps
+   (env_var PWD))
+  (action
+   (with-stdout-to
+    %{targets}
+    ; FIXME: do not use realpath
+    (bash
+      "echo \"(-nostdlib -I$(realpath ../nolibc/include) -include _freestanding/overrides.h -I$(realpath ../openlibm/include) -I$(realpath ../openlibm/src))\""))))
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    (:include cflags))))
+ (rule
+  (deps
+   (env_var OCAML_TARGET)
+   ; FIXME: source_tree deps doesn't work with copy_files
+   (glob_files configure*)
+   (glob_files {Makefile,Makefile.*.in})
+   (glob_files runtime/**.[!a])
+   (glob_files runtime/caml/**)
+   (glob_files tools/**)
+   (glob_files build-aux/**)
+   %{lib:solo5-bindings:crt}
+   %{lib:solo5-bindings:solo5.h}
+   (source_tree ../nolibc)
+   (source_tree ../openlibm))
+  ; s.h and m.h are listed here as dune doesn't like targets in subdir ocaml/dune#3374
+  (targets Makefile.config Makefile.common s.h m.h version.h domain.h
+    domain_state.h domain_state.tbl)
+  (action
+   (with-stdout-to
+    logs
+    (run ../../../scripts/configure-ocaml.sh %{ocaml-config:target} %{cc}))))
+ (subdir
+  runtime
+  (rule
+   (deps
+    ; FIXME: source_tree deps doesn't work with copy_files
+    Makefile
+    .depend
+    (glob_files caml/**)
+    ; normal deps
+    (source_tree ../../nolibc)
+    (source_tree ../../openlibm)
+    %{lib:solo5-bindings:crt}
+    %{lib:solo5-bindings:solo5.h}
+    ../VERSION
+    ../Makefile.config
+    ../Makefile.common
+    ../s.h
+    ../m.h
+    ../version.h)
+   (targets libasmrun.a)
+   (package solo5-bindings-spt)
+   (action
+    (progn
+     (run cp ../s.h ../m.h ../version.h caml)
+     (with-stdout-to
+      ocaml.logs
+      (run %{make} libasmrun.a)))))
+  (install
+   (section lib)
+   (package solo5-bindings-spt)
+   (files
+    libasmrun.a
+    (caml/alloc.h as caml/alloc.h)
+    (caml/callback.h as caml/callback.h)
+    (caml/config.h as caml/config.h)
+    (caml/custom.h as caml/custom.h)
+    (caml/fail.h as caml/fail.h)
+    (caml/hash.h as caml/hash.h)
+    (caml/intext.h as caml/intext.h)
+    (caml/memory.h as caml/memory.h)
+    (caml/misc.h as caml/misc.h)
+    (caml/mlvalues.h as caml/mlvalues.h)
+    (caml/printexc.h as caml/printexc.h)
+    (caml/signals.h as caml/signals.h)
+    (caml/compatibility.h as caml/compatibility.h)
+    (../m.h as caml/m.h)
+    (../s.h as caml/s.h)
+    (../domain.h as caml/domain.h)
+    (../domain_state.h as caml/domain_state.h)
+    (../domain_state.tbl as caml/domain_state.tbl)))))

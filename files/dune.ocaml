@@ -1,0 +1,21 @@
+(env
+ (_
+  (c_flags
+   :standard
+   -nostdlib -isystem ../nolibc/include
+   -I../openlibm/include -I../openlibm/src)))
+
+(rule
+ (deps
+  (env_var OCAML_TARGET)
+  ../../configure-ocaml.sh
+  (source_tree .)
+  (source_tree ../openlibm/include)
+  (source_tree ../openlibm/include/src)
+  (source_tree ../nolibc/include))
+  ; s.h and m.h are listed here as dune doesn't like targets in subdir
+  ; FIXME: ocaml/dune#3374
+  (targets Makefile.config Makefile.common s.h m.h version.h domain.h
+   domain_state.h domain_state.tbl)
+  (action
+   (run ../../configure-ocaml.sh %{ocaml-config:target} %{cc})))
