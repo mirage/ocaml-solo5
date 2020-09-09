@@ -1,0 +1,40 @@
+\documentclass[11pt]{book}
+\usepackage{ae}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% HEVEA\@def@charset{UTF-8}%
+\usepackage{alltt}
+\usepackage{fullpage}
+\usepackage{syntaxdef}
+\usepackage{multind}
+\usepackage{html}
+\usepackage{textcomp}
+\usepackage{caml-sl}
+\usepackage{ocamldoc}
+\usepackage{xspace}
+
+\input{macros.tex}
+
+% Add meta tag to the generated head tag
+\ifouthtml
+\let\oldmeta=\@meta
+\renewcommand{\@meta}{
+\oldmeta
+\begin{rawhtml}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+\end{rawhtml}
+}
+\fi
+
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
+%\makeatletter \def\@wrindex#1#2{\xdef \@indexfile{\csname #1@idxfile\endcsname}\@@wrindex#2||\\}\makeatother
+\def\th{^{\hbox{\scriptsize th}}}
+
+\raggedbottom
+\input{version.tex}
+%HEVEA\tocnumber
+%HEVEA\setcounter{cuttingdepth}{1}
+%HEVEA\title{The OCaml system, release \ocamlversion}
+\input{allfiles.tex}
+
+

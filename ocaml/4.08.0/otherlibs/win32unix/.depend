@@ -1,0 +1,25 @@
+windbug.$(O): windbug.c windbug.h
+cst2constr.$(O): cst2constr.c ../../runtime/caml/mlvalues.h \
+  ../../runtime/caml/config.h ../../runtime/caml/m.h \
+  ../../runtime/caml/s.h ../../runtime/caml/misc.h \
+  ../../runtime/caml/fail.h ../unix/cst2constr.h
+mmap_ba.$(O): mmap_ba.c ../../runtime/caml/alloc.h ../../runtime/caml/misc.h \
+  ../../runtime/caml/config.h ../../runtime/caml/m.h \
+  ../../runtime/caml/s.h ../../runtime/caml/mlvalues.h \
+  ../../runtime/caml/bigarray.h ../../runtime/caml/custom.h \
+  ../../runtime/caml/memory.h ../../runtime/caml/gc.h \
+  ../../runtime/caml/major_gc.h ../../runtime/caml/freelist.h \
+  ../../runtime/caml/minor_gc.h ../../runtime/caml/address_class.h
+unix.cmo : \
+    unix.cmi
+unix.cmx : \
+    unix.cmi
+unix.cmi :
+unixLabels.cmo : \
+    unix.cmi \
+    unixLabels.cmi
+unixLabels.cmx : \
+    unix.cmx \
+    unixLabels.cmi
+unixLabels.cmi : \
+    unix.cmi

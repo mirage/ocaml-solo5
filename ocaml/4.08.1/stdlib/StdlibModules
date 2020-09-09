@@ -1,0 +1,83 @@
+# -*- Makefile -*-
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*            Xavier Leroy, projet Cristal, INRIA Rocquencourt            *
+#*                                                                        *
+#*   Copyright 2002 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# This file lists all standard library modules.
+# It is used in particular to know what to expunge in toplevels.
+
+P ?= stdlib__
+
+STDLIB_MODULES=\
+  $(P)spacetime \
+  $(P)arg \
+  $(P)array \
+  $(P)arrayLabels \
+  $(P)bigarray \
+  $(P)bool \
+  $(P)buffer \
+  $(P)bytes \
+  $(P)bytesLabels \
+  $(P)callback \
+  camlinternalFormat \
+  camlinternalFormatBasics \
+  camlinternalLazy \
+  camlinternalMod \
+  camlinternalOO \
+  $(P)char \
+  $(P)complex \
+  $(P)digest \
+  $(P)ephemeron \
+  $(P)filename \
+  $(P)float \
+  $(P)format \
+  $(P)fun \
+  $(P)gc \
+  $(P)genlex \
+  $(P)hashtbl \
+  $(P)int \
+  $(P)int32 \
+  $(P)int64 \
+  $(P)lazy \
+  $(P)lexing \
+  $(P)list \
+  $(P)listLabels \
+  $(P)map \
+  $(P)marshal \
+  $(P)moreLabels \
+  $(P)nativeint \
+  $(P)obj \
+  $(P)oo \
+  $(P)option \
+  $(P)parsing \
+  $(P)pervasives \
+  $(P)printexc \
+  $(P)printf \
+  $(P)queue \
+  $(P)random \
+  $(P)result \
+  $(P)scanf \
+  $(P)seq \
+  $(P)set \
+  $(P)stack \
+  $(P)stdLabels \
+  stdlib \
+  $(P)stream \
+  $(P)string \
+  $(P)stringLabels \
+  $(P)sys \
+  $(P)uchar \
+  $(P)unit \
+  $(P)weak
