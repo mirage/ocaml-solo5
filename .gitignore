@@ -7,4 +7,3 @@ flags/libs.tmp
 nolibc/*.o
 nolibc/*.a
 nolibc/test-include/
-ocaml/
