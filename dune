@@ -1,0 +1,252 @@
+(data_only_dirs ocaml)
+
+;; nolibc.a
+
+(rule
+ (targets cflags)
+ ; FIXME: (package solo5-bindings) doesn't work with opam
+ ; install. See #3418
+ (deps %{lib:solo5-bindings:dune-package})
+ (action
+  (run ./config/discover.exe)))
+
+(subdir
+ nolibc
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    -nostdlib
+    -I./include
+    -include
+    _freestanding/overrides.h
+    -I../openlibm/src
+    -I../openlibm/include)))
+ (rule
+  (target libnolibc.a)
+  (package ocaml-freestanding)
+  (deps
+   (source_tree .)
+   (source_tree ../openlibm))
+  (action
+   (with-stdout-to
+    build-nolibc.logs
+    (run ../scripts/build-nolibc.sh %{cc})))))
+
+; FIXME: need a public library to be able to reference
+; the library using %{lib:<name>:dune-package}
+
+(library
+ (public_name ocaml-freestanding)
+ (name ocaml_freestanding)
+ (modules))
+
+(install
+ (section lib)
+ (package ocaml-freestanding)
+ (files nolibc/libnolibc.a))
+
+(install
+ (section lib_root)
+ (package ocaml-freestanding)
+ (files
+  (ocaml-freestanding.pc as pkgconfig/ocaml-freestanding.pc)))
+
+;; openlibm.a
+
+(subdir
+ openlibm
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    -nostdlib
+    -I../nolibc/include
+    -include
+    _freestanding/overrides.h)))
+ (rule
+  (deps
+   (source_tree .)
+   (source_tree ../nolibc))
+  (targets libopenlibm.a)
+  (package ocaml-freestanding)
+  (action
+   (with-stdout-to
+    build-openlibm.logs
+    (run ../scripts/build-openlibm.sh %{cc}))))
+ (install
+  (section lib)
+  (package ocaml-freestanding)
+  (files libopenlibm.a))
+ (install
+  ; FIXME: no include section
+  (section lib_root)
+  (package ocaml-freestanding)
+  (files
+   (include/openlibm.h as ../include/ocaml-freestanding/include/openlibm.h)
+   (include/openlibm_complex.h as
+     ../include/ocaml-freestanding/openlibm_complex.h)
+   (include/openlibm_fenv.h as ../include/ocaml-freestanding/openlibm_fenv.h)
+   (include/openlibm_fenv_amd64.h as
+     ../include/ocaml-freestanding/openlibm_fenv_amd64.h)
+   (include/openlibm_fenv_arm.h as
+     ../include/ocaml-freestanding/openlibm_fenv_arm.h)
+   (include/openlibm_fenv_i387.h as
+     ../include/ocaml-freestanding/openlibm_fenv_i387.h)
+   (include/openlibm_fenv_powerpc.h as
+     ../include/ocaml-freestanding/openlibm_fenv_powerpc.h)
+   (include/openlibm_math.h as ../include/ocaml-freestanding/openlibm_math.h)
+   (src/aarch64_fpmath.h as ../include/ocaml-freestanding/aarch64_fpmath.h)
+   (src/fpmath.h as ../include/ocaml-freestanding/fpmath.h)
+   (src/math_private.h as ../include/ocaml-freestanding/math_private.h)
+   (src/amd64_fpmath.h as ../include/ocaml-freestanding/amd64_fpmath.h)
+   (src/i386_fpmath.h as ../include/ocaml-freestanding/i386_fpmath.h)
+   (src/math_private_openbsd.h as
+     ../include/ocaml-freestanding/math_private_openbsd.h)
+   (src/bsd_cdefs.h as ../include/ocaml-freestanding/bsd_cdefs.h)
+   (src/k_log.h as ../include/ocaml-freestanding/k_log.h)
+   (src/powerpc_fpmath.h as ../include/ocaml-freestanding/powerpc_fpmath.h)
+   (src/cdefs-compat.h as ../include/ocaml-freestanding/cdefs-compat.h)
+   (src/k_logf.h as ../include/ocaml-freestanding/k_logf.h)
+   (src/types-compat.h as ../include/ocaml-freestanding/types-compat.h))))
+
+;; libasmrun.a
+
+(subdir
+ ocaml-src
+ ; FIXME: See ocaml/dune#3387 for better rules
+ (subdir
+  runtime/caml
+  (copy_files ../../../ocaml/%{ocaml_version}/runtime/caml/**))
+ (subdir
+  runtime
+  (copy_files ../../ocaml/%{ocaml_version}/runtime/**))
+ (subdir
+  tools
+  (copy_files ../../ocaml/%{ocaml_version}/tools/**))
+ (subdir
+  build-aux
+  (copy_files ../../ocaml/%{ocaml_version}/build-aux/**))
+ (copy_files ../ocaml/%{ocaml_version}/**)
+ (rule
+  (targets cflags)
+  (deps
+   (env_var PWD))
+  (action
+   (with-stdout-to
+    %{targets}
+    ; FIXME: do not use realpath
+    (bash
+      "echo \"(-nostdlib -I$(realpath ../nolibc/include) -include _freestanding/overrides.h -I$(realpath ../openlibm/include) -I$(realpath ../openlibm/src))\""))))
+ (env
+  (_
+   (c_flags
+    (:include ../cflags)
+    (:include cflags))))
+ (rule
+  (deps
+   (env_var OCAML_TARGET)
+   ; FIXME: source_tree deps doesn't work with copy_files
+   (glob_files configure*)
+   (glob_files {Makefile,Makefile.*.in})
+   (glob_files runtime/**.[!a])
+   (glob_files runtime/caml/**)
+   (glob_files tools/**)
+   (glob_files build-aux/**)
+   (source_tree ../nolibc)
+   (source_tree ../openlibm))
+  ; s.h and m.h are listed here as dune doesn't like targets in subdir ocaml/dune#3374
+  (targets Makefile.config Makefile.common s.h m.h version.h domain.h
+    domain_state.h domain_state.tbl)
+  (action
+   (with-stdout-to
+    logs
+    (run ../scripts/configure-ocaml.sh %{ocaml-config:target} %{cc}))))
+ (subdir
+  runtime
+  (rule
+   (deps
+    ; FIXME: source_tree deps doesn't work with copy_files
+    Makefile
+    .depend
+    (glob_files caml/**)
+    ; normal deps
+    (source_tree ../../nolibc)
+    (source_tree ../../openlibm)
+    ../VERSION
+    ../Makefile.config
+    ../Makefile.common
+    ../s.h
+    ../m.h
+    ../version.h)
+   (targets libasmrun.a)
+   (package ocaml-freestanding)
+   (action
+    (progn
+     (run cp ../s.h ../m.h ../version.h caml)
+     (with-stdout-to
+      ocaml.logs
+      (run %{make} libasmrun.a)))))
+  (install
+   (section lib)
+   (package ocaml-freestanding)
+   (files libasmrun.a))
+  (install
+   (section lib_root)
+   (package ocaml-freestanding)
+   (files
+    (caml/alloc.h as ../include/ocaml-freestanding/caml/alloc.h)
+    (caml/callback.h as ../include/ocaml-freestanding/caml/callback.h)
+    (caml/config.h as ../include/ocaml-freestanding/caml/config.h)
+    (caml/custom.h as ../include/ocaml-freestanding/caml/custom.h)
+    (caml/fail.h as ../include/ocaml-freestanding/caml/fail.h)
+    (caml/hash.h as ../include/ocaml-freestanding/caml/hash.h)
+    (caml/intext.h as ../include/ocaml-freestanding/caml/intext.h)
+    (caml/memory.h as ../include/ocaml-freestanding/caml/memory.h)
+    (caml/misc.h as ../include/ocaml-freestanding/caml/misc.h)
+    (caml/mlvalues.h as ../include/ocaml-freestanding/caml/mlvalues.h)
+    (caml/printexc.h as ../include/ocaml-freestanding/caml/printexc.h)
+    (caml/signals.h as ../include/ocaml-freestanding/caml/signals.h)
+    (caml/compatibility.h as
+      ../include/ocaml-freestanding/caml/compatibility.h)
+    (../m.h as ../include/ocaml-freestanding/caml/m.h)
+    (../s.h as ../include/ocaml-freestanding/caml/s.h)
+    (../domain.h as ../include/ocaml-freestanding/caml/domain.h)
+    (../domain_state.h as ../include/ocaml-freestanding/caml/domain_state.h)
+    (../domain_state.tbl as
+      ../include/ocaml-freestanding/caml/domain_state.tbl)))))
+
+(subdir
+ nolibc/include
+ (dirs :standard _freestanding)
+ (install
+  (section lib_root)
+  (package ocaml-freestanding)
+  (files
+   (assert.h as ../include/ocaml-freestanding/assert.h)
+   (ctype.h as ../include/ocaml-freestanding/ctype.h)
+   (dirent.h as ../include/ocaml-freestanding/dirent.h)
+   (endian.h as ../include/ocaml-freestanding/endian.h)
+   (errno.h as ../include/ocaml-freestanding/errno.h)
+   (fcntl.h as ../include/ocaml-freestanding/fcntl.h)
+   (features.h as ../include/ocaml-freestanding/features.h)
+   (inttypes.h as ../include/ocaml-freestanding/inttypes.h)
+   (limits.h as ../include/ocaml-freestanding/limits.h)
+   (math.h as ../include/ocaml-freestanding/math.h)
+   (setjmp.h as ../include/ocaml-freestanding/setjmp.h)
+   (signal.h as ../include/ocaml-freestanding/signal.h)
+   (stdio.h as ../include/ocaml-freestanding/stdio.h)
+   (stdlib.h as ../include/ocaml-freestanding/stdlib.h)
+   (string.h as ../include/ocaml-freestanding/string.h)
+   (time.h as ../include/ocaml-freestanding/time.h)
+   (unistd.h as ../include/ocaml-freestanding/unistd.h)
+   (_freestanding/byteorder.h as
+     ../include/ocaml-freestanding/_freestanding/byteorder.h)
+   (_freestanding/overrides.h as
+     ../include/ocaml-freestanding/_freestanding/overrides.h)
+   (sys/ioctl.h as ../include/ocaml-freestanding/sys/ioctl.h)
+   (sys/stat.h as ../include/ocaml-freestanding/sys/stat.h)
+   (sys/time.h as ../include/ocaml-freestanding/sys/time.h)
+   (sys/times.h as ../include/ocaml-freestanding/sys/times.h)
+   (sys/types.h as ../include/ocaml-freestanding/sys/types.h)
+   (sys/wait.h as ../include/ocaml-freestanding/sys/wait.h))))

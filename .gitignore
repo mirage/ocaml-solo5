@@ -7,3 +7,6 @@ flags/libs.tmp
 nolibc/*.o
 nolibc/*.a
 nolibc/test-include/
+.merlin
+_build
+*.install

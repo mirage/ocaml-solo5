@@ -6,18 +6,18 @@ bug-reports: "https://github.com/mirage/ocaml-freestanding/issues/"
 license: "MIT"
 tags: "org:mirage"
 dev-repo: "git+https://github.com/mirage/ocaml-freestanding.git"
-build: [make]
-install: [make "install" "PREFIX=%{prefix}%"]
+
+build: [
+ ["dune" "subst"] {pinned}
+ ["dune" "build" "-p" name "-j" jobs]
+ ["dune" "runtest" "-p" name] {with-test}
+]
+
 depends: [
   "conf-pkg-config"
-  "ocamlfind" {build}
-  "ocaml-src" {build}
-  ("solo5-bindings-hvt" | "solo5-bindings-spt" | "solo5-bindings-virtio" | "solo5-bindings-muen" | "solo5-bindings-genode" | "solo5-bindings-xen")
-  "ocaml" {>= "4.08.0" & < "4.11.0"}
-]
-substs: [
-  "flags/cflags.tmp"
-  "flags/libs.tmp"
+  "dune" {>= "2.5.0"}
+  "dune-configurator"
+  "solo5-bindings"
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}
@@ -30,6 +30,7 @@ available: [
   | (os = "freebsd" & arch = "x86_64")
   | (os = "openbsd" & arch = "x86_64"))
 ]
+
 synopsis: "Freestanding OCaml runtime"
 description:
   "This package provides a freestanding OCaml runtime (asmrun), suitable for linking with a unikernel base layer."
