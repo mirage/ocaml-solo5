@@ -31,6 +31,10 @@ available: [
   | (os = "openbsd" & arch = "x86_64"))
 ]
 
+pin-depends: [
+  ["solo5-bindings.dev" "git+https://github.com/samoht/solo5.git#dune"]
+]
+
 synopsis: "Freestanding OCaml runtime"
 description:
   "This package provides a freestanding OCaml runtime (asmrun), suitable for linking with a unikernel base layer."
