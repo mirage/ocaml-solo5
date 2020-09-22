@@ -1,3 +1,5 @@
+TEST
+
 # ocaml-freestanding -- Freestanding OCaml runtime
 
 This package provides a freestanding OCaml runtime suitable for linking with a
