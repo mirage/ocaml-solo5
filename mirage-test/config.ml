@@ -1,7 +1,5 @@
 open Mirage
 
-let main =
-  foreign "Unikernel" job
+let main = foreign "Unikernel" job
 
-let () =
-  register "noop" [main]
+let () = register "noop" [ main ]
