@@ -124,17 +124,13 @@ void *sbrk(intptr_t increment)
  */
 
 /*
- * DEBUG not defined and assertions compiled out corresponds to the default
- * recommended configuration (see documentation below). If you need to debug
- * dlmalloc on Solo5 then define DEBUG to `1' here.
+ * DEBUG not defined and assertions enabled corresponds to the recommended
+ * configuration as our assert() does not call malloc().  (see documentation in
+ * dlmalloc.i). If you need to debug dlmalloc on Solo5 then define DEBUG to `1'
+ * here.
  */
-#if defined(DEBUG) && (DEBUG)
+#include <assert.h>
 #define ABORT_ON_ASSERT_FAILURE 0
-#else
-#undef assert
-#define assert(x)
-#define STRUCT_MALLINFO_DECLARED 1
-#endif
 
 #undef WIN32
 #define HAVE_MMAP 0
@@ -150,6 +146,7 @@ void *sbrk(intptr_t increment)
 #define LACKS_TIME_H
 #define MALLOC_FAILURE_ACTION
 #define USE_LOCKS 0
+#define STRUCT_MALLINFO_DECLARED 1
 
 /* disable null-pointer-arithmetic warning on clang */
 #if defined(__clang__) && __clang_major__ >= 6

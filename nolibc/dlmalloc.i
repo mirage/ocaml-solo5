@@ -1444,8 +1444,7 @@ DLMALLOC_EXPORT int mspace_mallopt(int, int);
 #undef assert
 #define assert(x) if(!(x)) ABORT
 #else /* ABORT_ON_ASSERT_FAILURE */
-/* Not present on Solo5 */
-/* #include <assert.h> */
+#include <assert.h>
 #endif /* ABORT_ON_ASSERT_FAILURE */
 #else  /* DEBUG */
 #ifndef assert
