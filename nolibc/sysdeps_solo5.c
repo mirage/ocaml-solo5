@@ -147,6 +147,7 @@ void *sbrk(intptr_t increment)
 #define MALLOC_FAILURE_ACTION
 #define USE_LOCKS 0
 #define STRUCT_MALLINFO_DECLARED 1
+#define FOOTERS 1
 
 /* disable null-pointer-arithmetic warning on clang */
 #if defined(__clang__) && __clang_major__ >= 6
