@@ -1444,8 +1444,7 @@ DLMALLOC_EXPORT int mspace_mallopt(int, int);
 #undef assert
 #define assert(x) if(!(x)) ABORT
 #else /* ABORT_ON_ASSERT_FAILURE */
-/* Not present on Solo5 */
-/* #include <assert.h> */
+#include <assert.h>
 #endif /* ABORT_ON_ASSERT_FAILURE */
 #else  /* DEBUG */
 #ifndef assert
@@ -3167,12 +3166,16 @@ static int init_mparams(void) {
       }
       else
 #endif /* USE_DEV_RANDOM */
+#ifdef __ocaml_freestanding__
+      magic = (size_t)(solo5_clock_monotonic() ^ 0x55555555UL);
+#else /* __ocaml_freestanding__ */
 #ifdef WIN32
       magic = (size_t)(GetTickCount() ^ (size_t)0x55555555U);
 #elif defined(LACKS_TIME_H)
       magic = (size_t)&magic ^ (size_t)0x55555555U;
 #else
       magic = (size_t)(time(0) ^ (size_t)0x55555555U);
+#endif
 #endif
       magic |= (size_t)8U;    /* ensure nonzero */
       magic &= ~(size_t)7U;   /* improve chances of fault for bad values */

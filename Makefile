@@ -1,4 +1,4 @@
-.PHONY: all clean install
+.PHONY: all clean install uninstall distclean
 
 include Makeconf
 
@@ -97,7 +97,7 @@ uninstall:
 	./uninstall.sh
 
 clean:
-	$(MAKE) -C ocaml/runtime clean
+	-$(MAKE) -C ocaml/runtime clean
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
@@ -106,3 +106,6 @@ clean:
 	$(RM) Makeconf ocaml-freestanding.pc
 	$(RM) flags/libs flags/libs.tmp
 	$(RM) flags/cflags flags/cflags.tmp
+
+distclean: clean
+	$(RM) -r ocaml/

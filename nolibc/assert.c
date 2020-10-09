@@ -1,6 +1,6 @@
-#include <solo5.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /*
  * These functions deliberately do not call printf() or malloc() in order to
@@ -9,7 +9,7 @@
 
 static void puts(const char *s)
 {
-    solo5_console_write(s, strlen(s));
+    (void)write(2, s, strlen(s));
 }
 
 void _assert_fail(const char *file, const char *line, const char *e)
