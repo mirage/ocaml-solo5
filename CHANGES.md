@@ -1,3 +1,7 @@
+## v0.6.3 (2020-10-12)
+
+* nolibc: dlmalloc: Improve security posture and robustness by always enabling assertions, initialising magic value for heap canaries using monotonic time and enabling FOOTERs. (#87, @mato)
+
 ## v0.6.2 (2020-07-22)
 
 * Fix `posix_memalign()` return values in failure cases. (#82, @mato)
