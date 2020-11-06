@@ -74,6 +74,7 @@ STUB_IGNORE(off_t, lseek, -1);
 STUB_ABORT(read);
 STUB_IGNORE(int, readlink, -1);
 STUB_ABORT(unlink);
+STUB_ABORT(rmdir);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
@@ -98,3 +99,4 @@ STUB_ABORT(strerror);
 
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
+STUB_ABORT(mkdir);

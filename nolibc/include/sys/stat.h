@@ -1,6 +1,8 @@
 #ifndef _SYS_STAT_H
 #define _SYS_STAT_H
 
+#include <sys/types.h>
+
 struct stat {
     int st_mode;
 };
@@ -9,5 +11,6 @@ struct stat {
 #define S_IFREG 0
 #define S_ISREG(x) (0)
 int stat(const char *, struct stat *);
+int mkdir(const char *, mode_t);
 
 #endif
