@@ -60,8 +60,8 @@ configured target. It also has to be linked with the accompanying `nolibc` and
 
 To select the `freestanding` toolchain, one can either use the `ocamlfind 
 -toolchain` option or use the dune build context feature with the `(toolchain 
-frestanding)`. 
-
+frestanding)`. A complete example on how to build a solo5 binary is available 
+in the `test/` folder. 
 
 ### Usage - the old way (< 0.7.0):
 

@@ -1,0 +1,36 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        ocaml-version: [4.10.0, 4.11.0]
+        mode: 
+          - name: hvt
+            exec: false
+          - name: spt
+            exec: true
+          - name: virtio
+            exec: false
+          - name: muen
+            exec: false
+          - name: xen
+            exec: false
+    runs-on: ${{ matrix.operating-system }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-ml/setup-ocaml@master
+      with:
+        ocaml-version: ${{ matrix.ocaml-version }}
+    - name: Pinning package
+      run: opam pin add -n -t -y .
+    - name: Depexts
+      run: opam depext -yt ocaml-freestanding conf-libseccomp
+    - name: Install ocaml-freestanding, bindings and dune
+      run: opam install -t -y . solo5-bindings-${{ matrix.mode.name }} dune
+    - name: Compiling example project
+      run: MODE=${{ matrix.mode.name }} opam exec -- dune build --root test
+    - name: Running example project
+      if: ${{ matrix.mode.exec }}
+      run: opam exec -- solo5-${{ matrix.mode.name }} test/_build/freestanding/main.bin || [ $? -eq 1 ]

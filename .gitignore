@@ -6,3 +6,5 @@ nolibc/*.a
 nolibc/test-include/
 stubs/*.o
 ocaml/
+.merlin
+_build

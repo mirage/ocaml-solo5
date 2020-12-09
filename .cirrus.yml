@@ -11,10 +11,22 @@ freebsd_task:
       - OCAML_VERSION: 4.10.1
       - OCAML_VERSION: 4.11.1
   pkg_install_script: pkg install -y ocaml-opam gmp gmake pkgconf bash
-  ocaml_script: opam init -a --comp=$OCAML_VERSION
-  solo5_script: eval `opam env` && opam install solo5-bindings-hvt
-  dependencies_script: eval `opam env` && opam install --deps-only .
-  build_script: eval `opam env` && opam pin add ocaml-freestanding .
-  env:
-    MIRAGE_TEST_MODE: hvt
-  mirage_script: ./.travis-test-mirage.sh
+  opam_ocaml_cache:
+    folder: $HOME/.opam
+    reupload_on_changes: false # since there is a fingerprint script
+    fingerprint_script:
+      - echo $CIRRUS_OS
+      - echo $OCAML_VERSION
+    populate_script: 
+      - opam init -a --comp=$OCAML_VERSION
+  setup_script: 
+    - opam update
+    - opam install dune
+    - opam pin add -n -t .
+    - opam depext -yt ocaml-freestanding
+    - opam install -t . --deps-only
+    - opam install solo5-bindings-hvt
+  build_script: opam reinstall -t .
+  test_script: 
+    - MODE=hvt opam exec -- dune build --root test
+  

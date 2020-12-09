@@ -1,0 +1,49 @@
+
+
+(executable 
+ (name main)
+ (modes (native object))
+ (link_flags -g -w +A-4-41-42-44 -bin-annot -strict-sequence -principal
+   -safe-string -color always)
+ (foreign_stubs (language c) (names startup manifest))
+)
+
+(rule
+ (targets manifest.c)
+ (deps manifest.json)
+ (action
+  (run solo5-elftool gen-manifest manifest.json manifest.c)))
+
+(rule 
+ (target mode)
+ (deps (env_var MODE))
+ (action (with-stdout-to %{target}
+  (bash "if [ ! -z \"${MODE+x}\" ]; then echo -n \"$MODE\"; else echo -n \"hvt\"; fi")
+)))
+
+(rule
+ (target ldflags)
+ (action (with-stdout-to %{target} (progn
+  (bash "echo -n \"%{lib:nolibc:libnolibc.a} %{lib:nolibc:libopenlibm.a} \" && solo5-config --target=%{read:mode} --ldflags")
+ )))
+)
+
+(rule
+ (target main.bin)
+ (deps main.exe.o)
+ (action
+  (bash
+   "$(solo5-config --target=%{read:mode} --ld) main.exe.o -o %{target} %{read:ldflags}")))
+
+(rule 
+ (alias runtest)
+ (enabled_if (= %{context_name} freestanding))
+ (action 
+  (with-accepted-exit-codes 1 (run "solo5-%{read:mode}" "%{dep:main.bin}")))
+)
+
+(alias 
+ (name default)
+ (enabled_if (= %{context_name} freestanding))
+ (deps (alias_rec all))
+)
