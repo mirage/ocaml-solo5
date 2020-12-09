@@ -20,7 +20,8 @@ cp openlibm/src/*h ${DESTINC}
 cp openlibm/libopenlibm.a ${DESTLIB}
 
 # OCaml
-make -C ocaml install
+MAKE=${MAKE:=make}
+${MAKE} -C ocaml install
 
 # META: ocamlfind and other build utilities test for existance ${DESTLIB}/META
 # when figuring out whether a library is installed
