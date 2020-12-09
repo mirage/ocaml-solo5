@@ -1,10 +1,8 @@
 Makeconf
 ocaml-freestanding.pc
-flags/cflags
-flags/cflags.tmp
-flags/libs
-flags/libs.tmp
+freestanding.conf
 nolibc/*.o
 nolibc/*.a
 nolibc/test-include/
+stubs/*.o
 ocaml/

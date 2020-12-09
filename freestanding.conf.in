@@ -1,0 +1,8 @@
+path(freestanding) = "@@PREFIX@@/freestanding-sysroot/lib"
+destdir(freestanding) = "@@PREFIX@@/freestanding-sysroot/lib"
+stdlib(freestanding) = "@@PREFIX@@/freestanding-sysroot/lib/ocaml"
+ocamlopt(freestanding) = "@@PREFIX@@/freestanding-sysroot/bin/ocamlopt"
+ocamlc(freestanding) = "@@PREFIX@@/freestanding-sysroot/bin/ocamlc"
+ocamlmklib(freestanding) = "@@PREFIX@@/freestanding-sysroot/bin/ocamlmklib"
+ocamldep(freestanding) = "@@PREFIX@@/freestanding-sysroot/bin/ocamldep"
+ocamlcp(freestanding) = "@@PREFIX@@/freestanding-sysroot/bin/ocamlcp"

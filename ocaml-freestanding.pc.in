@@ -1,11 +1,10 @@
 prefix=${pcfiledir}/../..
-exec_prefix=${prefix}
-includedir=${prefix}/include/ocaml-freestanding
-libdir=${exec_prefix}/lib/ocaml-freestanding
+sysroot=${prefix}/freestanding-sysroot
+libdir=${sysroot}/lib/ocaml
 
 Name: ocaml-freestanding
 Version: 1.0.0
 URL: https://github.com/mirage/ocaml-freestanding/
 Description: Freestanding OCaml runtime
-Cflags: -I${includedir} -include _freestanding/overrides.h
-Libs: -L${libdir} -lasmrun -lnolibc -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@
+Cflags: @@CFLAGS@@ -I${libdir} -I${sysroot}/include/nolibc -include _freestanding/overrides.h
+Libs: -L${libdir} -lasmrun -L${sysroot}/lib/nolibc -lnolibc -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@

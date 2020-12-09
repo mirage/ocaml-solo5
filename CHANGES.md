@@ -1,3 +1,8 @@
+## unreleased
+
+* Add compatibility with the solo5 0.7.0 package split.
+* Build a freestanding cross-compiler to use with the ocamlfind toolchain feature. This cross-compiler is able to build partial executables to link with a solo5 bindings library.
+
 ## v0.6.3 (2020-10-12)
 
 * nolibc: dlmalloc: Improve security posture and robustness by always enabling assertions, initialising magic value for heap canaries using monotonic time and enabling FOOTERs. (#87, @mato)
