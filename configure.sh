@@ -61,9 +61,11 @@ ocamlfind query ocaml-src >/dev/null || exit 1
 
 MAKECONF_CFLAGS="$(solo5-config --toolchain=$CONFIG_TOOLCHAIN --cflags)"
 MAKECONF_CC="$(solo5-config --toolchain=$CONFIG_TOOLCHAIN --cc)"
+MAKECONF_LD="$(solo5-config --toolchain=$CONFIG_TOOLCHAIN --ld)"
 
 BUILD_ARCH="$(uname -m)"
 OCAML_BUILD_ARCH=
+AS=
 
 # Canonicalize BUILD_ARCH and set OCAML_BUILD_ARCH. The former is for autoconf,
 # the latter for the rest of the OCaml build system.
@@ -81,6 +83,15 @@ case "${BUILD_ARCH}" in
         ;;
 esac
 
+case "$($MAKECONF_CC -dumpmachine)" in
+    *-*-freebsd*|*-*-openbsd*)
+        AS="$MAKECONF_CC -c"
+        ;;
+    *)
+        AS=as
+        ;;
+esac
+
 PKG_CONFIG_EXTRA_LIBS=
 if [ "${BUILD_ARCH}" = "aarch64" ]; then
     PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $($MAKECONF_CC -print-libgcc-file-name)" || exit 1
@@ -90,8 +101,10 @@ cat <<EOM >Makeconf
 MAKECONF_PREFIX=${MAKECONF_PREFIX}
 MAKECONF_CFLAGS=${MAKECONF_CFLAGS}
 MAKECONF_CC=${MAKECONF_CC}
+MAKECONF_LD=${MAKECONF_LD}
 MAKECONF_BUILD_ARCH=${BUILD_ARCH}
 MAKECONF_OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
 MAKECONF_NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 MAKECONF_PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
+MAKECONF_AS=${AS}
 EOM

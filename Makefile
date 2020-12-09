@@ -57,15 +57,16 @@ ocaml/Makefile.config: ocaml/Makefile stubs/solo5_stubs.o openlibm/libopenlibm.a
 		CC="$(MAKECONF_CC)" \
 		OC_CFLAGS="$(OC_CFLAGS)" \
 		OCAMLC_CFLAGS="$(GLOBAL_CFLAGS)" \
-		AS="as" \
+		AS="$(MAKECONF_AS)" \
 		ASPP="$(MAKECONF_CC) $(OC_CFLAGS) -c" \
 		CPPFLAGS="$(OC_CFLAGS)" \
 		LIBS="$(OC_LIBS)"\
-		LD="ld" \
+		LD="$(MAKECONF_LD)" \
 	  ./configure \
 		-host=$(MAKECONF_BUILD_ARCH)-unknown-none \
 		-prefix $(MAKECONF_PREFIX)/freestanding-sysroot \
 		-disable-shared\
+		-disable-systhreads\
 		-disable-unix-lib\
 		-disable-instrumented-runtime\
 		-disable-installing-bytecode-programs\
@@ -113,7 +114,7 @@ freestanding.conf: freestanding.conf.in
 
 # COMMANDS
 install: all
-	PREFIX=$(MAKECONF_PREFIX) ./install.sh
+	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
 
 uninstall:
 	./uninstall.sh
