@@ -86,6 +86,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-host=$(MAKECONF_BUILD_ARCH)-unknown-none \
 		-prefix $(MAKECONF_PREFIX)/freestanding-sysroot \
 		-disable-shared\
+		-disable-systhreads\
 		-disable-unix-lib\
 		-disable-instrumented-runtime
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
@@ -124,7 +125,7 @@ freestanding.conf: freestanding.conf.in
 
 # COMMANDS
 install: all
-	PREFIX=$(MAKECONF_PREFIX) ./install.sh
+	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
 
 uninstall:
 	./uninstall.sh
