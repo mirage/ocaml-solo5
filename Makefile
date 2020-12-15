@@ -6,7 +6,7 @@ FREESTANDING_LIBS=openlibm/libopenlibm.a \
 		  ocaml/runtime/libasmrun.a \
 		  nolibc/libnolibc.a
 
-all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc flags/libs flags/cflags
+all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc
 
 Makeconf:
 	./configure.sh
@@ -69,27 +69,6 @@ ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
 	    -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
 	    ocaml-freestanding.pc.in > $@
 
-flags/libs.tmp: flags/libs.tmp.in
-	opam config subst $@
-
-flags/libs: flags/libs.tmp Makeconf
-	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
-	awk -v RS= -- '{ \
-	    sub("@@PKG_CONFIG_EXTRA_LIBS@@", "$(PKG_CONFIG_EXTRA_LIBS)", $$0); \
-	    print "(", $$0, ")" \
-	    }' $< >$@
-
-flags/cflags.tmp: flags/cflags.tmp.in
-	opam config subst $@
-
-flags/cflags: flags/cflags.tmp Makeconf
-	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --cflags >> $<
-	awk -v RS= -- '{ \
-	    print "(", $$0, ")" \
-	    }' $< >$@
-
 install: all
 	./install.sh
 
@@ -104,8 +83,6 @@ clean:
 	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)" \
 	    clean
 	$(RM) Makeconf ocaml-freestanding.pc
-	$(RM) flags/libs flags/libs.tmp
-	$(RM) flags/cflags flags/cflags.tmp
 
 distclean: clean
 	$(RM) -r ocaml/
