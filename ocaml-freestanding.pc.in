@@ -9,4 +9,3 @@ URL: https://github.com/mirage/ocaml-freestanding/
 Description: Freestanding OCaml runtime
 Cflags: -I${includedir} -include _freestanding/overrides.h
 Libs: -L${libdir} -lasmrun -lnolibc -lopenlibm @@PKG_CONFIG_EXTRA_LIBS@@
-Requires: @@PKG_CONFIG_DEPS@@

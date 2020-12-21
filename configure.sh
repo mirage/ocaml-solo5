@@ -1,31 +1,68 @@
 #!/bin/sh
 
-export PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig
-pkg_exists() {
-    pkg-config --exists "$@"
+prog_NAME="$(basename $0)"
+
+err()
+{
+    echo "${prog_NAME}: ERROR: $@" 1>&2
 }
-if pkg_exists solo5-bindings-hvt solo5-bindings-spt solo5-bindings-virtio solo5-bindings-muen solo5-bindings-genode solo5-bindings-xen; then
-    echo "ERROR: Conflicting packages." 1>&2
-    echo "ERROR: Only one of solo5-bindings-hvt, solo5-bindings-spt, solo5-bindings-virtio, solo5-bindings-muen, solo5-bindings-genode, solo5-bindings-xen can be installed." 1>&2
+
+die()
+{
+    echo "${prog_NAME}: ERROR: $@" 1>&2
     exit 1
-fi
-PKG_CONFIG_DEPS=
-pkg_exists solo5-bindings-hvt && PKG_CONFIG_DEPS=solo5-bindings-hvt
-pkg_exists solo5-bindings-spt && PKG_CONFIG_DEPS=solo5-bindings-spt
-pkg_exists solo5-bindings-muen && PKG_CONFIG_DEPS=solo5-bindings-muen
-pkg_exists solo5-bindings-virtio && PKG_CONFIG_DEPS=solo5-bindings-virtio
-pkg_exists solo5-bindings-genode && PKG_CONFIG_DEPS=solo5-bindings-genode
-pkg_exists solo5-bindings-xen && PKG_CONFIG_DEPS=solo5-bindings-xen
-if [ -z "${PKG_CONFIG_DEPS}" ]; then
-    echo "ERROR: No supported Solo5 bindings package found." 1>&2
-    echo "ERROR: solo5-bindings-hvt, solo5-bindings-spt, solo5-bindings-virtio, solo5-bindings-muen, solo5-bindings-genode or solo5-bindings-xen must be installed." 1>&2
+}
+
+warn()
+{
+    echo "${prog_NAME}: WARNING: $@" 1>&2
+}
+
+usage()
+{
+    cat <<EOM 1>&2
+usage: ${prog_NAME} [ OPTIONS ]
+Configures the ocaml-freestanding build system.
+Options:
+    --prefix=DIR:
+        Installation prefix (default: /usr/local).
+    --toolchain=TOOLCHAIN
+        Solo5 toolchain flags to use.
+EOM
     exit 1
-fi
+}
+
+MAKECONF_PREFIX=/usr/local
+while [ $# -gt 0 ]; do
+    OPT="$1"
+
+    case "${OPT}" in
+        --toolchain=*)
+            CONFIG_TOOLCHAIN="${OPT##*=}"
+            ;;
+        --prefix=*)
+            MAKECONF_PREFIX="${OPT##*=}"
+            ;;
+        --help)
+            usage
+            ;;
+        *)
+            err "Unknown option: '${OPT}'"
+            usage
+            ;;
+    esac
+
+    shift
+done
+
+[ -z "${CONFIG_TOOLCHAIN}" ] && die "The --toolchain option needs to be specified."
+
 ocamlfind query ocaml-src >/dev/null || exit 1
 
-FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
+MAKECONF_CFLAGS="$(solo5-config --toolchain=$CONFIG_TOOLCHAIN --cflags)"
+MAKECONF_CC="$(solo5-config --toolchain=$CONFIG_TOOLCHAIN --cc)"
+
 BUILD_ARCH="$(uname -m)"
-BUILD_OS="$(uname -s)"
 OCAML_BUILD_ARCH=
 
 # Canonicalize BUILD_ARCH and set OCAML_BUILD_ARCH. The former is for autoconf,
@@ -46,15 +83,15 @@ esac
 
 PKG_CONFIG_EXTRA_LIBS=
 if [ "${BUILD_ARCH}" = "aarch64" ]; then
-    PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $(gcc -print-libgcc-file-name)" || exit 1
+    PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $($MAKECONF_CC -print-libgcc-file-name)" || exit 1
 fi
 
 cat <<EOM >Makeconf
-FREESTANDING_CFLAGS=${FREESTANDING_CFLAGS}
-BUILD_ARCH=${BUILD_ARCH}
-BUILD_OS=${BUILD_OS}
-OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
-NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
-PKG_CONFIG_DEPS=${PKG_CONFIG_DEPS}
-PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
+MAKECONF_PREFIX=${MAKECONF_PREFIX}
+MAKECONF_CFLAGS=${MAKECONF_CFLAGS}
+MAKECONF_CC=${MAKECONF_CC}
+MAKECONF_BUILD_ARCH=${BUILD_ARCH}
+MAKECONF_OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
+MAKECONF_PKG_CONFIG_EXTRA_LIBS=${PKG_CONFIG_EXTRA_LIBS}
+MAKECONF_NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 EOM
