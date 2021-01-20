@@ -68,9 +68,7 @@ ocaml/Makefile.config: ocaml/Makefile stubs/solo5_stubs.o openlibm/libopenlibm.a
 		-disable-shared\
 		-disable-systhreads\
 		-disable-unix-lib\
-		-disable-instrumented-runtime\
-		-disable-installing-bytecode-programs\
-		-disable-installing-source-artifacts
+		-disable-instrumented-runtime
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo '#undef HAS_SOCKETS' >> ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
