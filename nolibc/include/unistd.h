@@ -14,5 +14,6 @@ ssize_t read(int, void *, size_t);
 ssize_t write(int, const void *, size_t);
 ssize_t readlink(const char *, char *, size_t);
 int unlink(const char *);
+int rmdir(const char *);
 
 #endif
