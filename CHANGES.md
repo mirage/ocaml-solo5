@@ -1,3 +1,7 @@
+## v0.6.4 (2021-03-03)
+
+* Add support for OCaml 4.12 (#88, @kit-ty-kate)
+
 ## v0.6.3 (2020-10-12)
 
 * nolibc: dlmalloc: Improve security posture and robustness by always enabling assertions, initialising magic value for heap canaries using monotonic time and enabling FOOTERs. (#87, @mato)
