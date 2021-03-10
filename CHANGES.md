@@ -1,3 +1,8 @@
+## unreleased
+
+* Add compatibility with the solo5 0.7.0 package split.
+* Build a freestanding cross-compiler to use with the ocamlfind toolchain feature. This cross-compiler is able to build partial executables to link with a solo5 bindings library.
+
 ## v0.6.6 (2021-11-15)
 
 * Fix compilation on alpine 3.13+ with OCaml 4.13+ by providing LDFLAGS

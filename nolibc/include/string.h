@@ -18,5 +18,9 @@ char *strerror(int);
 char *strncpy(char *, const char *, size_t);
 char *strchr(const char *, int);
 char *strstr(const char *, const char *);
+/*
+ * The following definitions are required for the OCaml bytecode runtime.
+ */
+int strncmp(const char*, const char*, size_t);
 
 #endif

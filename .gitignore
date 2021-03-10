@@ -1,5 +1,6 @@
 Makeconf
 ocaml-freestanding.pc
+freestanding.conf
 nolibc/*.o
 nolibc/*.a
 nolibc/test-include/

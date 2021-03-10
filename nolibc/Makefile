@@ -21,7 +21,7 @@ OBJS=assert.o \
      dtoa.o \
      memchr.o memcmp.o memcpy.o memmove.o memset.o \
      strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
-     strstr.o \
+     strstr.o strncmp.o \
      stubs.o \
      vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
 

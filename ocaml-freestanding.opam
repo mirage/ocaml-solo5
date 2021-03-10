@@ -36,6 +36,7 @@ available: [
   | (os = "freebsd" & arch = "x86_64")
   | (os = "openbsd" & arch = "x86_64"))
 ]
-synopsis: "Freestanding OCaml runtime"
+synopsis: "Freestanding OCaml compiler"
 description:
-  "This package provides a freestanding OCaml runtime (asmrun), suitable for linking with a unikernel base layer."
+  "This package provides a freestanding OCaml cross-compiler, suitable for linking with a unikernel base layer."
+version: "0.7.0"

@@ -1,6 +1,6 @@
-# ocaml-freestanding -- Freestanding OCaml runtime
+# ocaml-freestanding -- Freestanding OCaml compiler
 
-This package provides a freestanding OCaml runtime suitable for linking with a
+This package provides a freestanding OCaml compiler suitable for linking with a
 unikernel base layer. Currently only [Solo5](https://github.com/Solo5/solo5) is
 supported.
 
@@ -23,19 +23,49 @@ on your system as a dependency when you build this package.
 
 The following components are built and installed:
 
-In `PREFIX/lib/ocaml-freestanding`:
+In `PREFIX/frestanding-sysroot/bin`:
 
-- `libnolibc.a`: libc interfaces required by OCaml runtime.
-- `libopenlibm.a`: libm required by OCaml runtime.
+- `ocamlc`: a bytecode OCaml compiler configured for the chosen target. Please
+  note that the bytecode runtime is not supported.
+- `ocamlopt`: a native freestanding OCaml compiler configured for the chosen
+  target.
+
+In `PREFIX/frestanding-sysroot/lib/ocaml`:
 - `libasmrun.a`, `libotherlibs.a`: OCaml native code runtime.
+- Compiler libraries.
+- In `caml/`: Header files for the OCaml runtime. 
 
-In `PREFIX/include/ocaml-freestanding/include`:
+In `PREFIX/frestanding-sysroot/lib/nolibc`:
+
+- `libnolibc.a`: libc interfaces required by the OCaml runtime.
+- `libopenlibm.a`: libm required by the OCaml runtime.
+
+In `PREFIX/frestanding-sysroot/include/nolibc`:
 
 - Header files for nolibc and openlibm.
 
-In `PREFIX/include/ocaml-freestanding/include/caml`:
+In `PREFIX/lib/pkgconfig`:
 
-- Header files for OCaml runtime.
+- `ocaml-freestanding.pc`: package definition to link the ocaml runtime.
+
+In `PREFIX/lib/findlib.conf.d`:
+
+- `freestanding.conf`: ocamlfind definition of the cross-compilation switch.
+
+### Usage
+
+The installed compiler is able to build solo5 executables. The solo5 bindings 
+(xen, hvt, spt, ...) is chosen at link time, using the solo5-specific 
+`-z solo5-abi=XXX` compiler/linker option. Linking an executable with no 
+bindings results in a _dummy_ executable.
+
+To build with the freestanding compiler toolchain, it has to be selected using 
+ocamlfind or dune:
+- ocamlfind: `ocamlfind -toolchain freestanding ...`
+- dune: `dune build -x freestanding`, or add the toolchain in a build context 
+  in the dune workspace file.
+
+### Usage - the old way (< 0.7.0):
 
 Downstream packages should use the following flags and tools when building
 and linking C code:
@@ -55,7 +85,7 @@ Assuming your unikernel base layer is packaged for OPAM in a similar
 fashion to Solo5 this should be as simple as:
 
 1. Adding the appropriate clauses to determine the OPAM packages required
-   and `FREESTANDING_CFLAGS` for compilation to `configure.sh`.
+   and `MAKECONF_CFLAGS` for compilation to `configure.sh`.
 2. Implementing a `nolibc/sysdeps_yourkernel.c`.
 
 Note that the nolibc code is intentionally strict about namespacing of APIs
