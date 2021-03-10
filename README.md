@@ -37,9 +37,12 @@ In `PREFIX/include/ocaml-freestanding/include/caml`:
 
 - Header files for OCaml runtime.
 
-Downstream packages should use `pkg-config --cflags ocaml-freestanding` when
-compiling C code using these components and `pkg-config --libs
-ocaml-freestanding` during the link step.
+Downstream packages should use the following flags and tools when building
+and linking C code:
+- CFLAGS: `pkg-config --cflags ocaml-freestanding`
+- CC: `pkg-config --var=ld ocaml-freestanding`
+- LIBS: `pkg-config --libs ocaml-freestanding`
+- LD: `pkg-config --var=cc ocaml-freestanding`
 
 ## Supported compiler versions
 

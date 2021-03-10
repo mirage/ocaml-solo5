@@ -8,14 +8,11 @@ FREESTANDING_LIBS=openlibm/libopenlibm.a \
 
 all:	$(FREESTANDING_LIBS) ocaml-freestanding.pc
 
-Makeconf:
-	./configure.sh
-
 TOP=$(abspath .)
-FREESTANDING_CFLAGS+=-I$(TOP)/nolibc/include -include _freestanding/overrides.h
+MAKECONF_CFLAGS+=-I$(TOP)/nolibc/include -include _freestanding/overrides.h
 
 openlibm/libopenlibm.a:
-	$(MAKE) -C openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
+	$(MAKE) -C openlibm "CC=$(MAKECONF_CC)" "CPPFLAGS=$(MAKECONF_CFLAGS)" libopenlibm.a
 
 ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` ./ocaml
@@ -35,17 +32,17 @@ ocaml/Makefile:
 # - HAS_XXX must be defined manually since our invocation of configure cannot
 #   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
+OCAML_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
 
 ocaml/Makefile.config: ocaml/Makefile
 	cd ocaml && \
-	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
-	    AS="as" \
-	    ASPP="cc $(OCAML_CFLAGS) -c" \
-	    LD="ld" \
+	    CC="$(MAKECONF_CC) $(OCAML_CFLAGS) -nostdlib" \
+	    AS="$(MAKECONF_AS)" \
+	    ASPP="$(MAKECONF_CC) $(OCAML_CFLAGS) -c" \
+	    LD="$(MAKECONF_LD)" \
 	    CPPFLAGS="$(OCAML_CFLAGS)" \
-	    ./configure --host=$(BUILD_ARCH)-unknown-none
-	echo "ARCH=$(OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	    ./configure --host=$(MAKECONF_BUILD_ARCH)-unknown-none
+	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=$(OC_CFLAGS) $(OC_CPPFLAGS)' >> ocaml/Makefile.config
 	echo 'SAK_LINK=$(SAK_CC) $(SAK_CFLAGS) $(OUTPUTEXE)$(1) $(2)' >> ocaml/Makefile.config
@@ -61,19 +58,21 @@ ocaml/runtime/caml/version.h: ocaml/Makefile.config
 ocaml/runtime/libasmrun.a: ocaml/Makefile.config ocaml/runtime/caml/version.h
 	$(MAKE) -C ocaml/runtime libasmrun.a
 
-NOLIBC_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
+NOLIBC_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
 nolibc/libnolibc.a:
 	$(MAKE) -C nolibc \
+		"CC=$(MAKECONF_CC)" \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
-	    "SYSDEP_OBJS=$(NOLIBC_SYSDEP_OBJS)"
+	    "SYSDEP_OBJS=$(MAKECONF_NOLIBC_SYSDEP_OBJS)"
 
 ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
-	sed -e 's!@@PKG_CONFIG_DEPS@@!$(PKG_CONFIG_DEPS)!' \
-	    -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(PKG_CONFIG_EXTRA_LIBS)!' \
+	sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(MAKECONF_PKG_CONFIG_EXTRA_LIBS)!' \
+	    -e 's!@@PKG_CONFIG_CC@@!$(MAKECONF_CC)!' \
+	    -e 's!@@PKG_CONFIG_LD@@!$(MAKECONF_LD)!' \
 	    ocaml-freestanding.pc.in > $@
 
 install: all
-	./install.sh
+	PREFIX=$(MAKECONF_PREFIX) ./install.sh
 
 uninstall:
 	./uninstall.sh
