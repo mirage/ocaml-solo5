@@ -1,0 +1,18 @@
+
+(executable 
+ (name main)
+ (link_flags -cclib "-z solo5-abi=hvt")
+ (foreign_stubs (language c) (names startup manifest))
+)
+
+(rule
+ (targets manifest.c)
+ (deps manifest.json)
+ (action
+  (run solo5-elftool gen-manifest manifest.json manifest.c)))
+
+(alias 
+ (name default)
+ (enabled_if (= %{context_name} default.freestanding))
+ (deps (alias_rec all))
+)
