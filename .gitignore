@@ -5,3 +5,4 @@ nolibc/*.o
 nolibc/*.a
 nolibc/test-include/
 ocaml/
+_build/

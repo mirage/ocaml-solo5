@@ -65,6 +65,15 @@ ocamlfind or dune:
 - dune: `dune build -x freestanding`, or add the toolchain in a build context 
   in the dune workspace file.
 
+#### Example
+
+The `example` describes the minimal structure needed to build an 
+ocaml-freestanding executable with dune, linked with the hvt bindings. It 
+requires an application manifest and a startup file to initialize the libc. 
+
+Build: `dune build -x freestanding` 
+Run: `solo5-hvt _build/default.freestanding/main.exe`
+
 ### Usage - the old way (< 0.7.0):
 
 Downstream packages should use the following flags and tools when building
