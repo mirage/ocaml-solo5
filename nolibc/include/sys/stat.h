@@ -5,6 +5,7 @@
 
 struct stat {
     int st_mode;
+    int st_size;
 };
 #define S_IFDIR 0
 #define S_IFMT 0
