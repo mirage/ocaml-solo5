@@ -6,14 +6,24 @@ bug-reports: "https://github.com/mirage/ocaml-freestanding/issues/"
 license: "MIT"
 tags: "org:mirage"
 dev-repo: "git+https://github.com/mirage/ocaml-freestanding.git"
-build: [make]
-install: [make "install" "PREFIX=%{prefix}%"]
+build: [
+  ["./configure.sh"
+   "--prefix=%{prefix}%"
+   "--target=x86_64-solo5-none-static" { arch = "x86_64"}
+   "--target=aarch64-solo5-none-static" { arch = "arm64"}
+  ]
+  [make]
+]
+install: [make "install" ]
 depends: [
-  "conf-pkg-config"
   "ocamlfind" {build}
   "ocaml-src" {build}
   ("solo5-bindings-hvt" | "solo5-bindings-spt" | "solo5-bindings-virtio" | "solo5-bindings-muen" | "solo5-bindings-genode" | "solo5-bindings-xen")
   "ocaml" {>= "4.08.0" & < "4.14.0"}
+  "solo5" {>= "0.7.0"}
+]
+pin-depends: [
+  ["solo5.0.7.0" "git+https://github.com/mato/solo5#new-toolchain"]
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}
