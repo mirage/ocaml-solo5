@@ -11,13 +11,19 @@ if pkg_exists solo5-bindings-hvt solo5-bindings-spt solo5-bindings-virtio solo5-
     echo "ERROR: Only one of solo5-bindings-hvt, solo5-bindings-spt, solo5-bindings-virtio, solo5-bindings-muen, solo5-bindings-genode, solo5-bindings-xen can be installed." 1>&2
     exit 1
 fi
-PKG_CONFIG_DEPS=
-pkg_exists solo5-bindings-hvt && PKG_CONFIG_DEPS=solo5-bindings-hvt
-pkg_exists solo5-bindings-spt && PKG_CONFIG_DEPS=solo5-bindings-spt
-pkg_exists solo5-bindings-muen && PKG_CONFIG_DEPS=solo5-bindings-muen
-pkg_exists solo5-bindings-virtio && PKG_CONFIG_DEPS=solo5-bindings-virtio
-pkg_exists solo5-bindings-genode && PKG_CONFIG_DEPS=solo5-bindings-genode
-pkg_exists solo5-bindings-xen && PKG_CONFIG_DEPS=solo5-bindings-xen
+if [ -z "${PKG_CONFIG_DEPS}" ]; then
+    PKG_CONFIG_DEPS=
+    pkg_exists solo5-bindings-hvt && PKG_CONFIG_DEPS=solo5-bindings-hvt
+    pkg_exists solo5-bindings-spt && PKG_CONFIG_DEPS=solo5-bindings-spt
+    pkg_exists solo5-bindings-muen && PKG_CONFIG_DEPS=solo5-bindings-muen
+    pkg_exists solo5-bindings-virtio && PKG_CONFIG_DEPS=solo5-bindings-virtio
+    pkg_exists solo5-bindings-genode && PKG_CONFIG_DEPS=solo5-bindings-genode
+    pkg_exists solo5-bindings-xen && PKG_CONFIG_DEPS=solo5-bindings-xen
+else
+    pkg_exists "${PKG_CONFIG_DEPS}" \
+        || (echo "ERROR: ${PKG_CONFIG_DEPS} is not installed" 1>&2; exit 1) \
+        || exit 1
+fi
 if [ -z "${PKG_CONFIG_DEPS}" ]; then
     echo "ERROR: No supported Solo5 bindings package found." 1>&2
     echo "ERROR: solo5-bindings-hvt, solo5-bindings-spt, solo5-bindings-virtio, solo5-bindings-muen, solo5-bindings-genode or solo5-bindings-xen must be installed." 1>&2
