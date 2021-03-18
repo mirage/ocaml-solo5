@@ -2,6 +2,12 @@
 
 include Makeconf
 
+ifneq ($(shell command -v opam),)
+	# only set if opam is available and PKG_CONFIG_PATH isn't
+	# already set in the environment or on the command line
+	PKG_CONFIG_PATH ?= $(shell opam config var prefix)/lib/pkgconfig
+endif
+
 FREESTANDING_LIBS=openlibm/libopenlibm.a \
 		  ocaml/runtime/libasmrun.a \
 		  nolibc/libnolibc.a
@@ -73,8 +79,7 @@ flags/libs.tmp: flags/libs.tmp.in
 	opam config subst $@
 
 flags/libs: flags/libs.tmp Makeconf
-	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
+	pkg-config $(PKG_CONFIG_DEPS) --libs >> $<
 	awk -v RS= -- '{ \
 	    sub("@@PKG_CONFIG_EXTRA_LIBS@@", "$(PKG_CONFIG_EXTRA_LIBS)", $$0); \
 	    print "(", $$0, ")" \
@@ -84,8 +89,7 @@ flags/cflags.tmp: flags/cflags.tmp.in
 	opam config subst $@
 
 flags/cflags: flags/cflags.tmp Makeconf
-	env PKG_CONFIG_PATH="$(shell opam config var prefix)/lib/pkgconfig" \
-	    pkg-config $(PKG_CONFIG_DEPS) --cflags >> $<
+	pkg-config $(PKG_CONFIG_DEPS) --cflags >> $<
 	awk -v RS= -- '{ \
 	    print "(", $$0, ")" \
 	    }' $< >$@

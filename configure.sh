@@ -1,6 +1,8 @@
 #!/bin/sh
 
-export PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig
+if command -v opam &> /dev/null; then
+    export PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig
+fi
 pkg_exists() {
     pkg-config --exists "$@"
 }
@@ -21,7 +23,7 @@ if [ -z "${PKG_CONFIG_DEPS}" ]; then
     echo "ERROR: solo5-bindings-hvt, solo5-bindings-spt, solo5-bindings-virtio, solo5-bindings-muen, solo5-bindings-genode or solo5-bindings-xen must be installed." 1>&2
     exit 1
 fi
-ocamlfind query ocaml-src >/dev/null || exit 1
+[ -e "$(dirname "$0")/ocaml" ] || ocamlfind query ocaml-src >/dev/null || exit 1
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
 BUILD_ARCH="$(uname -m)"
