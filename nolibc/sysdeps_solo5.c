@@ -119,10 +119,16 @@ void *sbrk(intptr_t increment)
     return (void *)prev;
 }
 
+/*
+ * On ARM64, Linux's libgcc requires the presence of a __getauxval function in
+ * the libc. We stub it out.
+ */
+#if defined(__aarch64__)
 int __getauxval(int unused) {
     errno = ENOENT;
     return 0;
 }
+#endif
 
 
 /*
