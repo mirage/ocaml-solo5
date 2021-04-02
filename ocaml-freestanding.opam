@@ -12,7 +12,7 @@ build: [
    "--target=x86_64-solo5-none-static" { arch = "x86_64"}
    "--target=aarch64-solo5-none-static" { arch = "arm64"}
   ]
-  [make]
+  [make "-j%{jobs}%"]
 ]
 install: [make "install" ]
 depends: [
@@ -23,7 +23,7 @@ depends: [
   "solo5" {>= "0.7.0"}
 ]
 pin-depends: [
-  ["solo5.0.7.0" "git+https://github.com/mato/solo5#new-toolchain"]
+  ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}
