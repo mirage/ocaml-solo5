@@ -116,6 +116,7 @@ ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
 	sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(MAKECONF_PKG_CONFIG_EXTRA_LIBS)!' \
 	    -e 's!@@PKG_CONFIG_CC@@!$(MAKECONF_CC)!' \
 	    -e 's!@@PKG_CONFIG_LD@@!$(MAKECONF_LD)!' \
+		-e 's!@@PKG_CONFIG_SOLO5_TOOLCHAIN@@!$(MAKECONF_TOOLCHAIN)!' \
 	    -e 's!@@CFLAGS@@!$(MAKECONF_CFLAGS)!' \
 	    ocaml-freestanding.pc.in > $@
 
