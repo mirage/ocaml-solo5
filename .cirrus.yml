@@ -10,7 +10,8 @@ freebsd_task:
       - OCAML_VERSION: 4.09.1
       - OCAML_VERSION: 4.10.2
       - OCAML_VERSION: 4.11.2
-      - OCAML_VERSION: 4.12.0
+      - OCAML_VERSION: 4.12.1
+      - OCAML_VERSION: 4.13.0
   pkg_install_script: pkg install -y ocaml-opam gmp gmake pkgconf bash
   ocaml_script: opam init -a --comp=$OCAML_VERSION
   solo5_script: eval `opam env` && opam install solo5-bindings-hvt
