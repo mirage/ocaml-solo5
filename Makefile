@@ -37,7 +37,7 @@ ocaml/Makefile:
 # Makefile: Disable build of ocamltest (for 4.10)
 	sed -i -e 's/$$(MAKE) -C ocamltest all//g' ocaml/Makefile
 # runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
-	sed -i -e 's/^all:.*/all: $$(PROGRAMS) primitives ld.conf/g' ocaml/runtime/Makefile
+	sed -i -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile
 	sed -i -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile
 	sed -i -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/runtime/Makefile
 	sed -i -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile
@@ -90,9 +90,9 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-unix-lib\
 		-disable-instrumented-runtime
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
-	echo 'SAK_CC=$(MAKECONF_CC)' >> ocaml/Makefile.config
-	echo 'SAK_CFLAGS=$(OC_CFLAGS) $(OC_CPPFLAGS)' >> ocaml/Makefile.config
-	echo 'SAK_LINK=$(SAK_CC) $(SAK_CFLAGS) $(OUTPUTEXE)$(1) $(2)' >> ocaml/Makefile.config
+	echo 'SAK_CC=cc' >> ocaml/Makefile.config
+	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
+	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
 	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
