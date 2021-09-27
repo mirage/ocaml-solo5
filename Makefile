@@ -46,6 +46,9 @@ ocaml/Makefile.config: ocaml/Makefile
 	    CPPFLAGS="$(OCAML_CFLAGS)" \
 	    ./configure --host=$(BUILD_ARCH)-unknown-none
 	echo "ARCH=$(OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo 'SAK_CC=cc' >> ocaml/Makefile.config
+	echo 'SAK_CFLAGS=$(OC_CFLAGS) $(OC_CPPFLAGS)' >> ocaml/Makefile.config
+	echo 'SAK_LINK=$(SAK_CC) $(SAK_CFLAGS) $(OUTPUTEXE)$(1) $(2)' >> ocaml/Makefile.config
 	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
