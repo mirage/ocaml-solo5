@@ -90,7 +90,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-unix-lib\
 		-disable-instrumented-runtime
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
-	echo 'SAK_CC=cc' >> ocaml/Makefile.config
+	echo 'SAK_CC=$(MAKECONF_CC)' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=$(OC_CFLAGS) $(OC_CPPFLAGS)' >> ocaml/Makefile.config
 	echo 'SAK_LINK=$(SAK_CC) $(SAK_CFLAGS) $(OUTPUTEXE)$(1) $(2)' >> ocaml/Makefile.config
 	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
