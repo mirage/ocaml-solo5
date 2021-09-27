@@ -15,10 +15,6 @@ depends: [
   ("solo5-bindings-hvt" | "solo5-bindings-spt" | "solo5-bindings-virtio" | "solo5-bindings-muen" | "solo5-bindings-genode" | "solo5-bindings-xen")
   "ocaml" {>= "4.08.0" & < "4.13.0"}
 ]
-substs: [
-  "flags/cflags.tmp"
-  "flags/libs.tmp"
-]
 conflicts: [
   "sexplib" {= "v0.9.0"}
   "solo5-kernel-ukvm"

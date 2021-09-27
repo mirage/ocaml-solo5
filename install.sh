@@ -30,5 +30,3 @@ touch ${DESTLIB}/META
 # pkg-config
 mkdir -p ${prefix}/lib/pkgconfig
 cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
-cp flags/cflags ${DESTLIB}
-cp flags/libs ${DESTLIB}
