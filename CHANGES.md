@@ -1,3 +1,10 @@
+## v0.6.5 (2021-09-27)
+
+* Add support for OCaml 4.13 (#95 #94, @kit-ty-kate @dra27)
+* Remove cflags and libs flags that are no longer used in the MirageOS-with-dune
+  development (#91 @hannesm, reverts #50 @TheLortex). These were introduced in
+  version 0.4.4.
+
 ## v0.6.4 (2021-03-03)
 
 * Add support for OCaml 4.12 (#88, @kit-ty-kate)
