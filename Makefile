@@ -93,9 +93,6 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
-	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
-	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
-	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
 	echo '#undef HAS_SOCKETS' >> ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
