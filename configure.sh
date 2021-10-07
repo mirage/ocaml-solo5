@@ -28,10 +28,13 @@ Options:
         Installation prefix (default: /usr/local).
     --target=TARGET
         Solo5 compiler toolchain to use.
+    --ocaml-configure-option=OPTION
+        Add an option to the OCaml compiler configuration.
 EOM
     exit 1
 }
 
+OCAML_CONFIGURE_OPTIONS=
 MAKECONF_PREFIX=/usr/local
 while [ $# -gt 0 ]; do
     OPT="$1"
@@ -42,6 +45,9 @@ while [ $# -gt 0 ]; do
             ;;
         --prefix=*)
             MAKECONF_PREFIX="${OPT##*=}"
+            ;;
+        --ocaml-configure-option=*)
+            OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT##*=}"
             ;;
         --help)
             usage
@@ -98,6 +104,7 @@ MAKECONF_LD=${MAKECONF_LD}
 MAKECONF_AS=${MAKECONF_AS}
 MAKECONF_BUILD_ARCH=${BUILD_ARCH}
 MAKECONF_OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
+MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
 MAKECONF_NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
 MAKECONF_EXTRA_LIBS=${EXTRA_LIBS}
 EOM
