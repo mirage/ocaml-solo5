@@ -1,0 +1,11 @@
+opam-version: "2.0"
+synopsis: "Set OCaml freestanding to compile for the host target"
+depends: [
+  "ocaml-freestanding" {post}
+]
+conflicts: [
+  "ocaml-freestanding-option-cross-aarch64"
+]
+maintainer: "Martin Lucina <martin@lucina.net>"
+flags: compiler
+

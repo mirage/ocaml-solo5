@@ -1,0 +1,7 @@
+opam-version: "2.0"
+synopsis: "Set OCaml freestanding to be compiled with flambda"
+depends: [
+  "ocaml-freestanding" {post}
+]
+maintainer: "Martin Lucina <martin@lucina.net>"
+flags: compiler

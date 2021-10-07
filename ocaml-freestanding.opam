@@ -9,8 +9,9 @@ dev-repo: "git+https://github.com/mirage/ocaml-freestanding.git"
 build: [
   ["./configure.sh"
    "--prefix=%{prefix}%"
-   "--target=x86_64-solo5-none-static" { arch = "x86_64"}
-   "--target=aarch64-solo5-none-static" { arch = "arm64"}
+   "--target=x86_64-solo5-none-static" { arch = "x86_64" & !ocaml-freestanding-option-cross-aarch64:installed }
+   "--target=aarch64-solo5-none-static" { arch = "arm64" | ocaml-freestanding-option-cross-aarch64:installed }
+   "--ocaml-configure-option=--enable-flambda" { ocaml-freestanding-option-flambda:installed }
   ]
   [make "-j%{jobs}%"]
 ]
@@ -20,9 +21,16 @@ depends: [
   "ocaml-src" {build}
   "ocaml" {>= "4.08.0" & < "4.14.0"}
   "solo5" {>= "0.7.0"}
+  ("solo5-cross-aarch64" {>= "0.7.0" } | "ocaml-freestanding-option-host")
+]
+depopts: [
+  "ocaml-freestanding-option-flambda"
+  "ocaml-freestanding-option-host"
+  "ocaml-freestanding-option-cross-aarch64"
 ]
 pin-depends: [
   ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
+  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}

@@ -88,7 +88,8 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-shared\
 		-disable-systhreads\
 		-disable-unix-lib\
-		-disable-instrumented-runtime
+		-disable-instrumented-runtime\
+		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
