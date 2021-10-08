@@ -31,7 +31,7 @@ libnolibc.a: $(OBJS) $(SYSDEP_OBJS) test-headers
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
 
 # The following test ensures that each header file provided by nolibc is both
-# self-contained and compile-tested. Note that headers in include/_freestanding
+# self-contained and compile-tested. Note that headers in include/freestanding
 # are not intended to be included directly, thus are exempt from this check.
 
 HEADERS=$(wildcard include/*.h include/sys/*.h)

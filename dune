@@ -1,0 +1,17 @@
+(dirs :standard \ ocaml)
+
+(rule
+ (deps (universe)
+       (source_tree *)
+       (source_tree ocaml)
+       (source_tree openlibm)
+       (source_tree nolibc)
+       (source_tree nolibc/include/_freestanding))
+ (targets libnolibc.a libopenlibm.a libasmrun.a)
+ (action
+  (no-infer
+   (progn
+    (setenv OPAMCLI 2.0 (run make))
+    (copy nolibc/libnolibc.a libnolibc.a)
+    (copy openlibm/libopenlibm.a libopenlibm.a)
+    (copy ocaml/runtime/libasmrun.a libasmrun.a)))))

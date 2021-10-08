@@ -1,7 +1,7 @@
 #ifndef _ENDIAN_H
 #define _ENDIAN_H
 
-#include <_freestanding/byteorder.h>
+#include <freestanding/byteorder.h>
 #include <stdint.h>
 
 #define bswap16(x) __builtin_bswap16(x)

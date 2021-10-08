@@ -12,7 +12,7 @@ Makeconf:
 	./configure.sh
 
 TOP=$(abspath .)
-FREESTANDING_CFLAGS+=-I$(TOP)/nolibc/include -include _freestanding/overrides.h
+FREESTANDING_CFLAGS+=-I$(TOP)/nolibc/include -include freestanding/overrides.h
 
 openlibm/libopenlibm.a:
 	$(MAKE) -C openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a

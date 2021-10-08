@@ -14,6 +14,7 @@ depends: [
   "ocaml-src" {build}
   ("solo5-bindings-hvt" | "solo5-bindings-spt" | "solo5-bindings-virtio" | "solo5-bindings-muen" | "solo5-bindings-genode" | "solo5-bindings-xen")
   "ocaml" {>= "4.08.0" & < "4.14.0"}
+  "dune" {with-test}
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}
