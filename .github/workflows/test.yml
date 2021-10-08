@@ -31,9 +31,11 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     steps:
     - uses: actions/checkout@v2
-    - uses: ocaml/setup-ocaml@master
+    - uses: ocaml/setup-ocaml@v2
       with:
         ocaml-compiler: ${{ matrix.ocaml-version }}
+        opam-local-packages: |
+          !ocaml-freestanding-cross-aarch64.opam
     - name: Pinning package
       run: opam pin add -n -t -y ocaml-freestanding .
     - name: Install ocaml-freestanding and dune
