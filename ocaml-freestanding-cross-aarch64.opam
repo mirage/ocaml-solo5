@@ -9,8 +9,7 @@ dev-repo: "git+https://github.com/mirage/ocaml-freestanding.git"
 build: [
   ["./configure.sh"
    "--prefix=%{prefix}%"
-   "--target=x86_64-solo5-none-static" { arch = "x86_64" }
-   "--target=aarch64-solo5-none-static" { arch = "arm64" }
+   "--target=aarch64-solo5-none-static"
    "--ocaml-configure-option=--with-afl" {ocaml-option-afl:installed}
    "--ocaml-configure-option=--disable-native-compiler" {ocaml-option-bytecode-only:installed}
    "--ocaml-configure-option=--disable-force-safe-string" {ocaml-option-default-unsafe-string:installed}
@@ -30,11 +29,14 @@ depends: [
   "ocaml-src" {build}
   "ocaml" {>= "4.08.0" & < "4.14.0"}
   "solo5" {>= "0.7.0"}
+  "solo5-cross-aarch64" {>= "0.7.0" }
 ]
 pin-depends: [
   ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
+  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
 ]
 conflicts: [
+  "ocaml-freestanding"
   "sexplib" {= "v0.9.0"}
   "solo5-kernel-ukvm"
   "solo5-kernel-virtio"
@@ -47,5 +49,5 @@ available: [
 ]
 synopsis: "Freestanding OCaml compiler"
 description:
-  "This package provides a freestanding OCaml cross-compiler, suitable for linking with a unikernel base layer."
+  "This package provides a freestanding OCaml cross-compiler for ARM64, suitable for linking with a unikernel base layer."
 version: "0.7.0"
