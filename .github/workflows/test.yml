@@ -35,7 +35,7 @@ jobs:
       with:
         ocaml-compiler: ${{ matrix.ocaml-version }}
     - name: Pinning package
-      run: opam pin add -n -t -y .
+      run: opam pin add -n -t -y ocaml-freestanding .
     - name: Install ocaml-freestanding and dune
       run: opam depext -iyt ocaml-freestanding conf-libseccomp dune
     - name: Compiling example project
