@@ -32,8 +32,8 @@ depends: [
   "solo5-cross-aarch64" {>= "0.7.0" }
 ]
 pin-depends: [
-  ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
-  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/TheLortex/solo5#new-toolchain+pkgconfig"]
+  ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#77db27433ccd5b1ec13735e8ef1c92e141969a5c"]
+  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/TheLortex/solo5#77db27433ccd5b1ec13735e8ef1c92e141969a5c"]
 ]
 conflicts: [
   "ocaml-freestanding"
