@@ -13,6 +13,7 @@ Makeconf:
 
 TOP=$(abspath .)
 FREESTANDING_CFLAGS+=-I$(TOP)/nolibc/include -include _freestanding/overrides.h
+FREESTANDING_LDFLAGS+=
 
 openlibm/libopenlibm.a:
 	$(MAKE) -C openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
@@ -36,10 +37,13 @@ ocaml/Makefile:
 #   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
+OCAML_LDFLAGS=$(FREESTANDING_LDFLAGS) -L$(TOP)/openlibm/
 
 ocaml/Makefile.config: ocaml/Makefile
 	cd ocaml && \
 	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
+	    LDFLAGS="$(OCAML_LDFLAGS)" \
+	    LIBS="-lopenlibm" \
 	    AS="as" \
 	    ASPP="cc $(OCAML_CFLAGS) -c" \
 	    LD="ld" \
