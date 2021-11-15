@@ -1,3 +1,8 @@
+## v0.6.6 (2021-11-15)
+
+* Fix compilation on alpine 3.13+ with OCaml 4.13+ by providing LDFLAGS
+  including -lopenlibm to OCaml's configure (#99, @dinosaure)
+
 ## v0.6.5 (2021-09-27)
 
 * Add support for OCaml 4.13 (#95 #94, @kit-ty-kate @dra27)
