@@ -38,6 +38,9 @@ case "${BUILD_ARCH}" in
     aarch64)
         OCAML_BUILD_ARCH="arm64"
         ;;
+    armv7l)
+        OCAML_BUILD_ARCH="arm"
+        ;;
     *)
         echo "ERROR: Unsupported architecture: ${BUILD_ARCH}" 1>&2
         exit 1
@@ -47,6 +50,11 @@ esac
 PKG_CONFIG_EXTRA_LIBS=
 if [ "${BUILD_ARCH}" = "aarch64" ]; then
     PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $(gcc -print-libgcc-file-name)" || exit 1
+fi
+
+# aarch32 with Solo5/spt will use an internal builtin library instead of libgcc
+if [ "${BUILD_ARCH}" = "armv7l" ]; then
+    PKG_CONFIG_EXTRA_LIBS="$PKG_CONFIG_EXTRA_LIBS $(ocamlfind printconf path)/solo5-bindings-spt/libaeabi.a" || exit 1
 fi
 
 cat <<EOM >Makeconf

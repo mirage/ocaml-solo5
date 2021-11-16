@@ -10,6 +10,9 @@
 #if defined(__x86_64__) || defined(__aarch64__)
 #define LONG_MAX  0x7fffffffffffffffL
 #define LLONG_MAX  0x7fffffffffffffffLL
+#elif defined(__arm__)
+#define LONG_MAX  0x7fffffffL
+#define LLONG_MAX  0x7fffffffffffffffLL
 #else
 #error Unsupported architecture
 #endif

@@ -24,6 +24,8 @@
 #if defined(__x86_64__) || defined(__aarch64__)
 #define IEEE_8087
 #define Long int
+#elif defined(__arm__)
+#define IEEE_8087 /* Considers only the little endian arm arch. */
 #else
 #error Unsupported architecture
 #endif
