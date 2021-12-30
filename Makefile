@@ -20,6 +20,7 @@ openlibm/libopenlibm.a:
 
 ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` ./ocaml
+	cd ocaml && ../patches/run.sh
 
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
 # convince it to think it's using the Solo5 compiler as a cross compiler, and

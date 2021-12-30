@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index bf3052be4..f42b4c4d4 100755
+--- a/configure
++++ b/configure
+@@ -13369,7 +13369,7 @@ return cos ();
+ }
+ _ACEOF
+ if ac_fn_c_try_link "$LINENO"; then :
+-  ac_cv_lib_m_cos=yes
++  ac_cv_lib_m_cos=no
+ else
+   ac_cv_lib_m_cos=no
+ fi
