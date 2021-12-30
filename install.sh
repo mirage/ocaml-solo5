@@ -2,7 +2,7 @@
 
 prefix=${1:-$PREFIX}
 if [ "$prefix" = "" ]; then
-    prefix=`opam config var prefix`
+    prefix=`opam var prefix`
 fi
 DESTINC=${prefix}/include/ocaml-freestanding
 DESTLIB=${prefix}/lib/ocaml-freestanding

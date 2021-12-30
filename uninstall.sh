@@ -2,7 +2,7 @@
 
 prefix=$1
 if [ "$prefix" = "" ]; then
-  prefix=`opam config var prefix`
+  prefix=`opam var prefix`
 fi
 
 odir=$prefix/lib
