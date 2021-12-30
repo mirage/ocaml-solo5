@@ -33,8 +33,6 @@ ocaml/Makefile:
 #   compiler.
 # - ARCH must be overridden manually in Makefile.config due to the use of
 #   hardcoded combinations in the OCaml configure.
-# - HAS_XXX must be defined manually since our invocation of configure cannot
-#   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
 OCAML_LDFLAGS=$(FREESTANDING_LDFLAGS) -L$(TOP)/openlibm -L$(TOP)/nolibc
@@ -53,8 +51,6 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=$(OC_CFLAGS) $(OC_CPPFLAGS)' >> ocaml/Makefile.config
 	echo 'SAK_LINK=$(SAK_CC) $(SAK_CFLAGS) $(OUTPUTEXE)$(1) $(2)' >> ocaml/Makefile.config
-	echo '#define HAS_GETTIMEOFDAY' >> ocaml/runtime/caml/s.h
-	echo '#define HAS_SECURE_GETENV' >> ocaml/runtime/caml/s.h
 	echo '#define HAS_TIMES' >> ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
