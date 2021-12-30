@@ -18,8 +18,12 @@ FREESTANDING_LDFLAGS+=
 openlibm/libopenlibm.a:
 	$(MAKE) -C openlibm "CFLAGS=$(FREESTANDING_CFLAGS)" libopenlibm.a
 
+# OCaml configure injects -lm into LIBS if it can be linked. This leads to
+# inconsistent assumptions - the host system libm being used and openlibm.
+# Since this is hardcoded in configure, we modify configure to never add -lm.
 ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` ./ocaml
+	sed -i -e 's/ac_cv_lib_m_cos=yes/ac_cv_lib_m_cos=no/' ocaml/configure
 
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
 # convince it to think it's using the Solo5 compiler as a cross compiler, and
