@@ -24,6 +24,7 @@ fi
 ocamlfind query ocaml-src >/dev/null || exit 1
 
 FREESTANDING_CFLAGS="$(pkg-config --cflags ${PKG_CONFIG_DEPS})"
+FREESTANDING_LDFLAGS="$(pkg-config --variable=ldflags ${PKG_CONFIG_DEPS})"
 BUILD_ARCH="$(uname -m)"
 BUILD_OS="$(uname -s)"
 OCAML_BUILD_ARCH=
@@ -51,6 +52,7 @@ fi
 
 cat <<EOM >Makeconf
 FREESTANDING_CFLAGS=${FREESTANDING_CFLAGS}
+FREESTANDING_LDFLAGS=${FREESTANDING_LDFLAGS}
 BUILD_ARCH=${BUILD_ARCH}
 BUILD_OS=${BUILD_OS}
 OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
