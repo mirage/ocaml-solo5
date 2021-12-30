@@ -119,6 +119,12 @@ void *sbrk(intptr_t increment)
     return (void *)prev;
 }
 
+/* solo5_app_main as a weak symbol to allow linking executables without
+   mirage_solo5 / mirage_xen */
+int __attribute__((weak)) solo5_app_main (const struct solo5_start_info *info) {
+  return 0;
+}
+
 /*
  * dlmalloc configuration:
  */
