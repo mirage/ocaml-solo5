@@ -37,13 +37,13 @@ ocaml/Makefile:
 #   link against nolibc (which would need to produce complete Solo5 binaries).
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OCAML_CFLAGS=$(FREESTANDING_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
-OCAML_LDFLAGS=$(FREESTANDING_LDFLAGS) -L$(TOP)/openlibm/
+OCAML_LDFLAGS=$(FREESTANDING_LDFLAGS) -L$(TOP)/openlibm -L$(TOP)/nolibc
 
-ocaml/Makefile.config: ocaml/Makefile
+ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	cd ocaml && \
 	    CC="cc $(OCAML_CFLAGS) -nostdlib" \
 	    LDFLAGS="$(OCAML_LDFLAGS)" \
-	    LIBS="-lopenlibm" \
+	    LIBS="-lopenlibm -lnolibc" \
 	    AS="as" \
 	    ASPP="cc $(OCAML_CFLAGS) -c" \
 	    LD="ld" \
