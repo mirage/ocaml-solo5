@@ -28,8 +28,8 @@ depends: [
   "solo5-cross-aarch64" {>= "0.7.0" }
 ]
 pin-depends: [
-  ["solo5.0.7.0" "git+https://github.com/TheLortex/solo5#77db27433ccd5b1ec13735e8ef1c92e141969a5c"]
-  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/TheLortex/solo5#77db27433ccd5b1ec13735e8ef1c92e141969a5c"]
+  ["solo5.0.7.0" "git+https://github.com/dinosaure/solo5.git#86beb3ac87245435fed397454163d7909b1d6880"]
+  ["solo5-cross-aarch64.0.7.0" "git+https://github.com/dinosaure/solo5.git#86beb3ac87245435fed397454163d7909b1d6880"]
 ]
 conflicts: [
   "ocaml-freestanding"
