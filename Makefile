@@ -2,7 +2,7 @@
 
 include Makeconf
 
-all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml ocaml-freestanding.pc freestanding.conf
+all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml freestanding.conf
 
 TOP=$(abspath .)
 
@@ -28,6 +28,8 @@ openlibm/libopenlibm.a:
 # OCAML
 ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` ./ocaml
+# configure avoid inserting -lm
+	sed -i -e 's/ac_cv_lib_m_cos=yes/ac_cv_lib_m_cos=no/' ocaml/configure
 # configure: Do not build dynlink
 	sed -i -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure
 # configure: Allow precise input of flags and libs
@@ -48,7 +50,7 @@ ocaml/Makefile:
 # yacc/Makefile: import ocamlyacc from the system
 	sed -i -e 's/^ocamlyacc$$(EXE):.*/dummy:/g' ocaml/yacc/Makefile
 	echo -e "ocamlyacc:\n\tcp $(shell which ocamlyacc) .\n" >> ocaml/yacc/Makefile
-# tools/Makefile: stub out objinfo_helper 
+# tools/Makefile: stub out objinfo_helper
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
 
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
@@ -63,11 +65,9 @@ ocaml/Makefile:
 #   compiler.
 # - ARCH must be overridden manually in Makefile.config due to the use of
 #   hardcoded combinations in the OCaml configure.
-# - We use LIBS with a stubbed out solo5 implementation to override the OCaml 
+# - We use LIBS with a stubbed out solo5 implementation to override the OCaml
 # 	configure link test
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-# - We override HAS_SOCKETS because of a bug in the ocaml configure script that
-# 	always enables sockets.
 OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
 OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS)
 ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
@@ -94,30 +94,17 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
-	echo '#undef HAS_SOCKETS' >> ocaml/runtime/caml/s.h
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
 
 ocaml/runtime/caml/version.h: ocaml/Makefile.config
 	ocaml/tools/make-version-header.sh > $@
 
-CAMLOPT:=$(shell which ocamlopt)
-CAMLRUN:=$(shell which ocamlrun)
-CAMLC:=$(shell which ocamlc)
-
 ocaml: ocaml/Makefile.config ocaml/runtime/caml/version.h
 	$(MAKE) -C ocaml world
 	$(MAKE) -C ocaml opt
 
 # CONFIGURATION FILES
-ocaml-freestanding.pc: ocaml-freestanding.pc.in Makeconf
-	sed -e 's!@@PKG_CONFIG_EXTRA_LIBS@@!$(MAKECONF_PKG_CONFIG_EXTRA_LIBS)!' \
-	    -e 's!@@PKG_CONFIG_CC@@!$(MAKECONF_CC)!' \
-	    -e 's!@@PKG_CONFIG_LD@@!$(MAKECONF_LD)!' \
-		-e 's!@@PKG_CONFIG_SOLO5_TOOLCHAIN@@!$(MAKECONF_TOOLCHAIN)!' \
-	    -e 's!@@CFLAGS@@!$(MAKECONF_CFLAGS)!' \
-	    ocaml-freestanding.pc.in > $@
-
 freestanding.conf: freestanding.conf.in
 	sed -e 's!@@PREFIX@@!$(MAKECONF_PREFIX)!' \
 	    freestanding.conf.in > $@
@@ -131,7 +118,7 @@ uninstall:
 
 clean:
 	$(RM) -r ocaml/
-	$(RM) ocaml-freestanding.pc freestanding.conf
+	$(RM) freestanding.conf
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \

@@ -1,6 +1,4 @@
-
-
-(executable 
+(executable
  (name main)
  (link_flags -g -w +A-4-41-42-44 -bin-annot -strict-sequence -principal
    -safe-string -color always -cclib (:include solo5_abi_flag))
@@ -13,7 +11,7 @@
  (action
   (run solo5-elftool gen-manifest manifest.json manifest.c)))
 
-(rule 
+(rule
  (target mode)
  (deps (env_var MODE))
  (action (with-stdout-to %{target}
@@ -27,14 +25,14 @@
   (bash "echo -n \"\\\"-z solo5-abi=\" && cat mode && echo -n \\\"")
 )))
 
-(rule 
+(rule
  (alias runtest)
  (enabled_if (= %{context_name} freestanding))
- (action 
+ (action
   (with-accepted-exit-codes 1 (run "solo5-%{read:mode}" "%{dep:main.exe}")))
 )
 
-(alias 
+(alias
  (name default)
  (enabled_if (= %{context_name} freestanding))
  (deps (alias_rec all))

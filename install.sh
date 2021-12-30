@@ -2,7 +2,7 @@
 
 prefix=${1:-$PREFIX}
 if [ "$prefix" = "" ]; then
-    prefix=`opam config var prefix`
+    prefix=`opam var prefix`
 fi
 
 DESTINC=${prefix}/freestanding-sysroot/include/nolibc
@@ -27,12 +27,8 @@ ${MAKE} -C ocaml install
 # when figuring out whether a library is installed
 touch ${DESTLIB}/META
 
-# pkg-config
-mkdir -p ${prefix}/lib/pkgconfig
-cp ocaml-freestanding.pc ${prefix}/lib/pkgconfig/ocaml-freestanding.pc
-
 # findlib
-mkdir -p ${prefix}/lib/findlib.conf.d 
+mkdir -p ${prefix}/lib/findlib.conf.d
 cp freestanding.conf ${prefix}/lib/findlib.conf.d/freestanding.conf
 
 # dummy packages

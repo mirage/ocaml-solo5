@@ -33,7 +33,7 @@ In `PREFIX/frestanding-sysroot/bin`:
 In `PREFIX/frestanding-sysroot/lib/ocaml`:
 - `libasmrun.a`, `libotherlibs.a`: OCaml native code runtime.
 - Compiler libraries.
-- In `caml/`: Header files for the OCaml runtime. 
+- In `caml/`: Header files for the OCaml runtime.
 
 In `PREFIX/frestanding-sysroot/lib/nolibc`:
 
@@ -44,48 +44,35 @@ In `PREFIX/frestanding-sysroot/include/nolibc`:
 
 - Header files for nolibc and openlibm.
 
-In `PREFIX/lib/pkgconfig`:
-
-- `ocaml-freestanding.pc`: package definition to link the ocaml runtime.
-
 In `PREFIX/lib/findlib.conf.d`:
 
 - `freestanding.conf`: ocamlfind definition of the cross-compilation switch.
 
 ### Usage
 
-The installed compiler is able to build solo5 executables. The solo5 bindings 
-(xen, hvt, spt, ...) is chosen at link time, using the solo5-specific 
-`-z solo5-abi=XXX` compiler/linker option. Linking an executable with no 
+The installed compiler is able to build solo5 executables. The solo5 bindings
+(xen, hvt, spt, ...) is chosen at link time, using the solo5-specific
+`-z solo5-abi=XXX` compiler/linker option. Linking an executable with no
 bindings results in a _dummy_ executable.
 
-To build with the freestanding compiler toolchain, it has to be selected using 
+To build with the freestanding compiler toolchain, it has to be selected using
 ocamlfind or dune:
 - ocamlfind: `ocamlfind -toolchain freestanding ...`
-- dune: `dune build -x freestanding`, or add the toolchain in a build context 
+- dune: `dune build -x freestanding`, or add the toolchain in a build context
   in the dune workspace file.
 
 #### Example
 
-The `example` describes the minimal structure needed to build an 
-ocaml-freestanding executable with dune, linked with the hvt bindings. It 
-requires an application manifest and a startup file to initialize the libc. 
+The `example` describes the minimal structure needed to build an
+ocaml-freestanding executable with dune, linked with the hvt bindings. It
+requires an application manifest and a startup file to initialize the libc.
 
-Build: `dune build -x freestanding` 
+Build: `dune build -x freestanding`
 Run: `solo5-hvt _build/default.freestanding/main.exe`
-
-### Usage - the old way (< 0.7.0):
-
-Downstream packages should use the following flags and tools when building
-and linking C code:
-- CFLAGS: `pkg-config --cflags ocaml-freestanding`
-- CC: `pkg-config --var=ld ocaml-freestanding`
-- LIBS: `pkg-config --libs ocaml-freestanding`
-- LD: `pkg-config --var=cc ocaml-freestanding`
 
 ## Supported compiler versions
 
-Tested against OCaml 4.10.0 through 4.13.0. Other versions may require
+Tested against OCaml 4.12.1 through 4.13.0. Other versions may require
 changing `configure.sh`.
 
 ## Porting to a different (uni)kernel base layer
