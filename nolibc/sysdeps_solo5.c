@@ -119,6 +119,27 @@ void *sbrk(intptr_t increment)
     return (void *)prev;
 }
 
+/* solo5_app_main and __solo5_mft1_note as weak symbols to allow linking
+ * executables, as done by OCaml's configure script to produce executables
+ * in the ../ocaml directory of this repository.
+ *
+ * The weak attribute is required (and supported on gcc and clang) to have
+ * mirage (mirage-solo5/mirage-xen) overwrite this symbol with a strong symbol
+ * which executes the application.
+ */
+#pragma weak solo5_app_main
+int solo5_app_main (const struct solo5_start_info *info) {
+  const char* msg =
+    "The weak solo5_app_main symbol from nolibc in ocaml-freestanding was "
+    "called, which should be overwritten by mirage-solo5/mirage-xen!\n";
+  solo5_console_write(msg, 134);
+  return -1;
+}
+
+#pragma weak __solo5_mft1_note
+#include <mft_abi.h>
+const struct mft1_note __solo5_mft1_note;
+
 /*
  * dlmalloc configuration:
  */
