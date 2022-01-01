@@ -63,7 +63,7 @@ done
 
 [ -z "${CONFIG_TARGET}" ] && die "The --target option needs to be specified."
 
-ocamlfind query ocaml-src >/dev/null || exit 1
+[ -e "$(dirname "$0")/ocaml" ] || ocamlfind query ocaml-src >/dev/null || exit 1
 
 MAKECONF_CFLAGS=""
 MAKECONF_CC="$CONFIG_TARGET-cc"
