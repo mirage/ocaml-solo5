@@ -21,6 +21,7 @@ build: [
 ]
 install: [make "install" ]
 depends: [
+  "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
   "ocaml" {>= "4.12.1" & < "4.14.0"}
   "solo5" {>= "0.7.0"}
