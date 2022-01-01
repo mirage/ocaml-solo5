@@ -27,9 +27,26 @@ openlibm/libopenlibm.a:
 
 # OCAML
 ocaml/Makefile:
-	cp -r `ocamlfind query ocaml-src` ./ocaml
-# configure avoid inserting -lm
-	sed -i -e 's/ac_cv_lib_m_cos=yes/ac_cv_lib_m_cos=no/' ocaml/configure
+	cp -r `opam var prefix`/lib/ocaml-src ./ocaml
+
+# OCaml >= 4.08.0 uses an autotools-based build system. In this case we
+# convince it to think it's using the Solo5 compiler as a cross compiler, and
+# let the build system do its work with as little additional changes on our
+# side as possible.
+#
+# Notes:
+#
+# - CPPFLAGS must be set for configure as well as CC, otherwise it complains
+#   about headers due to differences of opinion between the preprocessor and
+#   compiler.
+# - ARCH must be overridden manually in Makefile.config due to the use of
+#   hardcoded combinations in the OCaml configure.
+# - We use LIBS with a stubbed out solo5 implementation to override the OCaml
+# 	configure link test
+# - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
+OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
+OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS)
+ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # configure: Do not build dynlink
 	sed -i -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure
 # configure: Allow precise input of flags and libs
@@ -52,25 +69,9 @@ ocaml/Makefile:
 	echo -e "ocamlyacc:\n\tcp $(shell which ocamlyacc) .\n" >> ocaml/yacc/Makefile
 # tools/Makefile: stub out objinfo_helper
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
-
-# OCaml >= 4.08.0 uses an autotools-based build system. In this case we
-# convince it to think it's using the Solo5 compiler as a cross compiler, and
-# let the build system do its work with as little additional changes on our
-# side as possible.
-#
-# Notes:
-#
-# - CPPFLAGS must be set for configure as well as CC, otherwise it complains
-#   about headers due to differences of opinion between the preprocessor and
-#   compiler.
-# - ARCH must be overridden manually in Makefile.config due to the use of
-#   hardcoded combinations in the OCaml configure.
-# - We use LIBS with a stubbed out solo5 implementation to override the OCaml
-# 	configure link test
-# - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
-OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS)
-ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
+# av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
+# would use the host system libm instead of the freestanding openlibm, see
+# https://github.com/mirage/ocaml-freestanding/issues/101
 	cd ocaml && \
 		CC="$(MAKECONF_CC)" \
 		OC_CFLAGS="$(OC_CFLAGS)" \
@@ -82,6 +83,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		GLOBAL_LIBS="$(GLOBAL_LIBS)"\
 		LD="$(MAKECONF_LD)" \
 		ac_cv_prog_DIRECT_LD="$(MAKECONF_LD)" \
+		ac_cv_lib_m_cos="no" \
 	  ./configure \
 		-host=$(MAKECONF_BUILD_ARCH)-unknown-none \
 		-prefix $(MAKECONF_PREFIX)/freestanding-sysroot \
