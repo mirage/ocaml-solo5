@@ -1,7 +1,11 @@
-## unreleased
+## v0.7.0 (2022-01-03)
 
-* Add compatibility with the solo5 0.7.0 package split.
-* Build a freestanding cross-compiler to use with the ocamlfind toolchain feature. This cross-compiler is able to build partial executables to link with a solo5 bindings library.
+* **NOTE**: This release is a part of the MirageOS 4.0 release and, at this stage, `ocaml-freestanding.0.7.0` will **not** continue to support MirageOS 3 unikernels. `ocaml-freestanding` becomes a real cross-compiler used then by `dune` (with the cross-compilation option) to compile libraries including C stubs. For the MirageOS 4.0 perspective, libraries which include C stubs does not need anymore to compile multiple times C artifacts depending on what `ocaml-freestanding` provides. The `dune` context will help the compilation of these C stubs according the target chosen by the end-user (with the `mirage` tool).
+
+* Add compatibility with the solo5 0.7.0 package split. (#104)
+* Build a freestanding cross-compiler to use with the ocamlfind toolchain feature. This cross-compiler is able to build partial executables to link with a solo5 bindings library. (#104)
+* Fix the OpenBSD 7 support (#104)
+* Remove `pkg-config` (#104)
 
 ## v0.6.6 (2021-11-15)
 
