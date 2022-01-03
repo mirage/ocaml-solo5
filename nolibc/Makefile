@@ -21,7 +21,7 @@ OBJS=assert.o \
      dtoa.o \
      memchr.o memcmp.o memcpy.o memmove.o memset.o \
      strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
-     strstr.o \
+     strstr.o strncmp.o \
      stubs.o \
      vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
 
@@ -42,7 +42,7 @@ TEST_H_OBJS=$(patsubst %.h,test-%.o,$(HEADERS))
 
 # For each HEADER we want to test, generate a C source file including only
 # that HEADER. As above, HEADER may include subdirectories.
-test-include/%.c: include/%.h | test-include test-include/sys
+test-include/%.c: include/%.h | test-include/sys
 	echo "#include \"../$<\"" >$@
 
 .PRECIOUS: test-include/%.c
@@ -50,7 +50,7 @@ test-include/%.c: include/%.h | test-include test-include/sys
 test-include:
 	mkdir $@
 
-test-include/sys:
+test-include/sys: test-include
 	mkdir $@
 
 test-headers: $(TEST_H_OBJS)
