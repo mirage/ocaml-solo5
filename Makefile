@@ -53,8 +53,6 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	sed -i -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure
 	sed -i -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure
 	sed -i -e 's/nativecclibs="$$cclibs $$DLLIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure
-# Makefile: Disable build of ocamltest (for 4.10)
-	sed -i -e 's/$$(MAKE) -C ocamltest all//g' ocaml/Makefile
 # runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
 	sed -i -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile
 	sed -i -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile
@@ -91,6 +89,8 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-systhreads\
 		-disable-unix-lib\
 		-disable-instrumented-runtime\
+		-disable-ocamltest\
+		-disable-ocamldoc\
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
 	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
