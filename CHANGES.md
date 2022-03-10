@@ -1,3 +1,8 @@
+## v0.7.1 (2022-03-10)
+
+* remove afl, fp, nnpchecker configure options (#107, @hannesm)
+* Add suppport for OCaml 4.14 (#109, @kit-ty-kate)
+
 ## v0.7.0 (2022-01-03)
 
 * **NOTE**: This release is a part of the MirageOS 4.0 release and, at this stage, `ocaml-freestanding.0.7.0` will **not** continue to support MirageOS 3 unikernels. `ocaml-freestanding` becomes a real cross-compiler used then by `dune` (with the cross-compilation option) to compile libraries including C stubs. For the MirageOS 4.0 perspective, libraries which include C stubs does not need anymore to compile multiple times C artifacts depending on what `ocaml-freestanding` provides. The `dune` context will help the compilation of these C stubs according the target chosen by the end-user (with the `mirage` tool).
