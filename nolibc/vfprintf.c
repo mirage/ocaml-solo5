@@ -202,13 +202,13 @@ static char *fmt_u(uintmax_t x, char *s)
 typedef char compiler_defines_long_double_incorrectly[9-(int)sizeof(long double)];
 #endif
 
-static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
+static int fmt_fp(FILE *f, double y, int w, int p, int fl, int t)
 {
-	uint32_t big[(LDBL_MANT_DIG+28)/29 + 1          // mantissa expansion
-		+ (LDBL_MAX_EXP+LDBL_MANT_DIG+28+8)/9]; // exponent expansion
+	uint32_t big[(DBL_MANT_DIG+28)/29 + 1          // mantissa expansion
+		+ (DBL_MAX_EXP+DBL_MANT_DIG+28+8)/9]; // exponent expansion
 	uint32_t *a, *d, *r, *z;
 	int e2=0, e, i, j, l;
-	char buf[9+LDBL_MANT_DIG/4], *s;
+	char buf[9+DBL_MANT_DIG/4], *s;
 	const char *prefix="-0X+0X 0X-0x+0x 0x";
 	int pl;
 	char ebuf0[3*sizeof(int)], *ebuf=&ebuf0[3*sizeof(int)], *estr;
@@ -232,18 +232,18 @@ static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
 		return MAX(w, 3+pl);
 	}
 
-	y = frexpl(y, &e2) * 2;
+	y = frexp(y, &e2) * 2;
 	if (y) e2--;
 
 	if ((t|32)=='a') {
-		long double round = 8.0;
+		double round = 8.0;
 		int re;
 
 		if (t&32) prefix += 9;
 		pl += 2;
 
-		if (p<0 || p>=LDBL_MANT_DIG/4-1) re=0;
-		else re=LDBL_MANT_DIG/4-1-p;
+		if (p<0 || p>=DBL_MANT_DIG/4-1) re=0;
+		else re=DBL_MANT_DIG/4-1-p;
 
 		if (re) {
 			while (re--) round*=16;
@@ -290,7 +290,7 @@ static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
 	if (y) y *= 0x1p28, e2-=28;
 
 	if (e2<0) a=r=z=big;
-	else a=r=z=big+sizeof(big)/sizeof(*big) - LDBL_MANT_DIG - 1;
+	else a=r=z=big+sizeof(big)/sizeof(*big) - DBL_MANT_DIG - 1;
 
 	do {
 		*z = y;
@@ -311,7 +311,7 @@ static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
 	}
 	while (e2<0) {
 		uint32_t carry=0, *b;
-		int sh=MIN(9,-e2), need=1+(p+LDBL_MANT_DIG/3+8)/9;
+		int sh=MIN(9,-e2), need=1+(p+DBL_MANT_DIG/3+8)/9;
 		for (d=a; d<z; d++) {
 			uint32_t rm = *d & (1<<sh)-1;
 			*d = (*d>>sh) + carry;
@@ -333,15 +333,15 @@ static int fmt_fp(FILE *f, long double y, int w, int p, int fl, int t)
 	if (j < 9*(z-r-1)) {
 		uint32_t x;
 		/* We avoid C's broken division of negative numbers */
-		d = r + 1 + ((j+9*LDBL_MAX_EXP)/9 - LDBL_MAX_EXP);
-		j += 9*LDBL_MAX_EXP;
+		d = r + 1 + ((j+9*DBL_MAX_EXP)/9 - DBL_MAX_EXP);
+		j += 9*DBL_MAX_EXP;
 		j %= 9;
 		for (i=10, j++; j<9; i*=10, j++);
 		x = *d % i;
 		/* Are there any significant digits past j? */
 		if (x || d+1!=z) {
-			long double round = 2/LDBL_EPSILON;
-			long double small;
+			double round = 2/DBL_EPSILON;
+			double small;
 			if (*d/i & 1) round += 2;
 			if (x<i/2) small=0x0.8p0;
 			else if (x==i/2 && d+1==z) small=0x1.0p0;
