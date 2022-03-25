@@ -8,6 +8,6 @@
 #undef __linux__
 #undef linux
 
-#define __ocaml_freestanding__
+#define __ocaml_solo5__
 
 #endif /* __FREESTANDING_OVERRIDES_H */

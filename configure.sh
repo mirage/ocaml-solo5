@@ -17,7 +17,7 @@ usage()
 {
     cat <<EOM 1>&2
 usage: ${prog_NAME} [ OPTIONS ]
-Configures the ocaml-freestanding build system.
+Configures the ocaml-solo5 build system.
 Options:
     --prefix=DIR:
         Installation prefix (default: /usr/local).

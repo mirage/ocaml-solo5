@@ -12,6 +12,6 @@
 
 (alias
  (name default)
- (enabled_if (= %{context_name} default.freestanding))
+ (enabled_if (= %{context_name} default.solo5))
  (deps (alias_rec all))
 )

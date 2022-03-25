@@ -1,8 +1,7 @@
-# ocaml-freestanding -- Freestanding OCaml compiler
+# ocaml-solo5 -- OCaml compiler with Solo5 backend
 
-This package provides a freestanding OCaml compiler suitable for linking with a
-unikernel base layer. Currently only [Solo5](https://github.com/Solo5/solo5) is
-supported.
+This package provides a OCaml compiler suitable for linking with a
+Solo5 base layer.
 
 ## License and contributions
 
@@ -27,7 +26,7 @@ In `PREFIX/frestanding-sysroot/bin`:
 
 - `ocamlc`: a bytecode OCaml compiler configured for the chosen target. Please
   note that the bytecode runtime is not supported.
-- `ocamlopt`: a native freestanding OCaml compiler configured for the chosen
+- `ocamlopt`: a native OCaml compiler configured for the chosen
   target.
 
 In `PREFIX/frestanding-sysroot/lib/ocaml`:
@@ -46,7 +45,7 @@ In `PREFIX/frestanding-sysroot/include/nolibc`:
 
 In `PREFIX/lib/findlib.conf.d`:
 
-- `freestanding.conf`: ocamlfind definition of the cross-compilation switch.
+- `solo5.conf`: ocamlfind definition of the cross-compilation switch.
 
 ### Usage
 
@@ -55,20 +54,20 @@ The installed compiler is able to build solo5 executables. The solo5 bindings
 `-z solo5-abi=XXX` compiler/linker option. Linking an executable with no
 bindings results in a _dummy_ executable.
 
-To build with the freestanding compiler toolchain, it has to be selected using
+To build with the Solo5 compiler toolchain, it has to be selected using
 ocamlfind or dune:
-- ocamlfind: `ocamlfind -toolchain freestanding ...`
-- dune: `dune build -x freestanding`, or add the toolchain in a build context
+- ocamlfind: `ocamlfind -toolchain solo5 ...`
+- dune: `dune build -x solo5`, or add the toolchain in a build context
   in the dune workspace file.
 
 #### Example
 
 The `example` describes the minimal structure needed to build an
-ocaml-freestanding executable with dune, linked with the hvt bindings. It
+ocaml-solo5 executable with dune, linked with the hvt bindings. It
 requires an application manifest and a startup file to initialize the libc.
 
-Build: `dune build -x freestanding`
-Run: `solo5-hvt _build/default.freestanding/main.exe`
+Build: `dune build -x solo5`
+Run: `solo5-hvt _build/default.solo5/main.exe`
 
 ## Supported compiler versions
 

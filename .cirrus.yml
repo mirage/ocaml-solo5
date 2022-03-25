@@ -22,8 +22,8 @@ freebsd_task:
     - opam update
     - opam install dune
     - opam pin add -n -t .
-    - opam depext -yt ocaml-freestanding
-    - opam install -t ocaml-freestanding --deps-only
-  build_script: opam reinstall -t ocaml-freestanding
+    - opam depext -yt ocaml-solo5
+    - opam install -t ocaml-solo5 --deps-only
+  build_script: opam reinstall -t ocaml-solo5
   test_script:
     - MODE=hvt opam exec -- dune build --root test

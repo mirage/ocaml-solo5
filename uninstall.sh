@@ -6,5 +6,5 @@ if [ "$prefix" = "" ]; then
 fi
 
 odir=$prefix/lib
-rm -f $odir/findlib.conf.d/freestanding.conf
-rm -rf $prefix/freestanding-sysroot
+rm -f $odir/findlib.conf.d/solo5.conf
+rm -rf $prefix/solo5-sysroot

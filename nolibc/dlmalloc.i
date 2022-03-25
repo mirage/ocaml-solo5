@@ -3166,9 +3166,9 @@ static int init_mparams(void) {
       }
       else
 #endif /* USE_DEV_RANDOM */
-#ifdef __ocaml_freestanding__
+#ifdef __ocaml_solo5__
       magic = (size_t)(solo5_clock_monotonic() ^ 0x55555555UL);
-#else /* __ocaml_freestanding__ */
+#else /* __ocaml_solo5__ */
 #ifdef WIN32
       magic = (size_t)(GetTickCount() ^ (size_t)0x55555555U);
 #elif defined(LACKS_TIME_H)
