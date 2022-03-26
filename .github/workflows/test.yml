@@ -35,13 +35,13 @@ jobs:
       with:
         ocaml-compiler: ${{ matrix.ocaml-version }}
         opam-local-packages: |
-          !ocaml-freestanding-cross-aarch64.opam
+          !ocaml-solo5-cross-aarch64.opam
     - name: Pinning package
-      run: opam pin add -n -t -y ocaml-freestanding .
-    - name: Install ocaml-freestanding and dune
-      run: opam depext -iyt ocaml-freestanding conf-libseccomp dune
+      run: opam pin add -n -t -y ocaml-solo5 .
+    - name: Install ocaml-solo5 and dune
+      run: opam depext -iyt ocaml-solo5 conf-libseccomp dune
     - name: Compiling example project
       run: MODE=${{ matrix.mode.name }} opam exec -- dune build --root test
     - name: Running example project
       if: ${{ matrix.mode.exec }}
-      run: opam exec -- solo5-${{ matrix.mode.name }} test/_build/freestanding/main.exe || [ $? -eq 1 ]
+      run: opam exec -- solo5-${{ matrix.mode.name }} test/_build/solo5/main.exe || [ $? -eq 1 ]

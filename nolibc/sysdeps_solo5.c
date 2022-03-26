@@ -81,7 +81,7 @@ static uintptr_t sbrk_guard_size;
  * To be called by Mirage/Solo5 before calling caml_startup().
  *
  * XXX: There is intentionally no public prototype for this function. There
- * should really be a caml_freestanding_startup(), but I'm lazy and don't have
+ * should really be a caml_solo5_startup(), but I'm lazy and don't have
  * a proper place to put it in the build system right now.
  */
 void _nolibc_init(uintptr_t heap_start, size_t heap_size)

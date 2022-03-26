@@ -3,7 +3,7 @@
 (context (default))
 
 (context (default
- (name freestanding)
- (toolchain freestanding)
+ (name solo5)
+ (toolchain solo5)
  (host default)
 ))

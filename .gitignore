@@ -1,5 +1,5 @@
 Makeconf
-freestanding.conf
+solo5.conf
 nolibc/*.o
 nolibc/*.a
 nolibc/test-include/

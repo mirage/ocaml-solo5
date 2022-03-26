@@ -2,16 +2,16 @@
 
 include Makeconf
 
-all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml freestanding.conf
+all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml solo5.conf
 
 TOP=$(abspath .)
 
 # CFLAGS used to build nolibc / openlibm / ocaml runtime
-LOCAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/nolibc/include -include _freestanding/overrides.h
+LOCAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/nolibc/include -include _solo5/overrides.h
 # CFLAGS used by the OCaml compiler to build C stubs
-GLOBAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(MAKECONF_PREFIX)/freestanding-sysroot/include/nolibc/ -include _freestanding/overrides.h
+GLOBAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(MAKECONF_PREFIX)/solo5-sysroot/include/nolibc/ -include _solo5/overrides.h
 # LIBS used by the OCaml compiler to link executables
-GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/freestanding-sysroot/lib/nolibc/ -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS)
+GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS)
 
 # NOLIBC
 NOLIBC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
@@ -69,7 +69,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
 # would use the host system libm instead of the freestanding openlibm, see
-# https://github.com/mirage/ocaml-freestanding/issues/101
+# https://github.com/mirage/ocaml-solo5/issues/101
 	cd ocaml && \
 		CC="$(MAKECONF_CC)" \
 		OC_CFLAGS="$(OC_CFLAGS)" \
@@ -84,7 +84,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		ac_cv_lib_m_cos="no" \
 	  ./configure \
 		-host=$(MAKECONF_BUILD_ARCH)-unknown-none \
-		-prefix $(MAKECONF_PREFIX)/freestanding-sysroot \
+		-prefix $(MAKECONF_PREFIX)/solo5-sysroot \
 		-disable-shared\
 		-disable-systhreads\
 		-disable-unix-lib\
@@ -113,9 +113,9 @@ ocaml: ocaml/Makefile.config ocaml/runtime/caml/version.h
 	$(MAKE) -C ocaml opt
 
 # CONFIGURATION FILES
-freestanding.conf: freestanding.conf.in
+solo5.conf: solo5.conf.in
 	sed -e 's!@@PREFIX@@!$(MAKECONF_PREFIX)!' \
-	    freestanding.conf.in > $@
+	    solo5.conf.in > $@
 
 # COMMANDS
 install: all
@@ -126,7 +126,7 @@ uninstall:
 
 clean:
 	$(RM) -r ocaml/
-	$(RM) freestanding.conf
+	$(RM) solo5.conf
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \

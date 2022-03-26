@@ -27,13 +27,13 @@
 
 (rule
  (alias runtest)
- (enabled_if (= %{context_name} freestanding))
+ (enabled_if (= %{context_name} solo5))
  (action
   (with-accepted-exit-codes 1 (run "solo5-%{read:mode}" "%{dep:main.exe}")))
 )
 
 (alias
  (name default)
- (enabled_if (= %{context_name} freestanding))
+ (enabled_if (= %{context_name} solo5))
  (deps (alias_rec all))
 )
