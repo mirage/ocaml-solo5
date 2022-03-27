@@ -39,4 +39,3 @@ available: [
 synopsis: "Freestanding OCaml compiler"
 description:
   "This package provides a OCaml cross-compiler, suitable for linking with a Solo5 unikernel."
-version: "0.7.0"
