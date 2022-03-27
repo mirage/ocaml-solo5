@@ -1,3 +1,11 @@
+## v0.8.0 (2022-03-27)
+
+* Rename freestanding to solo5 (#114, #115, @dinosaure, @samoht)
+* Disable build of ocamltest (#108, @hannesm)
+* vfprintf: change long double to double to fix a floating point exception 
+  (#110, @palainp)
+* Add conf-which as a dependency (#113, @dinosaure)
+
 ## v0.7.1 (2022-03-10)
 
 * remove afl, fp, nnpchecker configure options (#107, @hannesm)
