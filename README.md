@@ -22,24 +22,24 @@ on your system as a dependency when you build this package.
 
 The following components are built and installed:
 
-In `PREFIX/frestanding-sysroot/bin`:
+In `PREFIX/solo5-sysroot/bin`:
 
 - `ocamlc`: a bytecode OCaml compiler configured for the chosen target. Please
   note that the bytecode runtime is not supported.
 - `ocamlopt`: a native OCaml compiler configured for the chosen
   target.
 
-In `PREFIX/frestanding-sysroot/lib/ocaml`:
+In `PREFIX/solo5-sysroot/lib/ocaml`:
 - `libasmrun.a`, `libotherlibs.a`: OCaml native code runtime.
 - Compiler libraries.
 - In `caml/`: Header files for the OCaml runtime.
 
-In `PREFIX/frestanding-sysroot/lib/nolibc`:
+In `PREFIX/solo5-sysroot/lib/nolibc`:
 
 - `libnolibc.a`: libc interfaces required by the OCaml runtime.
 - `libopenlibm.a`: libm required by the OCaml runtime.
 
-In `PREFIX/frestanding-sysroot/include/nolibc`:
+In `PREFIX/solo5-sysroot/include/nolibc`:
 
 - Header files for nolibc and openlibm.
 
