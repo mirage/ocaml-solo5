@@ -1,8 +1,9 @@
 (executable
  (name main)
  (link_flags -cclib "-z solo5-abi=hvt")
- (foreign_stubs (language c) (names startup manifest))
-)
+ (foreign_stubs
+  (language c)
+  (names startup manifest)))
 
 (rule
  (targets manifest.c)
@@ -12,6 +13,7 @@
 
 (alias
  (name default)
- (enabled_if (= %{context_name} default.solo5))
- (deps (alias_rec all))
-)
+ (enabled_if
+  (= %{context_name} default.solo5))
+ (deps
+  (alias_rec all)))
