@@ -1,3 +1,8 @@
+## v0.6.7 (2022-04-04)
+
+* Support OCaml 4.14 (#109, @kit-ty-kate)
+* vfprintf: change long double to double to fix a floating point exception (#110, @palainp)
+
 ## v0.6.6 (2021-11-15)
 
 * Fix compilation on alpine 3.13+ with OCaml 4.13+ by providing LDFLAGS
