@@ -59,8 +59,14 @@ ocaml/Makefile.config: ocaml/Makefile
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
 
+# NOTE: ocaml/tools/make-version-header.sh is integrated into OCaml's ./configure script starting from OCaml 4.14
+ifneq (,$(wildcard ocaml/tools/make-version-header.sh))
 ocaml/runtime/caml/version.h: ocaml/Makefile.config
 	ocaml/tools/make-version-header.sh > $@
+else
+ocaml/runtime/caml/version.h: ocaml/Makefile.config
+	@
+endif
 
 ocaml/runtime/libasmrun.a: ocaml/Makefile.config ocaml/runtime/caml/version.h
 	$(MAKE) -C ocaml/runtime libasmrun.a
