@@ -1,8 +1,13 @@
+## v0.8.1 (2022-06-14)
+
+* malloc: keep track of memory allocation and release (faster than mallinfo,
+  more accurate than footprint) (#120, @winux138 and @palainp)
+
 ## v0.8.0 (2022-03-27)
 
 * Rename freestanding to solo5 (#114, #115, @dinosaure, @samoht)
 * Disable build of ocamltest (#108, @hannesm)
-* vfprintf: change long double to double to fix a floating point exception 
+* vfprintf: change long double to double to fix a floating point exception
   (#110, @palainp)
 * Add conf-which as a dependency (#113, @dinosaure)
 
