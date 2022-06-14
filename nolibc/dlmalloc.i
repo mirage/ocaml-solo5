@@ -1,4 +1,14 @@
 /*
+  Note: that this is a slightly modified version of dlmalloc to add
+  the internal_memory_usage field to the malloc_state structure. This
+  field is used with the gm variable to keep track of the amount of
+  memory allocated in the heap.
+  The results of this fast estimation are returned by the
+  dlmalloc_memory_usage function exported as malloc_memory_usage.
+  See lines 978, 2619 and in dlmalloc(), dlfree() and dispose_chunk()
+*/
+
+/*
   This is a version (aka dlmalloc) of malloc/free/realloc written by
   Doug Lea and released to the public domain, as explained at
   http://creativecommons.org/publicdomain/zero/1.0/ Send questions,
@@ -827,6 +837,7 @@ extern "C" {
 #define dlmalloc_trim          malloc_trim
 #define dlmalloc_stats         malloc_stats
 #define dlmalloc_usable_size   malloc_usable_size
+#define dlmalloc_memory_usage  malloc_memory_usage
 #define dlmalloc_footprint     malloc_footprint
 #define dlmalloc_max_footprint malloc_max_footprint
 #define dlmalloc_footprint_limit malloc_footprint_limit
@@ -963,6 +974,17 @@ DLMALLOC_EXPORT void* dlvalloc(size_t);
   M_MMAP_THRESHOLD     -3      256*1024   any   (or 0 if no MMAP support)
 */
 DLMALLOC_EXPORT int dlmallopt(int, int);
+
+/*
+  malloc_memory_usage();
+  Returns total number of bytes allocated by malloc, realloc etc. This
+  value is the same as the uordblks field in the mallinfo structure but
+  the value is precomputed value that is updated on each call to malloc,
+  free, etc.
+  Unlike malloc_footprint it does not counts the bytes obtained from the
+  system but not currently allocated.
+*/
+DLMALLOC_EXPORT size_t dlmalloc_memory_usage(void);
 
 /*
   malloc_footprint();
@@ -2598,6 +2620,7 @@ struct malloc_state {
   msegment   seg;
   void*      extp;      /* Unused but available for extensions */
   size_t     exts;
+  size_t     internal_memory_usage; /* count memory allocation and free */
 };
 
 typedef struct malloc_state*    mstate;
@@ -4361,6 +4384,7 @@ static int sys_trim(mstate m, size_t pad) {
    of free mainly in that the chunk need not be marked as inuse.
 */
 static void dispose_chunk(mstate m, mchunkptr p, size_t psize) {
+  gm->internal_memory_usage -= psize;
   mchunkptr next = chunk_plus_offset(p, psize);
   if (!pinuse(p)) {
     mchunkptr prev;
@@ -4671,6 +4695,13 @@ void* dlmalloc(size_t bytes) {
     mem = sys_alloc(gm, nb);
 
   postaction:
+    /*
+       If we failed to get more memory from the system with the
+       prefious sys_alloc() call mem will be NULL and we cannot get
+       chunk information there.
+    */
+    if (mem!=NULL) gm->internal_memory_usage += chunksize(mem2chunk(mem));
+
     POSTACTION(gm);
     return mem;
   }
@@ -4689,6 +4720,7 @@ void dlfree(void* mem) {
 
   if (mem != 0) {
     mchunkptr p  = mem2chunk(mem);
+    gm->internal_memory_usage -= chunksize(p);
 #if FOOTERS
     mstate fm = get_mstate_for(p);
     if (!ok_magic(fm)) {
@@ -5348,6 +5380,10 @@ int dlmalloc_trim(size_t pad) {
 
 size_t dlmalloc_footprint(void) {
   return gm->footprint;
+}
+
+size_t dlmalloc_memory_usage(void) {
+  return gm->internal_memory_usage;
 }
 
 size_t dlmalloc_max_footprint(void) {
