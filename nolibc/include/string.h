@@ -23,4 +23,6 @@ char *strstr(const char *, const char *);
  */
 int strncmp(const char*, const char*, size_t);
 
+int strerror_r(int errnum, char *buf, size_t buflen);
+
 #endif
