@@ -110,3 +110,13 @@ STUB_ABORT(pthread_cleanup_pop);
 
 STUB_ABORT(mmap);
 STUB_ABORT(munmap);
+
+int memory_order_release;
+int memory_order_acquire;
+int memory_order_relaxed;
+
+STUB_ABORT(atomic_store_explicit);
+STUB_ABORT(atomic_exchange);
+STUB_ABORT(atomic_load_explicit);
+
+STUB_ABORT(sysconf);
