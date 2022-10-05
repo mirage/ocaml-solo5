@@ -10,5 +10,6 @@ extern int errno;
 #define EINVAL 6
 #define ENOMEM 7
 #define EMFILE 8
+#define EBUSY 9
 
 #endif

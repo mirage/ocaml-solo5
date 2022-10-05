@@ -100,3 +100,13 @@ STUB_ABORT(strerror);
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
 STUB_ABORT(mkdir);
+
+/* pthread.h */
+STUB_IGNORE(int, pthread_join, 0);
+STUB_IGNORE(int, pthread_create, 0);
+STUB_IGNORE(int, pthread_attr_init, 0);
+STUB_ABORT(pthread_cleanup_push);
+STUB_ABORT(pthread_cleanup_pop);
+
+STUB_ABORT(mmap);
+STUB_ABORT(munmap);
