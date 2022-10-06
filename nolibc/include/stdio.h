@@ -33,5 +33,13 @@ size_t fwrite(const void *, size_t, size_t, FILE *);
 int fputc(int, FILE *);
 int putc(int, FILE *);
 int ferror(FILE *);
+int puts(const char *);
+int putchar(int);
+int fputs(const char *, FILE *);
+FILE *fopen(const char *, const char *);
+int fclose(FILE *);
+char *strcpy(char *, const char *); /* TODO ??? */
+
+int sprintf(char *, const char *, ...);
 
 #endif

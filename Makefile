@@ -57,13 +57,13 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	sed -i -e 's,^runtime/ocamlrun$$(EXE):.*,dummy:,g' ocaml/Makefile
 	sed -i -e 's,^runtime/ocamlruni$$(EXE):.*,dummyi:,g' ocaml/Makefile
 	sed -i -e 's,^runtime/ocamlrund$$(EXE):.*,dummyd:,g' ocaml/Makefile
-	echo -e "runtime/ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/Makefile
-	echo -e "runtime/ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/Makefile
-	echo -e "runtime/ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlrun:\n\tcp $(shell which ocamlrun) runtime/\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlrund:\n\tcp $(shell which ocamlrund) runtime/\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlruni:\n\tcp $(shell which ocamlruni) runtime/\n" >> ocaml/Makefile
 	touch ocaml/runtime/libcamlrun.a ocaml/runtime/libcamlrund.a ocaml/libcamlruni.a
 # yacc/Makefile: import ocamlyacc from the system
 	sed -i -e 's,^yacc/ocamlyacc$$(EXE):.*,dummy:,g' ocaml/Makefile
-	echo -e "yacc/ocamlyacc:\n\tcp $(shell which ocamlyacc) .\n" >> ocaml/Makefile
+	echo -e "yacc/ocamlyacc:\n\tcp $(shell which ocamlyacc) yacc/\n" >> ocaml/Makefile
 # tools/Makefile: stub out objinfo_helper
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
@@ -91,7 +91,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-ocamltest\
 		-disable-ocamldoc\
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
-	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo "ARCH=$(MAKECONF_BUILD_ARCH)" >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config

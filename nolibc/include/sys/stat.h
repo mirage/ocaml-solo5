@@ -15,5 +15,6 @@ struct stat {
 #define S_IWUSR 0
 int stat(const char *, struct stat *);
 int mkdir(const char *, mode_t);
+int fstat(int, struct stat *);
 
 #endif

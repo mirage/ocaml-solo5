@@ -25,4 +25,6 @@ int strncmp(const char*, const char*, size_t);
 
 int strerror_r(int errnum, char *buf, size_t buflen);
 
+char *strdup(const char *);
+
 #endif

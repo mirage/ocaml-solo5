@@ -117,6 +117,5 @@ int memory_order_relaxed;
 
 STUB_ABORT(atomic_store_explicit);
 STUB_ABORT(atomic_exchange);
-STUB_ABORT(atomic_load_explicit);
 
 STUB_ABORT(sysconf);
