@@ -50,7 +50,7 @@ test-include/%.c: include/%.h | test-include/sys
 test-include/:
 	mkdir $@
 
-test-include/sys/: test-include
+test-include/sys/: test-include/
 	mkdir $@
 
-test-headers: $(TEST_H_OBJS)
+test-headers: test-include/sys/ $(TEST_H_OBJS)
