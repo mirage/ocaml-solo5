@@ -91,7 +91,8 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-ocamltest\
 		-disable-ocamldoc\
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
-	echo "ARCH=$(MAKECONF_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo 'NATIVE_COMPILER=true' >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
