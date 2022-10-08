@@ -52,7 +52,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # configure: Allow precise input of flags and libs
 	sed -i -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure
 	sed -i -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure
-	sed -i -e 's/nativecclibs="$$cclibs $$DLLIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure
+	sed -i -e 's/nativecclibs="$$cclibs $$DLLIBS $$PTHREAD_LIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure
 # runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
 	sed -i -e 's,^runtime/ocamlrun$$(EXE):.*,dummy:,g' ocaml/Makefile
 	sed -i -e 's,^runtime/ocamlruni$$(EXE):.*,dummyi:,g' ocaml/Makefile
