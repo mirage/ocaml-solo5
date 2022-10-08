@@ -99,7 +99,6 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
 	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
 	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
-	touch ocaml/runtime/none.c
 
 # NOTE: ocaml/tools/make-version-header.sh is integrated into OCaml's ./configure script starting from OCaml 4.14
 ifneq (,$(wildcard ocaml/tools/make-version-header.sh))
