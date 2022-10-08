@@ -119,3 +119,10 @@ STUB_ABORT(atomic_store_explicit);
 STUB_ABORT(atomic_exchange);
 
 STUB_ABORT(sysconf);
+
+/* above that line, for OCaml 5, those are only required (i guess) for the configure step */
+STUB_IGNORE(int, pthread_mutex_lock, 0);
+STUB_IGNORE(int, pthread_mutex_trylock, 0);
+STUB_IGNORE(int, pthread_mutex_unlock, 0);
+STUB_IGNORE(int, pthread_mutex_destroy, 0);
+STUB_IGNORE(int, pthread_mutex_init, 0);
