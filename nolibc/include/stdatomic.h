@@ -26,9 +26,9 @@ typedef unsigned long long atomic_uint_fast64_t;
   })
 
 #define atomic_exchange(OBJ, DESIRED) \
-  ({ __auto_type tmp = *OBJ;
-     *OBJ = DESIRED;
-     tmp;
+  ({ __auto_type tmp = *OBJ; \
+     *OBJ = DESIRED; \
+     tmp; \
   })
 
 #define atomic_store(OBJ, DESIRED) do { *OBJ = DESIRED; } while(0)
