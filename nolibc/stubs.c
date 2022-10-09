@@ -75,6 +75,7 @@ STUB_ABORT(read);
 STUB_IGNORE(int, readlink, -1);
 STUB_ABORT(unlink);
 STUB_ABORT(rmdir);
+STUB_ABORT(ftruncate);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
@@ -135,9 +136,13 @@ STUB_IGNORE(int, pthread_sigmask, 0);
 
 STUB_IGNORE(int, pthread_equal, 1);
 
+STUB_IGNORE(int, pthread_condattr_init, 0); /* TODO: Is there a memory leak in OCaml? Shouldn't there be a call to pthread_condattr_destroy? */
+
 /* TODO: No idea how to implement this properly */
 STUB_ABORT(pthread_cond_init);
 STUB_ABORT(pthread_cond_destroy);
 STUB_ABORT(pthread_cond_wait);
 STUB_ABORT(pthread_cond_signal);
 STUB_ABORT(pthread_cond_broadcast);
+STUB_ABORT(pthread_self);
+STUB_ABORT(pthread_detach);
