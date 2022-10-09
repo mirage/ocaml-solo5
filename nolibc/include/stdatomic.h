@@ -15,7 +15,8 @@ extern int memory_order_relaxed;
 extern int memory_order_seq_cst;
 
 int atomic_fetch_add ();
-int atomic_thread_fence ();
+
+#define atomic_thread_fence(MO) do {} while (0)
 
 typedef unsigned long long atomic_uint_fast64_t;
 
