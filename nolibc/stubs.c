@@ -146,3 +146,6 @@ STUB_ABORT(pthread_cond_signal);
 STUB_ABORT(pthread_cond_broadcast);
 STUB_ABORT(pthread_self);
 STUB_ABORT(pthread_detach);
+STUB_ABORT(sigfillset);
+STUB_ABORT(usleep);
+STUB_ABORT(strerror_r);
