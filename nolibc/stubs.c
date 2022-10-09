@@ -134,3 +134,10 @@ STUB_IGNORE(int, pthread_mutexattr_settype, 0);
 STUB_IGNORE(int, pthread_sigmask, 0);
 
 STUB_IGNORE(int, pthread_equal, 1);
+
+/* TODO: No idea how to implement this properly */
+STUB_ABORT(pthread_cond_init);
+STUB_ABORT(pthread_cond_destroy);
+STUB_ABORT(pthread_cond_wait);
+STUB_ABORT(pthread_cond_signal);
+STUB_ABORT(pthread_cond_broadcast);
