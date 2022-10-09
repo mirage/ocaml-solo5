@@ -16,7 +16,7 @@ extern int memory_order_seq_cst;
 
 typedef unsigned long long atomic_uint_fast64_t;
 
-#define atomic_compare atomic_compare_exchange_strong(OBJ, EXPECTED, DESIRED) \
+#define atomic_compare_exchange_strong(OBJ, EXPECTED, DESIRED) \
   ({ int ret = 0; \
      if (*OBJ == *EXPECTED) { \
        *OBJ = DESIRED; \
