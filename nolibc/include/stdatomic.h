@@ -34,6 +34,10 @@ typedef unsigned long long atomic_uint_fast64_t;
 #define atomic_store(OBJ, DESIRED) do { *OBJ = DESIRED; } while(0)
 #define atomic_store_explicit(OBJ, DESIRED, ORDER) atomic_store(OBJ, DESIRED)
 
-void atomic_fetch_or();
+#define atomic_fetch_or(OBJ, ARG) \
+  ({ __auto_type tmp = *OBJ; \
+     *OBJ = *OBJ | ARG; \
+     tmp; \
+  })
 
 #endif
