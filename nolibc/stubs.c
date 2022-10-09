@@ -130,3 +130,7 @@ STUB_IGNORE(int, pthread_mutex_init, 0);
 STUB_IGNORE(int, pthread_mutexattr_init, 0);
 STUB_IGNORE(int, pthread_mutexattr_destroy, 0);
 STUB_IGNORE(int, pthread_mutexattr_settype, 0);
+
+STUB_IGNORE(int, pthread_sigmask, 0);
+
+STUB_IGNORE(int, pthread_equal, 1);

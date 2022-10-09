@@ -14,7 +14,7 @@ extern int memory_order_acquire;
 extern int memory_order_relaxed;
 extern int memory_order_seq_cst;
 
-int atomic_fetch_add ();
+#define atomic_fetch_add(X, Y) ({ __auto_type tmp = *X; *X + Y; tmp; })
 
 #define atomic_thread_fence(MO) do {} while (0)
 
