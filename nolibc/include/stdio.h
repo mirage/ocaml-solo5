@@ -40,6 +40,5 @@ FILE *fopen(const char *, const char *);
 int fclose(FILE *);
 char *strcpy(char *, const char *); /* TODO ??? */
 
-int sprintf(char *, const char *, ...);
 
 #endif
