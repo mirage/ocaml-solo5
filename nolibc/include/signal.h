@@ -18,6 +18,6 @@ int raise(int);
 
 typedef int sigset_t;
 
-int sigfillset ();
+int sigfillset(sigset_t *);
 
 #endif
