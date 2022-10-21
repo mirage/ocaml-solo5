@@ -47,10 +47,10 @@ test-include/%.c: include/%.h | test-include/sys
 
 .PRECIOUS: test-include/%.c
 
-test-include/:
-	mkdir $@
+test-include:
+	mkdir -p $@
 
-test-include/sys/: test-include/
-	mkdir $@
+test-include/sys: test-include
+	mkdir -p $@
 
 test-headers: test-include/sys/ $(TEST_H_OBJS)
