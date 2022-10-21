@@ -42,7 +42,7 @@ TEST_H_OBJS=$(patsubst %.h,test-%.o,$(HEADERS))
 
 # For each HEADER we want to test, generate a C source file including only
 # that HEADER. As above, HEADER may include subdirectories.
-test-include/%.c: include/%.h | test-include/sys
+test-include/%.c: include/%.h | test-include/sys/
 	echo "#include \"../$<\"" >$@
 
 .PRECIOUS: test-include/%.c
