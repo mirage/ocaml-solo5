@@ -27,7 +27,7 @@ openlibm/libopenlibm.a:
 
 # OCAML
 ocaml/Makefile:
-	cp -r `opam var prefix`/lib/ocaml-src ./ocaml
+	cp -r "${OPAM_SWITCH_PREFIX}/lib/ocaml-src" ./ocaml
 
 # OCaml >= 4.08.0 uses an autotools-based build system. In this case we
 # convince it to think it's using the Solo5 compiler as a cross compiler, and
