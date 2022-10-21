@@ -2,6 +2,7 @@
 #define _PTHREAD_H
 
 #include <stddef.h>
+#include <signal.h>
 
 typedef unsigned long int pthread_t;
 typedef int cpu_set_t;
