@@ -136,7 +136,7 @@ STUB_IGNORE(int, pthread_equal, 1);
 STUB_IGNORE(int, pthread_condattr_init, 0); /* TODO: Is there a memory leak in OCaml? Shouldn't there be a call to pthread_condattr_destroy? */
 
 /* TODO: No idea how to implement this properly */
-STUB_ABORT(pthread_cond_init);
+STUB_IGNORE(int, pthread_cond_init, 0);
 STUB_ABORT(pthread_cond_destroy);
 STUB_ABORT(pthread_cond_wait);
 STUB_ABORT(pthread_cond_signal);
