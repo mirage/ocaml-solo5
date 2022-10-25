@@ -109,7 +109,7 @@ STUB_IGNORE(int, pthread_attr_init, 0);
 STUB_ABORT(pthread_cleanup_push);
 STUB_ABORT(pthread_cleanup_pop);
 
-STUB_ABORT(munmap);
+STUB_IGNORE(int, munmap, 0); /* TODO: Implement munmap correctly and avoid memory leaks */
 
 int memory_order_release;
 int memory_order_acquire;
