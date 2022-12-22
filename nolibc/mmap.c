@@ -4,10 +4,13 @@
 #include <sys/mman.h>
 
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
-  if (addr != NULL) {
-    printf("mmap: non-null addr is unsupported.\n");
-    abort();
-  }
+
+  /* man page for mmap says:
+   * If addr is not NULL, then the kernel takes it as a hint about where to place
+   * the mapping; [...] If another apping already exists there, the kernel picks
+   * a new address that may or *may not* depend on the hint.
+   */
+  (void)addr;
   if (fildes != -1) {
     printf("mmap: file descriptor is unsupported.\n");
     abort();

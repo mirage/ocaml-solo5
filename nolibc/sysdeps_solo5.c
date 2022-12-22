@@ -96,6 +96,10 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
 
     sbrk_start = sbrk_cur = heap_start;
     sbrk_end = heap_start + heap_size;
+
+    size_t tdata = 4096; // FIXME: hard coded
+    uintptr_t tls = (uintptr_t)malloc(tdata);
+    solo5_set_tls_base(tls);
 }
 
 /*
