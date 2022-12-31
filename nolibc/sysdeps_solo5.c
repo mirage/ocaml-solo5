@@ -77,6 +77,7 @@ static uintptr_t sbrk_end;
 static uintptr_t sbrk_cur;
 static uintptr_t sbrk_guard_size;
 
+static uint8_t tls[4096];
 /*
  * To be called by Mirage/Solo5 before calling caml_startup().
  *
@@ -97,9 +98,7 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
     sbrk_start = sbrk_cur = heap_start;
     sbrk_end = heap_start + heap_size;
 
-    size_t tdata = 4096; // FIXME: hard coded
-    uintptr_t tls = (uintptr_t)malloc(tdata);
-    solo5_set_tls_base(tls);
+    solo5_set_tls_base((uintptr_t)tls);
 }
 
 /*
