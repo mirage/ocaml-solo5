@@ -65,6 +65,9 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # yacc/Makefile: import ocamlyacc from the system
 	sed -i -e 's,^$$(ocamlyacc_PROGRAM)$$(EXE):.*,dummy_yacc:,g' ocaml/Makefile
 	echo -e "\$$(ocamlyacc_PROGRAM)\$$(EXE):\n\tcp $(shell which ocamlyacc) yacc/\n" >> ocaml/Makefile
+# patch ocaml 5.0.0 runtime for single domain/thread solo5
+	sed -e 's/#define Max_domains 128/#define Max_domains 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/tmp_domain.h.sed && \
+	mv ocaml/runtime/caml/tmp_domain.h.sed ocaml/runtime/caml/domain.h
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
 # would use the host system libm instead of the freestanding openlibm, see
 # https://github.com/mirage/ocaml-solo5/issues/101
