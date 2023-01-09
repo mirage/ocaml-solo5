@@ -69,6 +69,8 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
 	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
 		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
+	sed -e 's,^coldstart: $(COLDSTART_DEPS)$$,coldstart: runtime/primitives $$(COLDSTART_DEPS),' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
 	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/runtime/Makefile
 	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/runtime/Makefile
 	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/runtime/Makefile
