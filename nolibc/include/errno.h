@@ -10,5 +10,9 @@ extern int errno;
 #define EINVAL 6
 #define ENOMEM 7
 #define EMFILE 8
+#define EBUSY 9
+/* TODO(dinosaure): we probably should follow the Cosmopolitan
+ * project about these constants and use values where we have
+ * an {unix,bsd} consensus. */
 
 #endif
