@@ -79,6 +79,9 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	sed -e 's,^$$(ocamlyacc_PROGRAM)$$(EXE):.*,dummy_yacc:,g' ocaml/Makefile > ocaml/Makefile.sed && \
 		mv ocaml/Makefile.sed ocaml/Makefile
 	echo -e "\$$(ocamlyacc_PROGRAM)\$$(EXE):\n\tcp $(shell which ocamlyacc) yacc/\n" >> ocaml/Makefile
+# patch ocaml 5.0.0 runtime for single domain/thread solo5
+	sed -e 's/#define Max_domains 128/#define Max_domains 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/domain.h.sed && \
+		mv ocaml/runtime/caml/domain.h.sed ocaml/runtime/caml/domain.h
 # tools/Makefile: stub out objinfo_helper
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
