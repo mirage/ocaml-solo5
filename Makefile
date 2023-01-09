@@ -11,7 +11,7 @@ LOCAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/nolibc/include -include _solo5/override
 # CFLAGS used by the OCaml compiler to build C stubs
 GLOBAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(MAKECONF_PREFIX)/solo5-sysroot/include/nolibc/ -include _solo5/overrides.h
 # LIBS used by the OCaml compiler to link executables
-GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS)
+GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -Wl,--start-group -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
 
 # NOLIBC
 NOLIBC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
@@ -45,7 +45,7 @@ ocaml/Makefile:
 # 	configure link test
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
-OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS)
+OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -Wl,--start-group -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
 ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # configure: Do not build dynlink
 	sed -i -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure
