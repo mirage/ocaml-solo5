@@ -100,3 +100,45 @@ STUB_ABORT(strerror);
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
 STUB_ABORT(mkdir);
+
+/* pthread.h */
+STUB_IGNORE(int, pthread_join, 0);
+STUB_IGNORE(int, pthread_create, 0);
+STUB_IGNORE(int, pthread_attr_init, 0);
+STUB_ABORT(pthread_cleanup_push);
+STUB_ABORT(pthread_cleanup_pop);
+
+STUB_IGNORE(int, munmap, 0); /* TODO: Implement munmap correctly and avoid memory leaks */
+
+int memory_order_release;
+int memory_order_acquire;
+int memory_order_relaxed;
+
+STUB_ABORT(atomic_store_explicit);
+STUB_ABORT(atomic_exchange);
+
+/* above that line, for OCaml 5, those are only required (i guess) for the configure step */
+STUB_IGNORE(int, pthread_mutex_lock, 0);
+STUB_IGNORE(int, pthread_mutex_trylock, 0);
+STUB_IGNORE(int, pthread_mutex_unlock, 0);
+STUB_IGNORE(int, pthread_mutex_destroy, 0);
+STUB_IGNORE(int, pthread_mutex_init, 0);
+
+STUB_IGNORE(int, pthread_mutexattr_init, 0);
+STUB_IGNORE(int, pthread_mutexattr_destroy, 0);
+STUB_IGNORE(int, pthread_mutexattr_settype, 0);
+
+STUB_IGNORE(int, pthread_sigmask, 0);
+
+STUB_IGNORE(int, pthread_equal, 1);
+
+STUB_IGNORE(int, pthread_condattr_init, 0);
+/* TODO: Is there a memory leak in OCaml? Shouldn't there be a call to pthread_condattr_destroy? */
+
+STUB_IGNORE(int, pthread_cond_init, 0);
+STUB_ABORT(pthread_cond_destroy);
+STUB_ABORT(pthread_cond_wait);
+STUB_ABORT(pthread_cond_signal);
+STUB_IGNORE(int, pthread_cond_broadcast, 0);
+STUB_ABORT(pthread_self);
+STUB_ABORT(pthread_detach);
