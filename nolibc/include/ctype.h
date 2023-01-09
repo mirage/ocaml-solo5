@@ -6,5 +6,7 @@ int isdigit(int);
 int isprint(int);
 int isspace(int);
 int isupper(int);
+int isalnum(int);
+int tolower(int);
 
 #endif
