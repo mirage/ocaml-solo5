@@ -106,6 +106,7 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-systhreads\
 		-disable-unix-lib\
 		-disable-instrumented-runtime\
+		-disable-debug-runtime\
 		-disable-ocamltest\
 		-disable-ocamldoc\
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
