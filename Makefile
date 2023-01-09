@@ -48,22 +48,32 @@ OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostd
 OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -Wl,--start-group -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
 ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # configure: Do not build dynlink
-	sed -i -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure
+	sed -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
 # configure: Allow precise input of flags and libs
-	sed -i -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure
-	sed -i -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure
-	sed -i -e 's/nativecclibs="$$cclibs $$DLLIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure
+	sed -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	sed -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	sed -e 's/nativecclibs="$$cclibs $$DLLIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	chmod +x ocaml/configure
 # runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
-	sed -i -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile
+	sed -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
+		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
+	sed -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
+		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
+	sed -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
+		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
+	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
+		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
 	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/runtime/Makefile
 	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/runtime/Makefile
 	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/runtime/Makefile
 	touch ocaml/runtime/libcamlrun.a ocaml/runtime/libcamlrund.a ocaml/runtime/libcamlruni.a
 # yacc/Makefile: import ocamlyacc from the system
-	sed -i -e 's/^ocamlyacc$$(EXE):.*/dummy:/g' ocaml/yacc/Makefile
+	sed -e 's/^ocamlyacc$$(EXE):.*/dummy:/g' ocaml/yacc/Makefile > ocaml/yacc/Makefile.sed && \
+		mv ocaml/yacc/Makefile.sed ocaml/yacc/Makefile
 	echo -e "ocamlyacc:\n\tcp $(shell which ocamlyacc) .\n" >> ocaml/yacc/Makefile
 # tools/Makefile: stub out objinfo_helper
 	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
