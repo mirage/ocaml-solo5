@@ -31,4 +31,9 @@ int system(const char *);
 double strtod(const char *, char **);
 long strtol(const char *, char **, int);
 
+void qsort(void *base, size_t nmemb, size_t size,
+           int (*compare)(const void *, const void *));
+
+char *mktemp(char *);
+
 #endif
