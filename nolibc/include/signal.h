@@ -21,4 +21,7 @@ void (*signal(int sig, void (*func)(int)))(int);
 #define SIGFPE 1
 int raise(int);
 
+typedef int sigset_t;
+int sigfillset(sigset_t *);
+
 #endif
