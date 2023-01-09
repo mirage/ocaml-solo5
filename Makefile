@@ -77,7 +77,6 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	echo -e "runtime/ocamlrun\$$(EXE):\n\tcp $(shell which ocamlrun) runtime/\n" >> ocaml/Makefile
 	echo -e "runtime/ocamlrund\$$(EXE):\n\tcp $(shell which ocamlrund) runtime/\n" >> ocaml/Makefile
 	echo -e "runtime/ocamlruni\$$(EXE):\n\tcp $(shell which ocamlruni) runtime/\n" >> ocaml/Makefile
-	touch ocaml/runtime/libcamlrun.a ocaml/runtime/libcamlrund.a ocaml/runtime/libcamlruni.a
 # yacc/Makefile: import ocamlyacc from the system
 	sed -e 's/^ocamlyacc$$(EXE):.*/dummy:/g' ocaml/yacc/Makefile > ocaml/yacc/Makefile.sed && \
 		mv ocaml/yacc/Makefile.sed ocaml/yacc/Makefile
