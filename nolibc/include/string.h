@@ -16,6 +16,7 @@ char *strerror(int);
  * needed to build the freestanding version of GMP used by Mirage.
  */
 char *strncpy(char *, const char *, size_t);
+char *strcpy(char *, const char *);
 char *strchr(const char *, int);
 char *strstr(const char *, const char *);
 /*
@@ -26,5 +27,6 @@ int strncmp(const char*, const char*, size_t);
 /* TODO(dinosaure): we must track where they are used to know if we need
  * to implement them or not. */
 int strerror_r(int errnum, char *buf, size_t buflen);
+char *strdup(const char *);
 
 #endif
