@@ -5,7 +5,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        ocaml-version: [4.13.1]
+        ocaml-version: [5.0.0]
         mode:
           - name: hvt
             exec: false
@@ -17,17 +17,6 @@ jobs:
             exec: false
           - name: xen
             exec: false
-        include:
-          - operating-system: ubuntu-latest
-            ocaml-version: 4.13.0
-            mode:
-              name: spt
-              exec: true
-          - operating-system: ubuntu-latest
-            ocaml-version: 4.12.1
-            mode:
-              name: spt
-              exec: true
     runs-on: ${{ matrix.operating-system }}
     steps:
     - uses: actions/checkout@v2
