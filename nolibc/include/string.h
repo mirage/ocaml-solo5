@@ -23,4 +23,8 @@ char *strstr(const char *, const char *);
  */
 int strncmp(const char*, const char*, size_t);
 
+/* TODO(dinosaure): we must track where they are used to know if we need
+ * to implement them or not. */
+int strerror_r(int errnum, char *buf, size_t buflen);
+
 #endif
