@@ -60,20 +60,18 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 	sed -e 's/^arch=none$$/arch=$(MAKECONF_OCAML_BUILD_ARCH)/' ocaml/configure > ocaml/configure.sed && \
 		mv ocaml/configure.sed ocaml/configure
 	chmod +x ocaml/configure
-# runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
-	sed -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
-		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
-	sed -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
-		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
-	sed -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
-		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
-	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile > ocaml/runtime/Makefile.sed && \
-		mv ocaml/runtime/Makefile.sed ocaml/runtime/Makefile
+# Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
+	sed -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	sed -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
 	sed -e 's,^coldstart: $(COLDSTART_DEPS)$$,coldstart: runtime/primitives $$(COLDSTART_DEPS),' ocaml/Makefile > ocaml/Makefile.sed && \
 		mv ocaml/Makefile.sed ocaml/Makefile
-	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/runtime/Makefile
-	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/runtime/Makefile
-	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/runtime/Makefile
+	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/Makefile
+	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/Makefile
+	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/Makefile
 	echo -e "runtime/ocamlrun\$$(EXE):\n\tcp $(shell which ocamlrun) runtime/\n" >> ocaml/Makefile
 	echo -e "runtime/ocamlrund\$$(EXE):\n\tcp $(shell which ocamlrund) runtime/\n" >> ocaml/Makefile
 	echo -e "runtime/ocamlruni\$$(EXE):\n\tcp $(shell which ocamlruni) runtime/\n" >> ocaml/Makefile
