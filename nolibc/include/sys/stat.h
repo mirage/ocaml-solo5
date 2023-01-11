@@ -11,6 +11,8 @@ struct stat {
 #define S_IFMT 0
 #define S_IFREG 0
 #define S_ISREG(x) (0)
+#define S_IRUSR 0
+#define S_IWUSR 0
 int stat(const char *, struct stat *);
 int mkdir(const char *, mode_t);
 
