@@ -55,8 +55,11 @@ STUB_WARN_ONCE(int, getc, EOF);
 STUB_WARN_ONCE(int, ungetc, EOF);
 STUB_WARN_ONCE(int, fwrite, 0);
 STUB_WARN_ONCE(int, fputc, EOF);
+STUB_WARN_ONCE(int, fputs, EOF);
 STUB_WARN_ONCE(int, putc, EOF);
 STUB_WARN_ONCE(int, ferror, 1);
+STUB_WARN_ONCE(int, fopen, 1);
+STUB_WARN_ONCE(int, fclose, 1);
 
 /* stdlib.h */
 STUB_WARN_ONCE(char *, getenv, NULL);
