@@ -33,3 +33,14 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
    * caller on error and do not check the returned value here. */
   return ptr;
 }
+
+int munmap(void *addr, size_t length)
+{
+  /* munmap man page : The address addr must be a multiple of the page size (but length need not be). */
+  if (addr & OCAML_SOLO5_PAGESIZE != 0) {
+    return EINVAL;
+  }
+
+  free(addr);
+  return 0;
+}
