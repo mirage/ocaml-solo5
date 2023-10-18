@@ -2,17 +2,14 @@
 #define _ERRNO_H
 
 extern int errno;
-#define EBADF 1
-#define ERANGE 2
-#define ENOSYS 3
-#define EOVERFLOW 4
-#define ENOENT 5
-#define EINVAL 6
-#define ENOMEM 7
-#define EMFILE 8
-#define EBUSY 9
-/* TODO(dinosaure): we probably should follow the Cosmopolitan
- * project about these constants and use values where we have
- * an {unix,bsd} consensus. */
+#define EBADF     9     /* Bad file number */
+#define ENOENT    2     /* No such file or directory */
+#define ENOMEM    12    /* Out of memory */
+#define EBUSY     16    /* Device or resource busy */
+#define EINVAL    22    /* Invalid argument */
+#define EMFILE    24    /* Too many open files */
+#define ERANGE    34    /* Math result not representable */
+#define ENOSYS    38    /* Invalid system call number */
+#define EOVERFLOW 75    /* Value too large for defined data type */
 
 #endif
