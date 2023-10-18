@@ -22,8 +22,8 @@ depends: [
   "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
   "ocaml" {>= "5.0" & < "5.1"}
-  "solo5" {>= "0.7.0"}
-  "solo5-cross-aarch64" {>= "0.7.0" }
+  "solo5" {>= "0.8.0"}
+  "solo5-cross-aarch64" {>= "0.8.0" }
 ]
 conflicts: [
   "ocaml-solo5"
