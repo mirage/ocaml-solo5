@@ -22,7 +22,7 @@ depends: [
   "conf-which" {build}
   "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
-  "ocaml" {>= "5.0" & < "5.1"}
+  "ocaml" {>= "5.0" & < "5.2"}
   "solo5" {>= "0.8.0"}
 ]
 conflicts: [
