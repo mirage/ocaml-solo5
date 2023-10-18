@@ -7,7 +7,7 @@ int puts(const char *s)
 {
     size_t len = strlen(s);
     solo5_console_write(s, len);
-    return (len);
+    return (int)(len); // We should never have a string length above MAX_INT, do we?
 }
 
 int putchar(int chr)
