@@ -112,8 +112,6 @@ STUB_IGNORE(int, pthread_attr_init, 0);
 STUB_ABORT(pthread_cleanup_push);
 STUB_ABORT(pthread_cleanup_pop);
 
-STUB_IGNORE(int, munmap, 0); /* TODO: Implement munmap correctly and avoid memory leaks */
-
 int memory_order_release;
 int memory_order_acquire;
 int memory_order_relaxed;
@@ -137,7 +135,9 @@ STUB_IGNORE(int, pthread_sigmask, 0);
 STUB_IGNORE(int, pthread_equal, 1);
 
 STUB_IGNORE(int, pthread_condattr_init, 0);
-/* TODO: Is there a memory leak in OCaml? Shouldn't there be a call to pthread_condattr_destroy? */
+/* pthread_condattr_destroy: not used by Ocaml 5 (pthread_condattr_init is only used in
+   ocaml/runtime/platform.c with a function local variable as argument)
+ */
 
 STUB_IGNORE(int, pthread_cond_init, 0);
 STUB_ABORT(pthread_cond_destroy);
