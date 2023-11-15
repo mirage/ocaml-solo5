@@ -5,7 +5,7 @@
   memory allocated in the heap.
   The results of this fast estimation are returned by the
   dlmalloc_memory_usage function exported as malloc_memory_usage.
-  See lines 978, 2619 and in dlmalloc(), dlfree() and dispose_chunk()
+  See lines 993, 2629 and in dlmalloc(), dlfree() and dlrealloc*()
 */
 
 /*
@@ -4384,7 +4384,6 @@ static int sys_trim(mstate m, size_t pad) {
    of free mainly in that the chunk need not be marked as inuse.
 */
 static void dispose_chunk(mstate m, mchunkptr p, size_t psize) {
-  gm->internal_memory_usage -= psize;
   mchunkptr next = chunk_plus_offset(p, psize);
   if (!pinuse(p)) {
     mchunkptr prev;
@@ -4700,7 +4699,7 @@ void* dlmalloc(size_t bytes) {
        prefious sys_alloc() call mem will be NULL and we cannot get
        chunk information there.
     */
-    if (mem!=NULL) gm->internal_memory_usage += chunksize(mem2chunk(mem));
+    if (mem != NULL) gm->internal_memory_usage += chunksize(mem2chunk(mem));
 
     POSTACTION(gm);
     return mem;
@@ -4720,7 +4719,9 @@ void dlfree(void* mem) {
 
   if (mem != 0) {
     mchunkptr p  = mem2chunk(mem);
-    gm->internal_memory_usage -= chunksize(p);
+    if (is_inuse(p)) {
+      gm->internal_memory_usage -= chunksize(p);
+    }
 #if FOOTERS
     mstate fm = get_mstate_for(p);
     if (!ok_magic(fm)) {
@@ -4917,6 +4918,7 @@ static mchunkptr try_realloc_chunk(mstate m, mchunkptr p, size_t nb,
   else {
     USAGE_ERROR_ACTION(m, chunk2mem(p));
   }
+
   return newp;
 }
 
@@ -5231,6 +5233,7 @@ void* dlrealloc(void* oldmem, size_t bytes) {
   else {
     size_t nb = request2size(bytes);
     mchunkptr oldp = mem2chunk(oldmem);
+    size_t oldp_size = chunksize(oldp);
 #if ! FOOTERS
     mstate m = gm;
 #else /* FOOTERS */
@@ -5246,6 +5249,8 @@ void* dlrealloc(void* oldmem, size_t bytes) {
       if (newp != 0) {
         check_inuse_chunk(m, newp);
         mem = chunk2mem(newp);
+        /* In the case of an in_place reallocation, neither malloc or free are called, so manually update internal_memory_usage */
+        gm->internal_memory_usage += chunksize(newp)-oldp_size;
       }
       else {
         mem = internal_malloc(m, bytes);
@@ -5257,6 +5262,7 @@ void* dlrealloc(void* oldmem, size_t bytes) {
       }
     }
   }
+
   return mem;
 }
 
@@ -5269,6 +5275,7 @@ void* dlrealloc_in_place(void* oldmem, size_t bytes) {
     else {
       size_t nb = request2size(bytes);
       mchunkptr oldp = mem2chunk(oldmem);
+      size_t oldp_size = chunksize(oldp);
 #if ! FOOTERS
       mstate m = gm;
 #else /* FOOTERS */
@@ -5282,6 +5289,8 @@ void* dlrealloc_in_place(void* oldmem, size_t bytes) {
         mchunkptr newp = try_realloc_chunk(m, oldp, nb, 0);
         POSTACTION(m);
         if (newp == oldp) {
+          /* In the case of an in_place reallocation, neither malloc or free are called, so manually update internal_memory_usage */
+          gm->internal_memory_usage += chunksize(newp)-oldp_size;
           check_inuse_chunk(m, newp);
           mem = oldmem;
         }
