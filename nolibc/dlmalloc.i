@@ -818,12 +818,6 @@ extern "C" {
  #define FORCEINLINE
 #endif
 
-#ifdef DEBUG
-#define DEBUG_PRINTF(s, ...) printf(s, __VA_ARGS__)
-#else
-#define DEBUG_PRINTF(s, ...)
-#endif
-
 #if !ONLY_MSPACES
 
 /* ------------------- Declarations of public routines ------------------- */
@@ -4705,10 +4699,7 @@ void* dlmalloc(size_t bytes) {
        prefious sys_alloc() call mem will be NULL and we cannot get
        chunk information there.
     */
-    if (mem != NULL) {
-      DEBUG_PRINTF("dlmalloc %p %lu (%lu - %lu)\n", mem, gm->internal_memory_usage, bytes, chunksize(mem2chunk(mem)));
-      gm->internal_memory_usage += chunksize(mem2chunk(mem));
-    }
+    if (mem != NULL) gm->internal_memory_usage += chunksize(mem2chunk(mem));
 
     POSTACTION(gm);
     return mem;
@@ -4729,7 +4720,6 @@ void dlfree(void* mem) {
   if (mem != 0) {
     mchunkptr p  = mem2chunk(mem);
     if (is_inuse(p)) {
-      DEBUG_PRINTF("dlfree %p %lu (%lu)\n", mem, gm->internal_memory_usage, chunksize(p));
       gm->internal_memory_usage -= chunksize(p);
     }
 #if FOOTERS
@@ -5229,7 +5219,6 @@ static void internal_inspect_all(mstate m,
 
 void* dlrealloc(void* oldmem, size_t bytes) {
   void* mem = 0;
-  DEBUG_PRINTF("dlrealloc %p %lu (%lu %lu)\n", oldmem, gm->internal_memory_usage, oldmem!=NULL?chunksize(mem2chunk(oldmem)):0, bytes);
   if (oldmem == 0) {
     mem = dlmalloc(bytes);
   }
@@ -5261,7 +5250,6 @@ void* dlrealloc(void* oldmem, size_t bytes) {
         check_inuse_chunk(m, newp);
         mem = chunk2mem(newp);
         /* In the case of an in_place reallocation, neither malloc or free are called, so manually update internal_memory_usage */
-        DEBUG_PRINTF("dlrealloc %lu (%lu %lu)\n", gm->internal_memory_usage, chunksize(newp), oldp_size);
         gm->internal_memory_usage += chunksize(newp)-oldp_size;
       }
       else {
@@ -5274,14 +5262,12 @@ void* dlrealloc(void* oldmem, size_t bytes) {
       }
     }
   }
-  DEBUG_PRINTF("dlrealloc %p -> %p\n", oldmem, mem);
 
   return mem;
 }
 
 void* dlrealloc_in_place(void* oldmem, size_t bytes) {
   void* mem = 0;
-  DEBUG_PRINTF("dlrealloc_in_place %p %lu (%lu %lu)\n", oldmem, gm->internal_memory_usage, oldmem!=NULL?chunksize(mem2chunk(oldmem)):0, bytes);
   if (oldmem != 0) {
     if (bytes >= MAX_REQUEST) {
       MALLOC_FAILURE_ACTION;
@@ -5304,7 +5290,6 @@ void* dlrealloc_in_place(void* oldmem, size_t bytes) {
         POSTACTION(m);
         if (newp == oldp) {
           /* In the case of an in_place reallocation, neither malloc or free are called, so manually update internal_memory_usage */
-          DEBUG_PRINTF("dlrealloc_in_place %lu (%lu %lu)\n", gm->internal_memory_usage, chunksize(newp), oldp_size);
           gm->internal_memory_usage += chunksize(newp)-oldp_size;
           check_inuse_chunk(m, newp);
           mem = oldmem;
@@ -5316,7 +5301,6 @@ void* dlrealloc_in_place(void* oldmem, size_t bytes) {
 }
 
 void* dlmemalign(size_t alignment, size_t bytes) {
-  DEBUG_PRINTF("dlmemalign %lu (%lu %lu)\n", gm->internal_memory_usage, alignment, bytes);
   if (alignment <= MALLOC_ALIGNMENT) {
     return dlmalloc(bytes);
   }
@@ -5324,7 +5308,6 @@ void* dlmemalign(size_t alignment, size_t bytes) {
 }
 
 int dlposix_memalign(void** pp, size_t alignment, size_t bytes) {
-  DEBUG_PRINTF("dlposix_memalign %p %lu (%lu %lu)\n", *pp, gm->internal_memory_usage, alignment, bytes);
   void* mem = 0;
   if (alignment == MALLOC_ALIGNMENT)
     mem = dlmalloc(bytes);
