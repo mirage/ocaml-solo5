@@ -1,3 +1,8 @@
+## v0.8.2 (2023-11-15)
+
+* malloc: fix the memory allocation tracking to be precise (fixes #126 reported
+  by @hannesm, #127 @palainp)
+
 ## v0.8.1 (2022-06-14)
 
 * malloc: keep track of memory allocation and release (faster than mallinfo,
