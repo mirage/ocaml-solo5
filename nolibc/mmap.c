@@ -14,13 +14,11 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
    * there, the kernel picks a new address that may or *may not* depend on the hint.
    *
    * For our purpose (Solo5 & OCaml), OCaml might use a NULL addr and force us to
-   * use posix_memalign. If addr is not NULL we might use [malloc()] instead of.
-   * XXX(palainp): Does it worth to have a test on addr here?
+   * use posix_memalign. If addr is not NULL we can use [malloc()] instead of.
    *
    * The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
    * == -1] is handled so.
    */
-  (void)addr; // unused argument
   (void)prot; // unused argument
 
   if (fildes != -1) {
@@ -33,10 +31,21 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
   }
 
   void *ptr = NULL;
-  int ret = posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
-  if (ret == -1) {
-    /* Solo5 returns -1 and set errno on error, just return MAP_FAILED. */
-    return (void*)-1; // MAP_FAILED
+  /* XXX(palainp): Does it worth to have a test on addr here? */
+  if (addr == NULL) {
+    /* Solo5 may returns -1 and set errno on error, just return MAP_FAILED.
+       It doesn't modify ptr on error: ptr will still be NULL
+     */
+    posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
+  } else {
+    ptr = malloc(len);
+    if (ptr == NULL) {
+      errno = ENOMEM;
+    }
+  }
+
+  if (ptr == NULL) {
+    return MAP_FAILED;
   } else {
     return ptr;
   }

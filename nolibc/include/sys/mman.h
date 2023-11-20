@@ -16,7 +16,8 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off);
 #define MAP_ANONYMOUS 0x20
 #define MAP_ANON MAP_ANONYMOUS
 
-#define MAP_FAILED NULL
+// the MAP_FAILED comply with the mmap manual page
+#define MAP_FAILED (void*)-1
 
 #define OCAML_SOLO5_PAGESIZE (1 << 12)
 
