@@ -11,7 +11,7 @@ LOCAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/nolibc/include -include _solo5/override
 # CFLAGS used by the OCaml compiler to build C stubs
 GLOBAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(MAKECONF_PREFIX)/solo5-sysroot/include/nolibc/ -include _solo5/overrides.h
 # LIBS used by the OCaml compiler to link executables
-GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS)
+GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -Wl,--start-group -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
 
 # NOLIBC
 NOLIBC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
@@ -45,28 +45,43 @@ ocaml/Makefile:
 # 	configure link test
 # - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
 OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
-OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS)
+OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -Wl,--start-group -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
 ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 # configure: Do not build dynlink
-	sed -i -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure
+	sed -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
 # configure: Allow precise input of flags and libs
-	sed -i -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure
-	sed -i -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure
-	sed -i -e 's/nativecclibs="$$cclibs $$DLLIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure
-# runtime/Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
-	sed -i -e 's/^all: $$(BYTECODE_STATIC_LIBRARIES) $$(BYTECODE_SHARED_LIBRARIES)/all: primitives ld.conf/' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/runtime/Makefile
-	sed -i -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/runtime/Makefile
-	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/runtime/Makefile
-	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/runtime/Makefile
-	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/runtime/Makefile
-	touch ocaml/runtime/libcamlrun.a ocaml/runtime/libcamlrund.a ocaml/runtime/libcamlruni.a
+	sed -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	sed -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	sed -e 's/nativecclibs="$$cclibs $$DLLIBS $$PTHREAD_LIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	sed -e 's/^arch=none$$/arch=$(MAKECONF_OCAML_BUILD_ARCH)/' ocaml/configure > ocaml/configure.sed && \
+		mv ocaml/configure.sed ocaml/configure
+	chmod +x ocaml/configure
+# Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
+	sed -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	sed -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	sed -e 's,^coldstart: $(COLDSTART_DEPS)$$,coldstart: runtime/primitives $$(COLDSTART_DEPS),' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/Makefile
+	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/Makefile
+	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlrun\$$(EXE):\n\tcp $(shell which ocamlrun) runtime/\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlrund\$$(EXE):\n\tcp $(shell which ocamlrund) runtime/\n" >> ocaml/Makefile
+	echo -e "runtime/ocamlruni\$$(EXE):\n\tcp $(shell which ocamlruni) runtime/\n" >> ocaml/Makefile
 # yacc/Makefile: import ocamlyacc from the system
-	sed -i -e 's/^ocamlyacc$$(EXE):.*/dummy:/g' ocaml/yacc/Makefile
-	echo -e "ocamlyacc:\n\tcp $(shell which ocamlyacc) .\n" >> ocaml/yacc/Makefile
-# tools/Makefile: stub out objinfo_helper
-	echo -e "objinfo_helper:\n\ttouch objinfo_helper\n" >> ocaml/tools/Makefile
+	sed -e 's,^$$(ocamlyacc_PROGRAM)$$(EXE):.*,dummy_yacc:,g' ocaml/Makefile > ocaml/Makefile.sed && \
+		mv ocaml/Makefile.sed ocaml/Makefile
+	echo -e "\$$(ocamlyacc_PROGRAM)\$$(EXE):\n\tcp $(shell which ocamlyacc) yacc/\n" >> ocaml/Makefile
+# patch ocaml 5.0.0 runtime for single domain/thread solo5
+	sed -e 's/#define Max_domains 128/#define Max_domains 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/domain.h.sed && \
+		mv ocaml/runtime/caml/domain.h.sed ocaml/runtime/caml/domain.h
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
 # would use the host system libm instead of the freestanding openlibm, see
 # https://github.com/mirage/ocaml-solo5/issues/101
@@ -90,10 +105,11 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		-disable-systhreads\
 		-disable-unix-lib\
 		-disable-instrumented-runtime\
+		-disable-debug-runtime\
 		-disable-ocamltest\
 		-disable-ocamldoc\
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
-	echo "ARCH=$(MAKECONF_OCAML_BUILD_ARCH)" >> ocaml/Makefile.config
+	echo 'NATIVE_COMPILER=true' >> ocaml/Makefile.config
 	echo 'SAK_CC=cc' >> ocaml/Makefile.config
 	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
 	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config

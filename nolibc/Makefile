@@ -21,9 +21,11 @@ OBJS=assert.o \
      dtoa.o \
      memchr.o memcmp.o memcpy.o memmove.o memset.o \
      strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
-     strstr.o strncmp.o \
+     strstr.o strncmp.o puts.o \
      stubs.o \
-     vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
+     vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o \
+     sysconf.o \
+     mmap.o
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
 
@@ -42,15 +44,15 @@ TEST_H_OBJS=$(patsubst %.h,test-%.o,$(HEADERS))
 
 # For each HEADER we want to test, generate a C source file including only
 # that HEADER. As above, HEADER may include subdirectories.
-test-include/%.c: include/%.h | test-include/sys
+test-include/%.c: include/%.h | test-include/sys/
 	echo "#include \"../$<\"" >$@
 
 .PRECIOUS: test-include/%.c
 
-test-include:
-	mkdir $@
+test-include/:
+	mkdir -p $@
 
-test-include/sys: test-include
-	mkdir $@
+test-include/sys/: test-include/
+	mkdir -p $@
 
-test-headers: $(TEST_H_OBJS)
+test-headers: test-include/sys/ $(TEST_H_OBJS)

@@ -13,4 +13,5 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size); // defined in nolibc/
 int solo5_app_main(const struct solo5_start_info *si) {
     _nolibc_init(si->heap_start, si->heap_size);
     caml_startup(unused_argv);
+    return 0;
 }
