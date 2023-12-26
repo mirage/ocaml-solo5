@@ -37,8 +37,10 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
        It doesn't modify ptr on error: ptr will still be NULL
      */
     posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
+    //printf("DEBUG: mmap: posix_memalign for %lu @%p.\n", len, ptr);
   } else {
     ptr = malloc(len);
+    //printf("DEBUG: mmap: malloc for %lu @%p.\n", len, ptr);
     if (ptr == NULL) {
       errno = ENOMEM;
     }
@@ -63,6 +65,21 @@ int munmap(void *addr, size_t length)
     return -1;
   }
 
-  free(addr);
+  //printf("DEBUG: munmap: free for %lu @%p.\n", length, addr);
+
+  // FIXME! palainp: Calling free below leads to a PF in the free function
+  // An example run:
+  //   Ocaml calls mmap for a 2101248B domain stack (513 pages)
+  //   Immediatly it releases the last page with munmap, and sadly this page
+  //     hasn't been allocated with malloc => free will hangs the unikernel
+  // Other runs:
+  //   Ocaml calls mmap for 2101248B (136 pages)
+  //   Immediatly after it calls munmap on the first 7 pages and the last page
+  //     => calling free with make the whole area unaviable and calling free on
+  //     the last page will behave like the previous example
+  // In other words do  we need to add a complete page tracker here (and
+  //   configure dlmalloc for using mmap)?
+
+  // free(addr);
   return 0;
 }
