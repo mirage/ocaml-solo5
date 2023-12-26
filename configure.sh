@@ -31,6 +31,8 @@ EOM
 
 OCAML_CONFIGURE_OPTIONS=
 MAKECONF_PREFIX=/usr/local
+CC=cc
+
 while [ $# -gt 0 ]; do
     OPT="$1"
 
@@ -78,7 +80,22 @@ case "${BUILD_TRIPLET}" in
         OCAML_BUILD_ARCH="arm64"
         ;;
     *)
-        die "Unsupported architecture: ${BUILD_TRIPLET}"
+        die "Unsupported build architecture: ${BUILD_TRIPLET}"
+        ;;
+esac
+
+TRIPLET="$($CC -dumpmachine)"
+ARCH=
+
+case "${TRIPLET}" in
+    amd64-*|x86_64-*)
+        ARCH="x86_64"
+        ;;
+    aarch64-*)
+        ARCH="aarch64"
+        ;;
+    *)
+        die "Unsupported host architecture: ${TRIPLET}"
         ;;
 esac
 
@@ -94,6 +111,7 @@ MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
 MAKECONF_CC=${MAKECONF_CC}
 MAKECONF_LD=${MAKECONF_LD}
 MAKECONF_AS=${MAKECONF_AS}
+MAKECONF_ARCH=${ARCH}
 MAKECONF_BUILD_ARCH=${BUILD_ARCH}
 MAKECONF_OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}

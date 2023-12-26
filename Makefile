@@ -98,7 +98,8 @@ ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
 		ac_cv_prog_DIRECT_LD="$(MAKECONF_LD)" \
 		ac_cv_lib_m_cos="no" \
 	  ./configure \
-		-host=$(MAKECONF_BUILD_ARCH)-unknown-none \
+		-host=$(MAKECONF_ARCH)-unknown-none \
+		-target=$(MAKECONF_BUILD_ARCH)-solo5-none \
 		-prefix $(MAKECONF_PREFIX)/solo5-sysroot \
 		-disable-shared\
 		-disable-systhreads\
