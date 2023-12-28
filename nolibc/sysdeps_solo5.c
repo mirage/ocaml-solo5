@@ -85,6 +85,9 @@ static uintptr_t tls_main;
  * should really be a caml_solo5_startup(), but I'm lazy and don't have
  * a proper place to put it in the build system right now.
  */
+extern void mmap_init(uint64_t start_addr, size_t n_pages);
+#define PAGE_SIZE 4096
+
 void _nolibc_init(uintptr_t heap_start, size_t heap_size)
 {
     /*
@@ -98,6 +101,14 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
     sbrk_start = sbrk_cur = heap_start;
     sbrk_end = heap_start + heap_size;
 
+    // reserve 8Mb (2048 pages) for mmap usage in Ocaml runtime 
+    size_t n_pages = 2048;
+    void* a = NULL;
+    // posix_memalign ensure that the starting address is PAGE_SIZE aligned
+    posix_memalign(&a, PAGE_SIZE, n_pages*PAGE_SIZE);
+    mmap_init((uintptr_t)a, n_pages);
+
+    // init thread local storage for our unique domain
     tls_main = (uintptr_t)calloc(solo5_tls_size(), sizeof(uint8_t));
     if (tls_main == (uintptr_t)NULL) {
         solo5_console_write("TLS alloc failed\n", 17);

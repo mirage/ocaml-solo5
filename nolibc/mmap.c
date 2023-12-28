@@ -4,21 +4,233 @@
 
 #include <sys/mman.h>
 
+// Taken from mirage-xen
+/*
+ * Copyright (c) 2020 Martin Lucina <martin@lucina.net>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+#include <stddef.h>
+#include <stdint.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*
+ * This is a simple bitmap allocator for virtual memory addresses. Worst-case
+ * performance for bmap_alloc() is O(n), where n = total_pages / 8. bmap_free()
+ * is O(1) but requires the caller to keep the size of the allocated block.
+ */
+typedef struct bmap_allocator {
+    uint64_t *bmap;                      /* 1 bit per page; 1=free, 0=used */
+    size_t bmap_size;                    /* # of words in bmap[] */
+    uint64_t start_addr;                 /* starting virtual memory address */
+} bmap_allocator_t;
+
+#define BPW (sizeof(long) * 8)
+_Static_assert(sizeof(long) == 8, "long must be 64 bits");
+
+/*
+ * Returns 0-based index of first set bit in (bmap[]), starting with the bit
+ * index (at), or -1 if none found and end of (bmap[]) was reached.
+ */
+static int ffs_at(uint64_t *bmap, size_t bmap_size, size_t at)
+{
+    size_t word = at / BPW;
+    size_t shift = at % BPW;
+    size_t bit = 0;
+    size_t i;
+
+    for (i = word; i < bmap_size; i++) {
+        if (i == word)
+            /* (at) is not on a word boundary; shift so we can use ffsl */
+            bit = __builtin_ffsl(bmap[i] >> shift);
+        else
+            bit = __builtin_ffsl(bmap[i]);
+        if (bit)
+            break;
+    }
+
+    if (bit) {
+        if (i == word)
+            /* Restore previous shift if any */
+            bit += shift;
+        return (i * BPW) + (bit - 1);
+    }
+    else
+        return -1;
+}
+
+/*
+ * Returns 0-based index of first clear bit in (bmap[]), starting with the bit
+ * index (at), or -1 if none found and end of (bmap[]) was reached.
+ */
+static int ffc_at(uint64_t *bmap, size_t bmap_size, size_t at)
+{
+    size_t word = at / BPW;
+    size_t shift = at % BPW;
+    size_t bit = 0;
+    size_t i;
+
+    for (i = word; i < bmap_size; i++) {
+        if (i == word)
+            /* (at) is not on a word boundary; shift so we can use ffsl */
+            bit = __builtin_ffsl(~bmap[i] >> shift);
+        else
+            bit = __builtin_ffsl(~bmap[i]);
+        if (bit)
+            break;
+    }
+
+    if (bit) {
+        if (i == word)
+            /* Restore previous shift if any */
+            bit += shift;
+        return (i * BPW) + (bit - 1);
+    }
+    else
+        return -1;
+}
+
+/*
+ * Set (n) bits in (bmap[]) at 0-based bit index (at).
+ */
+static void setn_at(uint64_t *bmap, size_t bmap_size, size_t at, size_t n)
+{
+    assert((at + n - 1) < (bmap_size * BPW));
+    while (n > 0) {
+        n -= 1;
+        bmap[((at + n) / BPW)] |= (1UL << ((at + n) % BPW));
+    }
+}
+
+/*
+ * Clear (n) bits in (bmap[]) at 0-based bit index (at).
+ */
+static void clearn_at(uint64_t *bmap, size_t bmap_size, size_t at, size_t n)
+{
+    assert((at + n - 1) < (bmap_size * BPW));
+    while (n > 0) {
+        n -= 1;
+        bmap[((at + n) / BPW)] &= ~(1UL << ((at + n) % BPW));
+    }
+}
+
+/*
+ * Allocate (n) pages from (alloc), returns a memory address or NULL if no
+ * space found.
+ */
+static void *bmap_alloc(bmap_allocator_t *alloc, size_t n)
+{
+    int a = 0, b = 0;
+    size_t bmap_bits = alloc->bmap_size * BPW;
+
+    /*
+     * Allocating 0 pages is not allowed.
+     */
+    assert(n >= 1);
+
+    while (1) {
+        /*
+         * Look for the first free page starting at (b), initially 0.
+         */
+        a = ffs_at(alloc->bmap, alloc->bmap_size, (size_t)b);
+        if (a < 0)
+            return NULL;
+
+        // here a is >=0
+        /*
+         * Look for the first used page after the found free page.
+         */
+        b = ffc_at(alloc->bmap, alloc->bmap_size, (size_t)a);
+        if (b < 0)
+            /*
+             * Nothing found; all remaining pages from a..bmap_bits are free.
+             */
+            b = bmap_bits;
+
+        // here both a & b are >=0 and b is greater than a
+        /*
+         * Is the block big enough? If yes, mark as used (0) and return it.
+         */
+        if ((size_t)(b - a) >= n) {
+            clearn_at(alloc->bmap, alloc->bmap_size, (size_t)a, n);
+            return (void *)(alloc->start_addr + (a * OCAML_SOLO5_PAGESIZE));
+        }
+        /*
+         * Stop the search if we hit the end of bmap[] and did not find a large
+         * enough block.
+         */
+        if ((size_t)b == bmap_bits)
+            return NULL;
+        /*
+         * If we got here, loop with (b) set to the last seen used page.
+         */
+    }
+}
+
+/*
+ * Free (n) pages at (addr) from (alloc).
+ */
+static void bmap_free(bmap_allocator_t *alloc, void *addr, size_t n)
+{
+    /*
+     * Verify that:
+     *    addr is page-aligned
+     *    addr is within the range given to alloc
+     *    n is at least 1; the maximum size of n is checked in setn_at().
+     */
+    assert(((uintptr_t)addr & (OCAML_SOLO5_PAGESIZE - 1)) == 0);
+    assert((uintptr_t)addr >= alloc->start_addr);
+    assert(n >= 1);
+
+    int a = ((uintptr_t)addr - alloc->start_addr) / OCAML_SOLO5_PAGESIZE;
+    setn_at(alloc->bmap, alloc->bmap_size, a, n);
+}
+
+/*
+ * Initialise the allocator to use (n_pages) at (start_addr).
+ */
+
+// FIXME: this is a shared variable, should be use in critical section when used
+// accross multiple domains...
+static bmap_allocator_t *alloc = NULL;
+
+void mmap_init(uint64_t start_addr, size_t n_pages)
+{
+    alloc = malloc(sizeof (bmap_allocator_t));
+    assert(alloc != NULL);
+    /*
+     * n_pages must be a multiple of BPW.
+     */
+    assert((n_pages % BPW) == 0);
+    alloc->bmap_size = n_pages / BPW;
+    alloc->bmap = malloc(alloc->bmap_size * sizeof(long));
+    assert(alloc->bmap);
+    alloc->start_addr = start_addr;
+    /*
+     * All pages are initially free; set all bits in bmap[].
+     */
+    memset(alloc->bmap, 0xff, alloc->bmap_size * sizeof(long));
+}
+
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
 
-  /* man page for mmap says:
-   * If addr is NULL, then the kernel chooses the (page-aligned) address  at
-   * which to create the mapping; this is the most portable method of creat‐
-   * ing a new mapping. If addr is not NULL, then the kernel takes it as a hint
-   * about where to place the mapping; [...] If another apping already exists
-   * there, the kernel picks a new address that may or *may not* depend on the hint.
-   *
-   * For our purpose (Solo5 & OCaml), OCaml might use a NULL addr and force us to
-   * use posix_memalign. If addr is not NULL we can use [malloc()] instead of.
-   *
-   * The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
+  /* The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
    * == -1] is handled so.
    */
+  (void)addr; // unused argument
   (void)prot; // unused argument
 
   if (fildes != -1) {
@@ -30,23 +242,12 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
     abort();
   }
 
-  void *ptr = NULL;
-  /* XXX(palainp): Does it worth to have a test on addr here? */
-  if (addr == NULL) {
-    /* Solo5 may returns -1 and set errno on error, just return MAP_FAILED.
-       It doesn't modify ptr on error: ptr will still be NULL
-     */
-    posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
-    //printf("DEBUG: mmap: posix_memalign for %lu @%p.\n", len, ptr);
-  } else {
-    ptr = malloc(len);
-    //printf("DEBUG: mmap: malloc for %lu @%p.\n", len, ptr);
-    if (ptr == NULL) {
-      errno = ENOMEM;
-    }
-  }
+  void *ptr = bmap_alloc(alloc, len/OCAML_SOLO5_PAGESIZE);
+  //printf("DEBUG: mmap: alloc for %lu @%p.\n", len, ptr);
 
   if (ptr == NULL) {
+    // set errno
+    printf("DEBUG: mmap: map failed for %lu.\n", len);
     return MAP_FAILED;
   } else {
     return ptr;
@@ -61,25 +262,12 @@ int munmap(void *addr, size_t length)
    * The address addr must be a multiple of the page size (but length need not be).
    */
   if ((uintptr_t)addr & OCAML_SOLO5_PAGESIZE != 0) {
+    printf("DEBUG: munmap: address %p is not aligned.\n", addr);
     errno = EINVAL;
     return -1;
   }
 
   //printf("DEBUG: munmap: free for %lu @%p.\n", length, addr);
-
-  // FIXME! palainp: Calling free below leads to a PF in the free function
-  // An example run:
-  //   Ocaml calls mmap for a 2101248B domain stack (513 pages)
-  //   Immediatly it releases the last page with munmap, and sadly this page
-  //     hasn't been allocated with malloc => free will hangs the unikernel
-  // Other runs:
-  //   Ocaml calls mmap for 2101248B (136 pages)
-  //   Immediatly after it calls munmap on the first 7 pages and the last page
-  //     => calling free with make the whole area unaviable and calling free on
-  //     the last page will behave like the previous example
-  // In other words do  we need to add a complete page tracker here (and
-  //   configure dlmalloc for using mmap)?
-
-  // free(addr);
+  bmap_free(alloc, addr, length/OCAML_SOLO5_PAGESIZE);
   return 0;
 }
