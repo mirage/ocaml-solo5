@@ -117,7 +117,7 @@ static int ffc_at(uint64_t *bmap, size_t bmap_size, size_t at)
 static void setn_at(uint64_t *bmap, size_t bmap_size, size_t at, size_t n)
 {
     assert((at + n - 1) < (bmap_size * BPW));
-    memory_usage += n*OCAML_SOLO5_PAGESIZE;
+    memory_usage -= n*OCAML_SOLO5_PAGESIZE;
     while (n > 0) {
         n -= 1;
         bmap[((at + n) / BPW)] |= (1UL << ((at + n) % BPW));
@@ -130,7 +130,7 @@ static void setn_at(uint64_t *bmap, size_t bmap_size, size_t at, size_t n)
 static void clearn_at(uint64_t *bmap, size_t bmap_size, size_t at, size_t n)
 {
     assert((at + n - 1) < (bmap_size * BPW));
-    memory_usage -= n*OCAML_SOLO5_PAGESIZE;
+    memory_usage += n*OCAML_SOLO5_PAGESIZE;
     while (n > 0) {
         n -= 1;
         bmap[((at + n) / BPW)] &= ~(1UL << ((at + n) % BPW));
@@ -255,6 +255,7 @@ typedef struct buddy_header
 {
     uintptr_t start; // the start of our available memory area (i.e. page address)
     blk_idx avail[LOG2_NR_PAGES+1];
+    uint8_t max_available;
     struct buddy_node blocks[1<<LOG2_NR_PAGES];
 } buddy_allocator_t;
 
@@ -330,12 +331,23 @@ static void* buddy_alloc(buddy_allocator_t* h, uint8_t count)
     }
     // if no suitable 'j'
     if (j == LOG2_NR_PAGES+1) {
+        h->max_available = 0;
         return NULL;
     }
 
     // else we have to split the avail[j] block in smaller ones
     // R2 instructions
     blk_idx block = buddy_popfront(h, j);
+
+    if (1<<j == h->max_available && h->avail[j] == ALPHA) // update the greatest block size available
+    {
+        uint8_t i = j;
+        while(!(i == 0 || h->avail[i] != ALPHA))
+        {
+            --i;
+        }
+        h->max_available = 1<<i;
+    }
 
     DPRINTF("block index is %d\n", block);
 
@@ -349,7 +361,7 @@ static void* buddy_alloc(buddy_allocator_t* h, uint8_t count)
     // R3 condition
     h->blocks[block].available = 0;
     h->blocks[block].size = k;
-    if (count==33) printf("found address at %p\n", block_to_address(h, block));
+
     return block_to_address(h, block);
 }
 
@@ -378,6 +390,8 @@ static void buddy_free(buddy_allocator_t* h, void* addr)
     }
     // S3
     buddy_pushfront(h, block, k);
+    if (1<<k > h->max_available) // update the greatest block size available
+        h->max_available = 1<<k;
 }
 
 static void buddy_init(buddy_allocator_t *h, size_t n, uintptr_t start_addr)
@@ -389,6 +403,7 @@ static void buddy_init(buddy_allocator_t *h, size_t n, uintptr_t start_addr)
         h[n].avail[i] = ALPHA;
     }
     buddy_pushfront(&(h[n]), 0, LOG2_NR_PAGES);
+    h[n].max_available = 1<<LOG2_NR_PAGES;
 }
 
 /*********************** KEEP A LIST OF MEMORY ALLOCATED ********/
@@ -624,7 +639,7 @@ void *malloc(size_t size)
 		while (!(count == nbu_alloc || ptr != NULL))
 		{
             DPRINTF("try in buddy system %lu/%lu.\n", count, nbu_alloc);
-			ptr = buddy_alloc(&(bu_alloc[count]), n_blk);
+            if (bu_alloc[count].max_available >= n_blk) ptr = buddy_alloc(&(bu_alloc[count]), n_blk);
             ++count;
 		}
 
@@ -729,6 +744,8 @@ struct mallinfo mallinfo(void)
 {
 	struct mallinfo m;
 	memset(&m, 0, sizeof(struct mallinfo));
+    // so far only uordblks is used (in mirage-solo5 and mirage-xen)
+    m.uordblks = memory_usage;
 	return m;
 }
 
