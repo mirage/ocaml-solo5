@@ -72,11 +72,6 @@ clock_t times(struct tms *buf)
     return (clock_t)solo5_clock_monotonic();
 }
 
-static uintptr_t sbrk_start;
-static uintptr_t sbrk_end;
-static uintptr_t sbrk_cur;
-static uintptr_t sbrk_guard_size;
-
 /*
  * To be called by Mirage/Solo5 before calling caml_startup().
  *
@@ -84,39 +79,19 @@ static uintptr_t sbrk_guard_size;
  * should really be a caml_solo5_startup(), but I'm lazy and don't have
  * a proper place to put it in the build system right now.
  */
+extern void mm_init(uint64_t start_addr, uint64_t end_addr);
+
 void _nolibc_init(uintptr_t heap_start, size_t heap_size)
 {
     /*
-     * If we have <1MB of heap available at init time then don't let the heap
-     * grow to within (heap_size / 2) of the stack, otherwise don't let it
-     * grow to within 1MB of the stack.
+     * We can realistically run with less than 8MB of memory
      */
-    sbrk_guard_size = (heap_size >= 0x100000) ?
-        0x100000 : (heap_size / 2);
+    if (heap_size < 0x800000) {
+        solo5_console_write("Not enough memory\n", 18);
+        abort();
+    }
 
-    sbrk_start = sbrk_cur = heap_start;
-    sbrk_end = heap_start + heap_size;
-}
-
-/*
- * Called by dlmalloc to allocate or free memory.
- */
-void *sbrk(intptr_t increment)
-{
-    uintptr_t prev, brk;
-    uintptr_t max = (uintptr_t)&prev - sbrk_guard_size;
-    prev = brk = sbrk_cur;
-
-    /*
-     * dlmalloc guarantees increment values less than half of size_t, so this
-     * is safe from overflow.
-     */
-    brk += increment;
-    if (brk >= max || brk >= sbrk_end || brk < sbrk_start)
-        return (void *)-1;
-
-    sbrk_cur = brk;
-    return (void *)prev;
+    mm_init(heap_start, heap_start + heap_size);
 }
 
 /*
@@ -130,46 +105,3 @@ int __getauxval(int unused) {
 }
 #endif
 
-
-/*
- * dlmalloc configuration:
- */
-
-/*
- * DEBUG not defined and assertions enabled corresponds to the recommended
- * configuration as our assert() does not call malloc().  (see documentation in
- * dlmalloc.i). If you need to debug dlmalloc on Solo5 then define DEBUG to `1'
- * here.
- */
-#include <assert.h>
-#define ABORT_ON_ASSERT_FAILURE 0
-
-#undef WIN32
-#define HAVE_MMAP 0
-#define HAVE_MREMAP 0
-#define MMAP_CLEARS 0
-#define NO_MALLOC_STATS 1
-#define LACKS_FCNTL_H
-#define LACKS_SYS_PARAM_H
-#define LACKS_SYS_MMAN_H
-#define LACKS_STRINGS_H
-#define LACKS_SYS_TYPES_H
-#define LACKS_SCHED_H
-#define LACKS_TIME_H
-#define MALLOC_FAILURE_ACTION
-#define USE_LOCKS 0
-#define STRUCT_MALLINFO_DECLARED 1
-#define FOOTERS 1
-
-/* disable null-pointer-arithmetic warning on clang */
-#if defined(__clang__) && __clang_major__ >= 6
-#pragma clang diagnostic ignored "-Wnull-pointer-arithmetic"
-#endif
-
-/* inline the dlmalloc implementation into this module */
-#include "dlmalloc.i"
-
-/*
- * When adding new functions to this module, add them BEFORE the "dlmalloc
- * configuration" comment above, not here.
- */

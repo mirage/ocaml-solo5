@@ -23,6 +23,7 @@ OBJS=assert.o \
      strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
      strstr.o strncmp.o \
      stubs.o \
+     mm.o \
      vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
