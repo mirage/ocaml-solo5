@@ -173,11 +173,11 @@ static void *bmap_alloc(bmap_allocator_t *alloc, size_t n)
              */
             b = bmap_bits;
 
-        // here both a & b are >=0 and b is greater than a
+        // here both a & b are >=0
         /*
          * Is the block big enough? If yes, mark as used (0) and return it.
          */
-        if ((size_t)(b - a) >= n) {
+        if (b > a && (size_t)(b - a) >= n) {
             clearn_at(alloc->bmap, alloc->bmap_size, (size_t)a, n);
             return (void *)(alloc->start_addr + (a * OCAML_SOLO5_PAGESIZE));
         }
