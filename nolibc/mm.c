@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#if 1
+#if 0
 #define DPRINTF(format, ...) printf("%s(): " format, __func__, __VA_ARGS__)
 #else
 #define DPRINTF(format, ...)
@@ -229,7 +229,7 @@ static void bmap_free(bmap_allocator_t *alloc, void *addr, size_t n)
  */
 
 
-// total size of memory 2^LOG2_NR_PAGES. This is 'm' in TAOCP
+// total size of memory 2^LOG2_NR_PAGES * BLOCK_SIZE. This is 'm' in TAOCP
 #define LOG2_NR_PAGES 7
 #define BUDDY_BLOCK_SIZE 32
 
@@ -314,11 +314,11 @@ static void buddy_remove(buddy_allocator_t* h, blk_idx block, uint8_t k)
 
 static void* buddy_alloc(buddy_allocator_t* h, uint8_t count)
 {
-    assert(count <= 128);
+    assert(count > 0 && count <= 128);
     // we need the exponent position of the immediate upper power of two
-    uint8_t k = 8*sizeof(unsigned int) - (1+__builtin_clz((unsigned int)count));
+    uint8_t k = 8*sizeof(unsigned int) - (__builtin_clz((unsigned int)count));
 
-    DPRINTF("searching for %d blocks, total size %d, with k=%d\n", count, count*BUDDY_BLOCK_SIZE, k);
+    DPRINTF("searching for %d blocks, total size requested %ds, total size used %d, with k=%d\n", count, count*BUDDY_BLOCK_SIZE, k*BUDDY_BLOCK_SIZE, k);
     if (k > LOG2_NR_PAGES) return NULL;
 
     // search for the 'j' (k <= j <= m) that have a free block (size=2^j)
@@ -413,17 +413,22 @@ static void push_length(keep_length_t** len_array, size_t* len_count, void* addr
     size_t i = *len_count;
     while (!(i == 0 || (*len_array)[i].addr == NULL))
     {
+        DPRINTF("looking at %lu %p %lu\n", i, (*len_array)[i].addr, (*len_array)[i].length);
         --i;
     }
 
-    DPRINTF("found at 'rev-index' %lu\n", (*len_count)-i);
+    DPRINTF("found at %lu\n", i);
     (*len_array)[i].addr = addr;
     (*len_array)[i].length = len;
-    if (i == 0) // no free cell, decrease the starting position
+    if (i == 0) // no free cell, decrease the starting position, init the new 0's cell
     {
-        (*len_array) -= sizeof(keep_length_t);
+        (*len_array) -= 1; // due to pointer arithmetics, only decrease 1
+        (*len_array)[0].addr = NULL;
+        (*len_array)[0].length = 0;
         (*len_count) ++;
     }
+    DPRINTF("added at %lu %p %lu\n", i+1, (*len_array)[i+1].addr, (*len_array)[i+1].length);
+
 }
 
 static uint16_t pop_length(keep_length_t* len_array, size_t len_count, void* addr)
@@ -433,6 +438,7 @@ static uint16_t pop_length(keep_length_t* len_array, size_t len_count, void* add
     size_t i = len_count;
     while (!(i == 0 || len_array[i].addr == addr))
     {
+        DPRINTF("looking at %lu %p %lu\n", i, (len_array)[i].addr, (len_array)[i].length);
         --i;
     }
 
@@ -602,10 +608,12 @@ void *malloc(size_t size)
 {
     DPRINTF("request allocation for %lu.\n", size);
 
+    if (size == 0)
+    {
+        return NULL;
+    } else if (size<OCAML_SOLO5_PAGESIZE) {
 	// with small request use the buddy allocator inside 1 page
 	// reserve a new page if needed
-	if (size<OCAML_SOLO5_PAGESIZE)
-	{
         DPRINTF("small request %lu.\n", size);
 		void* ptr = NULL;
 		size_t count = 0;
