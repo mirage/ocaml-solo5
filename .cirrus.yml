@@ -1,5 +1,5 @@
 freebsd_instance:
-  image_family: freebsd-12-1
+  image_family: freebsd-13-2
 
 freebsd_task:
   env:
@@ -7,8 +7,8 @@ freebsd_task:
   env:
     matrix:
       - OCAML_VERSION: 4.12.1
-      - OCAML_VERSION: 4.13.0
       - OCAML_VERSION: 4.13.1
+      - OCAML_VERSION: 4.14.1
   pkg_install_script: pkg install -y ocaml-opam gmp gmake pkgconf bash
   opam_ocaml_cache:
     folder: $HOME/.opam
