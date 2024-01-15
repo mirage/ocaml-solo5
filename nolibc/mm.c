@@ -31,6 +31,18 @@
 #define DPRINTF(format, ...)
 #endif
 
+#if 0
+// print our caller address
+#define DPRINT_CALLER(format, ...) \
+{ \
+    printf("%s(): " format, __func__, __VA_ARGS__); \
+    printf("%p\n", __builtin_return_address (0)); \
+}
+#else
+#define DPRINT_CALLER(format, ...)
+#endif
+
+
 // total memory currently in use
 static size_t memory_usage = 0;
 
@@ -620,6 +632,7 @@ int posix_memalign(void **memptr, size_t alignment, size_t size)
      * the buddies (right growing)
      */
     assert((uintptr_t)la_alloc >= (uintptr_t)bu_alloc + nbu_alloc*sizeof(buddy_allocator_t));
+    DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
     return 0;
 }
 
@@ -650,6 +663,7 @@ void *malloc(size_t size)
         DPRINTF("found a buddy system for it? %s.\n", (ptr != NULL)?"true":"false");
         if (ptr != NULL) // we found memory into this one
         {
+            DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
             return ptr;
         } else { // count == nbu_alloc => we don't have a buddy system with enough memory, reserve a new page
             void* new_page = bmap_alloc(bm_alloc, 1);
@@ -667,19 +681,23 @@ void *malloc(size_t size)
             buddy_init(bu_alloc, count, (uintptr_t)new_page);
             DPRINTF("init a buddy system for #%lu.\n", count);
 
+            void *ptr = buddy_alloc(&(bu_alloc[count]), n_blk);
+            DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
             // we are sure to have memory with that new page
-            return buddy_alloc(&(bu_alloc[count]), n_blk);
+            return ptr;
         }
     } else { // with large request use bmap allocator and keep the size in a list
         DPRINTF("large request %lu.\n", size);
         void* ptr = NULL;
         posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, size);
+        DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
         return ptr;
     }
 }
 
 void free(void *ptr)
 {
+    DPRINT_CALLER("addr:%p ", ptr);
     DPRINTF("request free for %p.\n", ptr);
     if (ptr == NULL) return;
 
@@ -719,6 +737,7 @@ void *calloc(size_t nmemb, size_t size)
 
     DPRINTF("set %lu bytes at %p to 0s.\n", total, ptr);
     memset(ptr, 0, total);
+    DPRINT_CALLER("%lu Bytes @%p requested by ", total, ptr);
     return ptr;
 }
 
@@ -733,6 +752,7 @@ void *realloc(void *addr, size_t size)
     DPRINTF("copy %lu bytes from %p to %p.\n", size, addr, ptr);
     memcpy(ptr, addr, size);
     free(addr);
+    DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
     return ptr;
 }
 
