@@ -1,3 +1,8 @@
+## v0.8.3 (2024-02-12)
+
+* Fix the compilation of the OCaml toolchain by specifying the right target value
+  (#128 @dinosaure)
+
 ## v0.8.2 (2023-11-15)
 
 * malloc: fix the memory allocation tracking to be precise (fixes #126 reported
