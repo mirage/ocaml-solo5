@@ -24,7 +24,7 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#if 0
+#if 1
 #define DPRINTF(format, ...) printf("%s(): " format, __func__, __VA_ARGS__)
 #else
 #define DPRINTF(format, ...)
@@ -542,6 +542,7 @@ void mm_init(uintptr_t start_addr, uintptr_t end_addr)
 /*********************** MMAP FAMILY FUNCTIONS ******************/
 
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
+    DPRINTF("request mmap size %lu.\n", len);
 
   /* The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
    * == -1] is handled so.
@@ -575,6 +576,7 @@ int munmap(void *addr, size_t length)
 {
   (void)length; // unused argument
 
+    DPRINTF("request munmap for addr %p with len %lu.\n", addr, length);
 
   /* man page for munmap says:
    * The address addr must be a multiple of the page size (but length need not be).
