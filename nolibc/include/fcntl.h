@@ -9,5 +9,6 @@ int open(const char *, int, ...);
 #define O_CREAT (1<<3)
 #define O_TRUNC (1<<4)
 #define O_EXCL (1<<5)
+#define O_RDWR (1<<6)
 
 #endif
