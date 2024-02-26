@@ -23,5 +23,6 @@ int raise(int);
 
 typedef int sigset_t;
 int sigfillset(sigset_t *);
+int sigwait(const sigset_t *restrict set, int *restrict sig);
 
 #endif
