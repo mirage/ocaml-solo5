@@ -113,13 +113,6 @@ STUB_IGNORE(int, pthread_attr_init, 0);
 STUB_ABORT(pthread_cleanup_push);
 STUB_ABORT(pthread_cleanup_pop);
 
-int memory_order_release;
-int memory_order_acquire;
-int memory_order_relaxed;
-
-STUB_ABORT(atomic_store_explicit);
-STUB_ABORT(atomic_exchange);
-
 /* above that line, for OCaml 5, those are only required (i guess) for the configure step */
 STUB_IGNORE(int, pthread_mutex_lock, 0);
 STUB_IGNORE(int, pthread_mutex_trylock, 0);
