@@ -10,6 +10,7 @@ void *memmove(void *, const void *, size_t);
 void *memset(void *, int, size_t);
 int strcmp(const char *, const char *);
 size_t strlen(const char *);
+size_t strnlen(const char *, size_t);
 char *strerror(int);
 /*
  * The following definitions are not required by the OCaml runtime, but are
