@@ -79,6 +79,7 @@ STUB_IGNORE(int, readlink, -1);
 STUB_ABORT(unlink);
 STUB_ABORT(rmdir);
 STUB_ABORT(ftruncate);
+STUB_ABORT(execv);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
