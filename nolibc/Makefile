@@ -1,9 +1,6 @@
 ifeq ($(FREESTANDING_CFLAGS),)
     $(error FREESTANDING_CFLAGS not set)
 endif
-ifeq ($(SYSDEP_OBJS),)
-    $(error SYSDEP_OBJS not set)
-endif
 
 all: libnolibc.a test-headers
 
@@ -28,6 +25,8 @@ OBJS=assert.o \
      mmap.o
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
+
+SYSDEP_OBJS=sysdeps_solo5.o
 
 libnolibc.a: $(OBJS) $(SYSDEP_OBJS)
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
