@@ -31,7 +31,6 @@ EOM
 
 OCAML_CONFIGURE_OPTIONS=
 MAKECONF_PREFIX=/usr/local
-CC=cc
 
 while [ $# -gt 0 ]; do
     OPT="$1"
@@ -60,61 +59,23 @@ done
 
 [ -z "${CONFIG_TARGET}" ] && die "The --target option needs to be specified."
 
-MAKECONF_CFLAGS=""
-MAKECONF_CC="$CONFIG_TARGET-cc"
-MAKECONF_LD="$CONFIG_TARGET-ld"
-MAKECONF_AS="$MAKECONF_CC -c"
+TARGET_TRIPLET="$("$CONFIG_TARGET-cc" -dumpmachine)"
 
-BUILD_TRIPLET="$($MAKECONF_CC -dumpmachine)"
-OCAML_BUILD_ARCH=
-
-# Canonicalize BUILD_ARCH and set OCAML_BUILD_ARCH. The former is for autoconf,
-# the latter for the rest of the OCaml build system.
-case "${BUILD_TRIPLET}" in
+case "${TARGET_TRIPLET}" in
     amd64-*|x86_64-*)
-        BUILD_ARCH="x86_64"
-        OCAML_BUILD_ARCH="amd64"
+        TARGET_ARCH="x86_64"
         ;;
     aarch64-*)
-        BUILD_ARCH="aarch64"
-        OCAML_BUILD_ARCH="arm64"
+        TARGET_ARCH="aarch64"
         ;;
     *)
-        die "Unsupported build architecture: ${BUILD_TRIPLET}"
+        die "Unsupported build architecture: ${TARGET_TRIPLET}"
         ;;
 esac
-
-TRIPLET="$($CC -dumpmachine)"
-ARCH=
-
-case "${TRIPLET}" in
-    amd64-*|x86_64-*)
-        ARCH="x86_64"
-        ;;
-    aarch64-*)
-        ARCH="aarch64"
-        ;;
-    *)
-        die "Unsupported host architecture: ${TRIPLET}"
-        ;;
-esac
-
-EXTRA_LIBS=
-if [ "${BUILD_ARCH}" = "aarch64" ]; then
-    EXTRA_LIBS="$EXTRA_LIBS -lgcc" || exit 1
-fi
 
 cat <<EOM >Makeconf
 MAKECONF_PREFIX=${MAKECONF_PREFIX}
-MAKECONF_CFLAGS=${MAKECONF_CFLAGS}
 MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
-MAKECONF_CC=${MAKECONF_CC}
-MAKECONF_LD=${MAKECONF_LD}
-MAKECONF_AS=${MAKECONF_AS}
-MAKECONF_ARCH=${ARCH}
-MAKECONF_BUILD_ARCH=${BUILD_ARCH}
-MAKECONF_OCAML_BUILD_ARCH=${OCAML_BUILD_ARCH}
+MAKECONF_TARGET_ARCH=${TARGET_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
-MAKECONF_NOLIBC_SYSDEP_OBJS=sysdeps_solo5.o
-MAKECONF_EXTRA_LIBS=${EXTRA_LIBS}
 EOM

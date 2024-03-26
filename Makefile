@@ -16,14 +16,15 @@ GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -Wl,--start-group -ln
 # NOLIBC
 NOLIBC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
 nolibc/libnolibc.a:
-	$(MAKE) -C nolibc \
-	    "CC=$(MAKECONF_CC)" \
-	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
-	    "SYSDEP_OBJS=$(MAKECONF_NOLIBC_SYSDEP_OBJS)"
+	$(MAKE) -C nolibc libnolibc.a \
+	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
 
 # OPENLIBM
 openlibm/libopenlibm.a:
-	$(MAKE) -C openlibm "CC=$(MAKECONF_CC)" "CPPFLAGS=$(LOCAL_CFLAGS)" libopenlibm.a
+	$(MAKE) -C openlibm libopenlibm.a \
+	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	     "CPPFLAGS=$(LOCAL_CFLAGS)"
 
 # OCAML
 ocaml/Makefile:
@@ -144,7 +145,6 @@ clean:
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
-	    "SYSDEP_OBJS=$(MAKECONF_NOLIBC_SYSDEP_OBJS)" \
 	    clean
 
 distclean: clean
