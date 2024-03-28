@@ -5,7 +5,7 @@ ifeq ($(SYSDEP_OBJS),)
     $(error SYSDEP_OBJS not set)
 endif
 
-all: libnolibc.a
+all: libnolibc.a test-headers
 
 .PHONY: all test-headers clean
 
@@ -29,7 +29,7 @@ OBJS=assert.o \
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
 
-libnolibc.a: $(OBJS) $(SYSDEP_OBJS) test-headers
+libnolibc.a: $(OBJS) $(SYSDEP_OBJS)
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
 
 # The following test ensures that each header file provided by nolibc is both
