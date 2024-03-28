@@ -117,9 +117,8 @@ $(OCAML_IS_BUILT): ocaml/Makefile.config | _build
 	touch $@
 
 # CONFIGURATION FILES
-solo5.conf: solo5.conf.in
-	sed -e 's!@@PREFIX@@!$(MAKECONF_PREFIX)!' \
-	    solo5.conf.in > $@
+_build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
+	SYSROOT="$(MAKECONF_SYSROOT)" ./gen_solo5_conf.sh > $@
 
 # COMMANDS
 install: all
