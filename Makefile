@@ -148,13 +148,14 @@ $(INSTALL_FILES): $(TOOLCHAIN_FINAL) $(DOT_INSTALL_CHUNKS_FOR_OCAML)
 	     > $@
 
 # COMMANDS
+PACKAGE := ocaml-solo5
 .PHONY: install
-install: all
-	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
+install: $(PACKAGE).install
+	opam-installer --prefix=$(MAKECONF_PREFIX) $<
 
 .PHONY: uninstall
-uninstall:
-	./uninstall.sh
+uninstall: $(PACKAGE).install
+	opam-installer --prefix=$(MAKECONF_PREFIX) --uninstall $<
 
 .PHONY: clean
 clean:
