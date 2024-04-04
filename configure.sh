@@ -26,6 +26,9 @@ Options:
         libraries (default: <installation prefix>/lib/ocaml-solo5).
     --target=TARGET
         Solo5 compiler toolchain to use.
+    --othertoolprefix=PREFIX
+        Prefix for tools besides the Solo5 toolchain
+        (default: \`TARGET-cc -dumpmachine\`-).
     --ocaml-configure-option=OPTION
         Add an option to the OCaml compiler configuration.
 EOM
@@ -41,6 +44,9 @@ while [ $# -gt 0 ]; do
     case "${OPT}" in
         --target=*)
             CONFIG_TARGET="${OPT#*=}"
+            ;;
+        --othertoolprefix=*)
+            MAKECONF_TOOLPREFIX="${OPT#*=}"
             ;;
         --prefix=*)
             MAKECONF_PREFIX="${OPT#*=}"
@@ -69,6 +75,8 @@ MAKECONF_SYSROOT="${MAKECONF_SYSROOT:-$MAKECONF_PREFIX/lib/ocaml-solo5}"
 
 TARGET_TRIPLET="$("$CONFIG_TARGET-cc" -dumpmachine)"
 
+MAKECONF_TOOLPREFIX="${MAKECONF_TOOLPREFIX:-$TARGET_TRIPLET-}"
+
 case "${TARGET_TRIPLET}" in
     amd64-*|x86_64-*)
         TARGET_ARCH="x86_64"
@@ -85,6 +93,7 @@ cat <<EOM >Makeconf
 MAKECONF_PREFIX=${MAKECONF_PREFIX}
 MAKECONF_SYSROOT=${MAKECONF_SYSROOT}
 MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
+MAKECONF_TOOLPREFIX=${MAKECONF_TOOLPREFIX}
 MAKECONF_TARGET_ARCH=${TARGET_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
 EOM

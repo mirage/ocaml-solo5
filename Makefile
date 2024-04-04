@@ -26,6 +26,56 @@ openlibm/libopenlibm.a:
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
 	     "CPPFLAGS=$(LOCAL_CFLAGS)"
 
+# TOOLCHAIN
+# We create prefix-gcc even when the actual compiler will be Clang because
+# autoconf toolchain detection will pick the first compiler that exists in the
+# list: prefix-gcc, gcc, prefix-cc, cc...
+# Anyway, configure scripts always explicitly test whether the compiler defines
+# Clang-specific macros when they want to distinguish GCC and Clang
+ALLTOOLS := gcc cc ar as ld nm objcopy objdump ranlib readelf strip
+ALLTOOLS := $(foreach tool,$(ALLTOOLS), \
+                $(MAKECONF_TARGET_ARCH)-solo5-ocaml-$(tool))
+
+TOOLDIR_FOR_BUILD := _build/build-toolchain
+TOOLCHAIN_FOR_BUILD := $(addprefix $(TOOLDIR_FOR_BUILD)/,$(ALLTOOLS))
+TOOLDIR_FINAL := _build/toolchain
+TOOLCHAIN_FINAL := $(addprefix $(TOOLDIR_FINAL)/,$(ALLTOOLS))
+
+# Options for the build version of the tools
+TOOLCHAIN_BUILD_CFLAGS := -I$(TOP)/nolibc/include \
+  -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src
+TOOLCHAIN_BUILD_LDFLAGS := -L$(TOP)/nolibc -L$(TOP)/openlibm
+
+# Options for the installed version of the tools
+TOOLCHAIN_FINAL_CFLAGS := -I$(MAKECONF_SYSROOT)/include
+TOOLCHAIN_FINAL_LDFLAGS := -L$(MAKECONF_SYSROOT)/lib
+
+$(TOOLDIR_FOR_BUILD) $(TOOLDIR_FINAL):
+	mkdir -p $@
+
+$(TOOLDIR_FOR_BUILD)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
+    gen_toolchain_tool.sh | $(TOOLDIR_FOR_BUILD)
+	ARCH="$(MAKECONF_TARGET_ARCH)" \
+	  SOLO5_TOOLCHAIN="$(MAKECONF_TOOLCHAIN)" \
+	  OTHERTOOLPREFIX="$(MAKECONF_TOOLPREFIX)" \
+	  TOOL_CFLAGS="$(TOOLCHAIN_BUILD_CFLAGS)" \
+	  TOOL_LDFLAGS="$(TOOLCHAIN_BUILD_LDFLAGS)" \
+	  sh $< $* > $@
+	chmod +x $@
+
+$(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
+    gen_toolchain_tool.sh | $(TOOLDIR_FINAL)
+	ARCH="$(MAKECONF_TARGET_ARCH)" \
+	  SOLO5_TOOLCHAIN="$(MAKECONF_TOOLCHAIN)" \
+	  OTHERTOOLPREFIX="$(MAKECONF_TOOLPREFIX)" \
+	  TOOL_CFLAGS="$(TOOLCHAIN_FINAL_CFLAGS)" \
+	  TOOL_LDFLAGS="$(TOOLCHAIN_FINAL_LDFLAGS)" \
+	  sh $< $* > $@
+	chmod +x $@
+
+.PHONY: toolchains
+toolchains: $(TOOLCHAIN_FOR_BUILD) $(TOOLCHAIN_FINAL)
+
 # OCAML
 ocaml/Makefile:
 	cp -r `ocamlfind query ocaml-src` ./ocaml
