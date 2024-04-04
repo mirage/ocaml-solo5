@@ -120,6 +120,9 @@ $(OCAML_IS_BUILT): ocaml/Makefile.config | _build
 _build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
 	SYSROOT="$(MAKECONF_SYSROOT)" ./gen_solo5_conf.sh > $@
 
+_build/empty-META: | _build
+	touch $@
+
 # COMMANDS
 .PHONY: install
 install: all
