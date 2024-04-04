@@ -41,6 +41,8 @@ done
 set -- \\
   $CFLAGS \\
   -include _solo5/overrides.h \\
+  -D__BSD_VISIBLE=0 \\
+  -D__XSI_VISIBLE=0 \\
   "\$@"
 
 if [ -z "\$compiling" ]; then
