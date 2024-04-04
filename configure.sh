@@ -19,7 +19,7 @@ usage()
 usage: ${prog_NAME} [ OPTIONS ]
 Configures the ocaml-solo5 build system.
 Options:
-    --prefix=DIR:
+    --prefix=DIR
         Installation prefix (default: /usr/local).
     --target=TARGET
         Solo5 compiler toolchain to use.
@@ -37,13 +37,13 @@ while [ $# -gt 0 ]; do
 
     case "${OPT}" in
         --target=*)
-            CONFIG_TARGET="${OPT##*=}"
+            CONFIG_TARGET="${OPT#*=}"
             ;;
         --prefix=*)
-            MAKECONF_PREFIX="${OPT##*=}"
+            MAKECONF_PREFIX="${OPT#*=}"
             ;;
         --ocaml-configure-option=*)
-            OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT##*=}"
+            OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT#*=}"
             ;;
         --help)
             usage
