@@ -6,6 +6,14 @@ all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml solo5.conf
 
 TOP=$(abspath .)
 
+# Most parts (OCaml, nolibc, openlibm) currently build their result in-tree but
+# we reuse dune's `_build` dir, as familiar and already usable for `example`,
+# etc., for some generated files
+_build:
+	mkdir -p $@
+
+LIBS := openlibm/libopenlibm.a nolibc/libnolibc.a
+
 # CFLAGS used to build the nolibc and openlibm libraries
 LIB_CFLAGS=-I$(TOP)/nolibc/include -include _solo5/overrides.h
 
@@ -73,108 +81,44 @@ $(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 toolchains: $(TOOLCHAIN_FOR_BUILD) $(TOOLCHAIN_FINAL)
 
 # OCAML
-ocaml/Makefile:
-	cp -r `ocamlfind query ocaml-src` ./ocaml
+# Extract sources from the ocaml-src package and apply patches if there any in
+# `patches/<OCaml version>/`
+ocaml:
+# First make sure the ocaml directory doesn't exist, otherwise the cp would
+# create an ocaml-src subdirectory
+	test ! -d $@
+	cp -r "$$(ocamlfind query ocaml-src)" $@
+	VERSION="$$(head -n1 ocaml/VERSION)" ; \
+	if test -d "patches/$$VERSION" ; then \
+	  git apply --directory=$@ "patches/$$VERSION"/*; \
+	fi
 
-# OCaml >= 4.08.0 uses an autotools-based build system. In this case we
-# convince it to think it's using the Solo5 compiler as a cross compiler, and
-# let the build system do its work with as little additional changes on our
-# side as possible.
-#
-# Notes:
-#
-# - CPPFLAGS must be set for configure as well as CC, otherwise it complains
-#   about headers due to differences of opinion between the preprocessor and
-#   compiler.
-# - ARCH must be overridden manually in Makefile.config due to the use of
-#   hardcoded combinations in the OCaml configure.
-# - We use LIBS with a stubbed out solo5 implementation to override the OCaml
-# 	configure link test
-# - We override OCAML_OS_TYPE since configure just hardcodes it to "Unix".
-OC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/include -I$(TOP)/openlibm/src -nostdlib
-OC_LIBS=-L$(TOP)/nolibc -lnolibc -L$(TOP)/openlibm -Wl,--start-group -lopenlibm -nostdlib $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
-ocaml/Makefile.config: ocaml/Makefile openlibm/libopenlibm.a nolibc/libnolibc.a
-# configure: Do not build dynlink
-	sed -e 's/otherlibraries="dynlink"/otherlibraries=""/g' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-# configure: Allow precise input of flags and libs
-	sed -e 's/oc_cflags="/oc_cflags="$$OC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-	sed -e 's/ocamlc_cflags="/ocamlc_cflags="$$OCAMLC_CFLAGS /g' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-	sed -e 's/nativecclibs="$$cclibs $$DLLIBS $$PTHREAD_LIBS"/nativecclibs="$$GLOBAL_LIBS"/g' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-	sed -e 's/^arch=none$$/arch=$(MAKECONF_OCAML_BUILD_ARCH)/' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-	chmod +x ocaml/configure
-# Makefile: Runtime rules: don't build libcamlrun.a and import ocamlrun from the system
-	sed -e 's/^ocamlrun$$(EXE):.*/dummy:/g' ocaml/Makefile > ocaml/Makefile.sed && \
-		mv ocaml/Makefile.sed ocaml/Makefile
-	sed -e 's/^ocamlruni$$(EXE):.*/dummyi:/g' ocaml/Makefile > ocaml/Makefile.sed && \
-		mv ocaml/Makefile.sed ocaml/Makefile
-	sed -e 's/^ocamlrund$$(EXE):.*/dummyd:/g' ocaml/Makefile > ocaml/Makefile.sed && \
-		mv ocaml/Makefile.sed ocaml/Makefile
-	sed -e 's,^coldstart: $(COLDSTART_DEPS)$$,coldstart: runtime/primitives $$(COLDSTART_DEPS),' ocaml/Makefile > ocaml/Makefile.sed && \
-		mv ocaml/Makefile.sed ocaml/Makefile
-	echo -e "ocamlrun:\n\tcp $(shell which ocamlrun) .\n" >> ocaml/Makefile
-	echo -e "ocamlrund:\n\tcp $(shell which ocamlrund) .\n" >> ocaml/Makefile
-	echo -e "ocamlruni:\n\tcp $(shell which ocamlruni) .\n" >> ocaml/Makefile
-	echo -e "runtime/ocamlrun\$$(EXE):\n\tcp $(shell which ocamlrun) runtime/\n" >> ocaml/Makefile
-	echo -e "runtime/ocamlrund\$$(EXE):\n\tcp $(shell which ocamlrund) runtime/\n" >> ocaml/Makefile
-	echo -e "runtime/ocamlruni\$$(EXE):\n\tcp $(shell which ocamlruni) runtime/\n" >> ocaml/Makefile
-# yacc/Makefile: import ocamlyacc from the system
-	sed -e 's,^$$(ocamlyacc_PROGRAM)$$(EXE):.*,dummy_yacc:,g' ocaml/Makefile > ocaml/Makefile.sed && \
-		mv ocaml/Makefile.sed ocaml/Makefile
-	echo -e "\$$(ocamlyacc_PROGRAM)\$$(EXE):\n\tcp $(shell which ocamlyacc) yacc/\n" >> ocaml/Makefile
-# patch ocaml 5.0.0 runtime for single domain/thread solo5
-	sed -e 's/#define Max_domains 128/#define Max_domains 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/domain.h.sed && \
-		mv ocaml/runtime/caml/domain.h.sed ocaml/runtime/caml/domain.h
 # av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
 # would use the host system libm instead of the freestanding openlibm, see
 # https://github.com/mirage/ocaml-solo5/issues/101
+ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
+	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" ; \
 	cd ocaml && \
-		CC="$(MAKECONF_CC)" \
-		OC_CFLAGS="$(OC_CFLAGS)" \
-		OCAMLC_CFLAGS="$(GLOBAL_CFLAGS)" \
-		AS="$(MAKECONF_AS)" \
-		ASPP="$(MAKECONF_CC) $(OC_CFLAGS) -c" \
-		CPPFLAGS="$(OC_CFLAGS)" \
-		LIBS="$(OC_LIBS)"\
-		GLOBAL_LIBS="$(GLOBAL_LIBS)"\
-		LD="$(MAKECONF_LD)" \
-		ac_cv_prog_DIRECT_LD="$(MAKECONF_LD)" \
-		ac_cv_lib_m_cos="no" \
+	  ac_cv_lib_m_cos="no" \
 	  ./configure \
-		-host=$(MAKECONF_ARCH)-unknown-none \
-		-target=$(MAKECONF_BUILD_ARCH)-solo5-none \
-		-prefix $(MAKECONF_PREFIX)/solo5-sysroot \
-		-disable-shared\
-		-disable-systhreads\
-		-disable-unix-lib\
-		-disable-instrumented-runtime\
-		-disable-debug-runtime\
-		-disable-ocamltest\
-		-disable-ocamldoc\
+		--target="$(MAKECONF_TARGET_ARCH)-solo5-ocaml" \
+		--prefix="$(MAKECONF_SYSROOT)" \
+		--disable-shared \
+		--disable-systhreads \
+		--disable-unix-lib \
+		--disable-instrumented-runtime \
+		--disable-debug-runtime \
+		--disable-ocamltest \
+		--disable-ocamldoc \
+		--without-zstd \
 		$(MAKECONF_OCAML_CONFIGURE_OPTIONS)
-	echo 'NATIVE_COMPILER=true' >> ocaml/Makefile.config
-	echo 'SAK_CC=cc' >> ocaml/Makefile.config
-	echo 'SAK_CFLAGS=' >> ocaml/Makefile.config
-	echo 'SAK_LINK=cc $(SAK_CFLAGS) $$(OUTPUTEXE)$$(1) $$(2)' >> ocaml/Makefile.config
-	echo '#undef OCAML_OS_TYPE' >> ocaml/runtime/caml/s.h
-	echo '#define OCAML_OS_TYPE "None"' >> ocaml/runtime/caml/s.h
 
-# NOTE: ocaml/tools/make-version-header.sh is integrated into OCaml's ./configure script starting from OCaml 4.14
-ifneq (,$(wildcard ocaml/tools/make-version-header.sh))
-ocaml/runtime/caml/version.h: ocaml/Makefile.config
-	ocaml/tools/make-version-header.sh > $@
-else
-ocaml/runtime/caml/version.h: ocaml/Makefile.config
-	@
-endif
-
-ocaml: ocaml/Makefile.config ocaml/runtime/caml/version.h
-	$(MAKE) -C ocaml world
-	$(MAKE) -C ocaml opt
+OCAML_IS_BUILT := _build/ocaml_is_built
+$(OCAML_IS_BUILT): ocaml/Makefile.config | _build
+	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" $(MAKE) -C ocaml cross.opt
+	cd ocaml && ocamlrun tools/stripdebug ocamlc ocamlc.tmp
+	cd ocaml && ocamlrun tools/stripdebug ocamlopt ocamlopt.tmp
+	touch $@
 
 # CONFIGURATION FILES
 solo5.conf: solo5.conf.in
