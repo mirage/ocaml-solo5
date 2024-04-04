@@ -6,15 +6,11 @@ all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml solo5.conf
 
 TOP=$(abspath .)
 
-# CFLAGS used to build nolibc / openlibm / ocaml runtime
-LOCAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(TOP)/nolibc/include -include _solo5/overrides.h
-# CFLAGS used by the OCaml compiler to build C stubs
-GLOBAL_CFLAGS=$(MAKECONF_CFLAGS) -I$(MAKECONF_PREFIX)/solo5-sysroot/include/nolibc/ -include _solo5/overrides.h
-# LIBS used by the OCaml compiler to link executables
-GLOBAL_LIBS=-L$(MAKECONF_PREFIX)/solo5-sysroot/lib/nolibc/ -Wl,--start-group -lnolibc -lopenlibm $(MAKECONF_EXTRA_LIBS) -Wl,--end-group
+# CFLAGS used to build the nolibc and openlibm libraries
+LIB_CFLAGS=-I$(TOP)/nolibc/include -include _solo5/overrides.h
 
 # NOLIBC
-NOLIBC_CFLAGS=$(LOCAL_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
+NOLIBC_CFLAGS=$(LIB_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
 nolibc/libnolibc.a:
 	$(MAKE) -C nolibc libnolibc.a \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
@@ -24,7 +20,7 @@ nolibc/libnolibc.a:
 openlibm/libopenlibm.a:
 	$(MAKE) -C openlibm libopenlibm.a \
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
-	     "CPPFLAGS=$(LOCAL_CFLAGS)"
+	     "CPPFLAGS=$(LIB_CFLAGS)"
 
 # TOOLCHAIN
 # We create prefix-gcc even when the actual compiler will be Clang because
