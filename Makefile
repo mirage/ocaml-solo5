@@ -116,12 +116,27 @@ $(OCAML_IS_BUILT): ocaml/Makefile.config | _build
 	cd ocaml && ocamlrun tools/stripdebug ocamlopt ocamlopt.tmp
 	touch $@
 
+DOT_INSTALL_PREFIX_FOR_OCAML := _build/ocaml.install
+DOT_INSTALL_CHUNKS_FOR_OCAML := $(addprefix $(DOT_INSTALL_PREFIX_FOR_OCAML),\
+    .lib .libexec)
+$(DOT_INSTALL_CHUNKS_FOR_OCAML): | ocaml/Makefile.config
+	MAKE="$(MAKE)" ./gen_ocaml_install.sh \
+	  $(DOT_INSTALL_PREFIX_FOR_OCAML) ocaml $(MAKECONF_SYSROOT)
+
 # CONFIGURATION FILES
 _build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
 	SYSROOT="$(MAKECONF_SYSROOT)" ./gen_solo5_conf.sh > $@
 
 _build/empty-META: | _build
 	touch $@
+
+# INSTALL
+PACKAGES := $(basename $(wildcard *.opam))
+INSTALL_FILES := $(foreach pkg,$(PACKAGES),$(pkg).install)
+
+$(INSTALL_FILES): $(TOOLCHAIN_FINAL) $(DOT_INSTALL_CHUNKS_FOR_OCAML)
+	./gen_dot_install.sh $(DOT_INSTALL_PREFIX_FOR_OCAML) $(TOOLCHAIN_FINAL)\
+	     > $@
 
 # COMMANDS
 .PHONY: install
@@ -134,6 +149,7 @@ clean:
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc clean FREESTANDING_CFLAGS=_
 	if [ -d ocaml ] ; then $(MAKE) -C ocaml clean ; fi
+	$(RM) -f $(INSTALL_FILES)
 
 .PHONY: distclean
 distclean: clean
