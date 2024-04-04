@@ -6,3 +6,4 @@ nolibc/test-include/
 ocaml/
 _build/
 /ocaml-src.tar.gz
+/*.install
