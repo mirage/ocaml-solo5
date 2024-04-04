@@ -2,7 +2,8 @@
 
 include Makeconf
 
-all:	openlibm/libopenlibm.a nolibc/libnolibc.a ocaml solo5.conf
+# The `all` target is moved to the end to use variables in its dependencies
+default: all
 
 TOP=$(abspath .)
 
@@ -136,3 +137,7 @@ distclean: clean
 # Don't remove the ocaml directory itself, to play nicer with
 # development in there
 	if [ -d ocaml ] ; then $(MAKE) -C ocaml distclean ; fi
+
+all: $(LIBS) $(OCAML_IS_BUILT) \
+     _build/solo5.conf _build/empty-META \
+     $(TOOLCHAIN_FINAL)
