@@ -93,13 +93,9 @@ ocaml:
 	  git apply --directory=$@ "patches/$$VERSION"/*; \
 	fi
 
-# av_cv_libm_cos=no is passed to configure to prevent -lm being used (which
-# would use the host system libm instead of the freestanding openlibm, see
-# https://github.com/mirage/ocaml-solo5/issues/101
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
 	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" ; \
 	cd ocaml && \
-	  ac_cv_lib_m_cos="no" \
 	  ./configure \
 		--target="$(MAKECONF_TARGET_ARCH)-solo5-ocaml" \
 		--prefix="$(MAKECONF_SYSROOT)" \
