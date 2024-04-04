@@ -125,12 +125,14 @@ install: all
 	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
 
 clean:
-	$(RM) -r ocaml/
-	$(RM) solo5.conf
+	$(RM) -rf _build
 	$(MAKE) -C openlibm clean
-	$(MAKE) -C nolibc \
-	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)" \
-	    clean
+	$(MAKE) -C nolibc clean FREESTANDING_CFLAGS=_
+	if [ -d ocaml ] ; then $(MAKE) -C ocaml clean ; fi
+
 
 distclean: clean
-	rm Makeconf
+	$(RM) -f Makeconf
+# Don't remove the ocaml directory itself, to play nicer with
+# development in there
+	if [ -d ocaml ] ; then $(MAKE) -C ocaml distclean ; fi
