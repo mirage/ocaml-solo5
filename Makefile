@@ -141,3 +141,8 @@ distclean: clean
 all: $(LIBS) $(OCAML_IS_BUILT) \
      _build/solo5.conf _build/empty-META \
      $(TOOLCHAIN_FINAL)
+
+test:
+	$(MAKE) -C nolibc test-headers \
+	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
