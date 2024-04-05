@@ -24,7 +24,7 @@ depends: [
   "conf-git" {build} # to patch the compiler sources
   "conf-pkg-config" {build} # to detect how to link with zstd
   "ocamlfind" {build} # needed by dune context (for tests)
-  "ocaml" {>= "5.0" & < "5.2"}
+  "ocaml" {= "5.2.0"}
   "solo5" {>= "0.8.0"}
   "solo5-cross-aarch64" {>= "0.8.0" }
 ]
