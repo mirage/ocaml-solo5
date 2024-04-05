@@ -15,14 +15,18 @@ build: [
    "--ocaml-configure-option=--enable-flambda" {ocaml-option-flambda:installed}
   ]
   [make "-j%{jobs}%"]
+  [make "%{name}%.install"]
 ]
-install: [make "install" ]
+run-test: [
+  [make "test"]
+]
 depends: [
-  "conf-which" {build}
+  "conf-git" {build} # to patch the compiler sources
+  "conf-pkg-config" {build} # to detect how to link with zstd
   "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
   "ocaml" {>= "5.0" & < "5.2"}
-  "solo5" {>= "0.8.0"}
+  "solo5" {>= "0.9.0"}
 ]
 conflicts: [
   "sexplib" {= "v0.9.0"}

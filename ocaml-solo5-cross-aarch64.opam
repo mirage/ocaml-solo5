@@ -9,20 +9,25 @@ dev-repo: "git+https://github.com/mirage/ocaml-solo5.git"
 build: [
   ["./configure.sh"
    "--prefix=%{prefix}%"
+   "--sysroot=%{_:lib}%"
    "--target=aarch64-solo5-none-static"
    "--ocaml-configure-option=--disable-flat-float-array" {ocaml-option-no-flat-float-array:installed}
    "--ocaml-configure-option=--enable-flambda" {ocaml-option-flambda:installed}
   ]
   [make "-j%{jobs}%"]
+  [make "%{name}%.install"]
 ]
-install: [make "install" ]
+run-test: [
+  [make "test"]
+]
 depends: [
-  "conf-which" {build}
+  "conf-git" {build} # to patch the compiler sources
+  "conf-pkg-config" {build} # to detect how to link with zstd
   "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
   "ocaml" {>= "5.0" & < "5.2"}
-  "solo5" {>= "0.8.0"}
-  "solo5-cross-aarch64" {>= "0.8.0" }
+  "solo5" {>= "0.9.0"}
+  "solo5-cross-aarch64" {>= "0.9.0" }
 ]
 conflicts: [
   "ocaml-solo5"
