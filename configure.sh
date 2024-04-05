@@ -21,6 +21,9 @@ Configures the ocaml-solo5 build system.
 Options:
     --prefix=DIR
         Installation prefix (default: /usr/local).
+    --sysroot=DIR
+        Installation prefix for the OCaml cross-compiler and its supporting
+        libraries (default: <installation prefix>/lib/ocaml-solo5).
     --target=TARGET
         Solo5 compiler toolchain to use.
     --ocaml-configure-option=OPTION
@@ -42,6 +45,9 @@ while [ $# -gt 0 ]; do
         --prefix=*)
             MAKECONF_PREFIX="${OPT#*=}"
             ;;
+        --sysroot=*)
+            MAKECONF_SYSROOT="${OPT#*=}"
+            ;;
         --ocaml-configure-option=*)
             OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT#*=}"
             ;;
@@ -56,6 +62,8 @@ while [ $# -gt 0 ]; do
 
     shift
 done
+
+MAKECONF_SYSROOT="${MAKECONF_SYSROOT:-$MAKECONF_PREFIX/lib/ocaml-solo5}"
 
 [ -z "${CONFIG_TARGET}" ] && die "The --target option needs to be specified."
 
@@ -75,6 +83,7 @@ esac
 
 cat <<EOM >Makeconf
 MAKECONF_PREFIX=${MAKECONF_PREFIX}
+MAKECONF_SYSROOT=${MAKECONF_SYSROOT}
 MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
 MAKECONF_TARGET_ARCH=${TARGET_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
