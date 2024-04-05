@@ -1,8 +1,7 @@
-.PHONY: all clean install distclean ocaml
-
 include Makeconf
 
 # The `all` target is moved to the end to use variables in its dependencies
+.PHONY: default
 default: all
 
 TOP=$(abspath .)
@@ -122,26 +121,30 @@ _build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
 	SYSROOT="$(MAKECONF_SYSROOT)" ./gen_solo5_conf.sh > $@
 
 # COMMANDS
+.PHONY: install
 install: all
 	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
 
+.PHONY: clean
 clean:
 	$(RM) -rf _build
 	$(MAKE) -C openlibm clean
 	$(MAKE) -C nolibc clean FREESTANDING_CFLAGS=_
 	if [ -d ocaml ] ; then $(MAKE) -C ocaml clean ; fi
 
-
+.PHONY: distclean
 distclean: clean
 	$(RM) -f Makeconf
 # Don't remove the ocaml directory itself, to play nicer with
 # development in there
 	if [ -d ocaml ] ; then $(MAKE) -C ocaml distclean ; fi
 
+.PHONY: all
 all: $(LIBS) $(OCAML_IS_BUILT) \
      _build/solo5.conf _build/empty-META \
      $(TOOLCHAIN_FINAL)
 
+.PHONY: test
 test:
 	$(MAKE) -C nolibc test-headers \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
