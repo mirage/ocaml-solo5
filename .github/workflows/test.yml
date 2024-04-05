@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        ocaml-compiler: [5.0.0]
+        ocaml-compiler: [5.2.1]
     name: OCaml ${{ matrix.ocaml-compiler }}
     runs-on: ubuntu-latest
     steps:
