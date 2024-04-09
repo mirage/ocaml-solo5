@@ -54,4 +54,4 @@ test-include/:
 test-include/sys/: test-include/
 	mkdir -p $@
 
-test-headers: test-include/sys/ $(TEST_H_OBJS)
+test-headers: $(TEST_H_OBJS) | test-include/sys/
