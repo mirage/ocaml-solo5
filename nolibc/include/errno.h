@@ -3,6 +3,7 @@
 
 extern int errno;
 #define EBADF        9    /* Bad file number */
+#define EAGAIN      11    /* Resource temporarily unavailable */
 #define ENOENT       2    /* No such file or directory */
 #define ENOMEM      12    /* Out of memory */
 #define EBUSY       16    /* Device or resource busy */

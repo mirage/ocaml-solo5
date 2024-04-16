@@ -108,7 +108,7 @@ STUB_ABORT(mkdir);
 
 /* pthread.h */
 STUB_IGNORE(int, pthread_join, 0);
-STUB_IGNORE(int, pthread_create, 0);
+STUB_IGNORE(int, pthread_create, EAGAIN);
 STUB_IGNORE(int, pthread_attr_init, 0);
 STUB_ABORT(pthread_cleanup_push);
 STUB_ABORT(pthread_cleanup_pop);
