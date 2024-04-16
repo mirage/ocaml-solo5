@@ -22,6 +22,13 @@ gen_cc() {
       ;;
   esac
 
+  # Add the -Wno-unused-command-line-argument option for clang, as we always
+  # give it compiling options, even if it will be only linking
+  # Reuse the test from Solo5 to detect clang
+  if "$SOLO5_TOOLCHAIN-cc" -dM -E - </dev/null | grep -Eq '^#define __clang__ 1$'
+  then CFLAGS="-Wno-unused-command-line-argument $CFLAGS"
+  fi
+
   cat << EOF
 #!/bin/sh
 
