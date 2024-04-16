@@ -18,14 +18,24 @@ LIBS := openlibm/libopenlibm.a nolibc/libnolibc.a
 LIB_CFLAGS=-I$(TOP)/nolibc/include -include _solo5/overrides.h
 
 # NOLIBC
+# Use a phony target indirection, so that nolibc/Makefile is always checked to
+# see whether the library should be rebuilt while avoiding useless rebuild if
+# nolibc/libnolibc.a was up-to-date
 NOLIBC_CFLAGS=$(LIB_CFLAGS) -I$(TOP)/openlibm/src -I$(TOP)/openlibm/include
-nolibc/libnolibc.a:
+nolibc/libnolibc.a: phony-nolibc
+
+.PHONY: phony-nolibc
+phony-nolibc:
 	$(MAKE) -C nolibc libnolibc.a \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
 
 # OPENLIBM
-openlibm/libopenlibm.a:
+# See NOLIBC for explanations of the phony target
+openlibm/libopenlibm.a: phony-openlibm
+
+.PHONY: phony-openlibm
+phony-openlibm:
 	$(MAKE) -C openlibm libopenlibm.a \
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
 	     "CPPFLAGS=$(LIB_CFLAGS)"
