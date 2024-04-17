@@ -1,0 +1,46 @@
+From 99cd05adca76d094f8158dcb4bc00640bdbc215f Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Tue, 19 Mar 2024 19:14:29 +0100
+Subject: [PATCH 10/14] Check that the configured and the installed OCaml are
+ compatible
+
+---
+ configure    | Bin 683026 -> 683593 bytes
+ configure.ac |   7 +++++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/configure b/configure
+index ed543dc3656bd697930d75675c52a636eaec27dc..c8d8deca514907ab6513abc655b6118f5f2dfa73 100755
+GIT binary patch
+delta 436
+zcmbPqL-XVv&4w1n7N!>F7M2#)Eo{FyO_deGQx%F*3rjPLQWX*v^78X^lZ*0;i*=Lp
+za|<$aQi~Mw(-cZFQWc65b5j+{Qj3Z+^Yf-}+{1384HAV4z!YWX6_+ID<fNu3_&X=&
+z<|x1nnZA&lNvfU%4SITd3Q7ugYG&37wOk57keE}HnwU}<54Ry6YPD@belpOiWCh)_
+zywcnRu;NUhlT(XJ6e^TV^^EikloV`%Ocg1dW++YHAj#<<1afU+NoG<`s)7bsqvrI$
+zMn+L=;vcn{B&Hi&U>9)8%)`*8P*$v<g3~fhB?ToFA5TA5KYt|!Q?9hk=?7EUjoUT2
+T*npTFh&h0mbGrr?*Q-PTib#^3
+
+delta 48
+zcmX?kM|08*&4w1n7N!>F7M2#)Eo{Fyr$_j)>$S)8umLeU5OV-A=k|CWu2+cwubU7N
+
+diff --git a/configure.ac b/configure.ac
+index b006cae173..d8a25c5d7c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -825,6 +825,13 @@ AS_IF(
+     CPPFLAGS_FOR_BUILD='$(CPPFLAGS)'
+     LDFLAGS_FOR_BUILD='$(LDFLAGS)'],
+     [cross_compiler=true
++    # We require a non-cross-compiler of the same version
++    AC_MSG_CHECKING([the version of the installed OCaml compiler])
++    already_installed_version=`ocamlc -vnum`
++    AS_IF([test x"AC_PACKAGE_VERSION" = x"$already_installed_version"],
++          [AC_MSG_RESULT([compatible (AC_PACKAGE_VERSION)])],
++          [AC_MSG_ERROR(m4_normalize([incompatible (AC_PACKAGE_VERSION vs
++             $already_installed_version)]))])
+     AC_MSG_NOTICE([detecting the C toolchain for build])
+     AX_PROG_CC_FOR_BUILD])
+ 
+-- 
+2.45.2
+
