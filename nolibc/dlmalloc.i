@@ -5,7 +5,8 @@
   memory allocated in the heap.
   The results of this fast estimation are returned by the
   dlmalloc_memory_usage function exported as malloc_memory_usage.
-  See lines 993, 2629 and in dlmalloc(), dlfree() and dlrealloc*()
+  See lines 993, 2629 and in dlmalloc(), dlfree(), internal_memalign()
+  and dlrealloc*()
 */
 
 /*
@@ -4942,6 +4943,7 @@ static void* internal_memalign(mstate m, size_t alignment, size_t bytes) {
     mem = internal_malloc(m, req);
     if (mem != 0) {
       mchunkptr p = mem2chunk(mem);
+      size_t prevsize = chunksize(p);
       if (PREACTION(m))
         return 0;
       if ((((size_t)(mem)) & (alignment - 1)) != 0) { /* misaligned */
@@ -4990,6 +4992,8 @@ static void* internal_memalign(mstate m, size_t alignment, size_t bytes) {
       assert (chunksize(p) >= nb);
       assert(((size_t)mem & (alignment - 1)) == 0);
       check_inuse_chunk(m, p);
+      /* internal_malloc has been called, but the allocated block might be reduced, so manually update internal_memory_usage */
+      gm->internal_memory_usage += chunksize(p) - prevsize;
       POSTACTION(m);
     }
   }
