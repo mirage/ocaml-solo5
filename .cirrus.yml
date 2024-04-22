@@ -19,6 +19,7 @@ freebsd_task:
   setup_script:
     - opam update
     - opam install dune
+    - opam pin add -n solo5 'https://github.com/shym/solo5.git#freebsd-stdalign'
     - opam pin add -n -t .
     - opam depext -yt ocaml-solo5
     - opam install -t ocaml-solo5 --deps-only
