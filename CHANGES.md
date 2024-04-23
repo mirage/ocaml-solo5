@@ -1,3 +1,8 @@
+## v0.8.4 (2024-04-23)
+
+* malloc: fix the memory allocation tracking for posix_memalign (used in
+  mirage-xen via io-page) (#135 @palainp)
+
 ## v0.8.3 (2024-02-12)
 
 * Fix the compilation of the OCaml toolchain by specifying the right target value
