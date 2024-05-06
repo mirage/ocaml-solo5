@@ -28,6 +28,7 @@ jobs:
             mode:
               name: spt
               exec: true
+    name: ${{ matrix.mode.name }} / ${{ matrix.ocaml-version }}
     runs-on: ${{ matrix.operating-system }}
     steps:
     - uses: actions/checkout@v2
