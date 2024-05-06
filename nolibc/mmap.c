@@ -21,8 +21,8 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
    * since the OCaml code base simply ignores the returned value (as MAP_FIXED
    * enforces the returned value to be either addr or MAP_FAILED).
    *
-   * The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
-   * == -1] is handled so.
+   * The OCaml runtime uses [mmap()] only to allocate memory, so only
+   * [fildes == 1] is handled.
    */
   (void)prot; // unused argument
 
@@ -38,9 +38,9 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
   void *ptr = NULL;
 
   if (addr == NULL) {
-    /* Solo5 may returns -1 and set errno on error, just return MAP_FAILED.
-       It doesn't modify ptr on error: ptr will still be NULL
-     */
+    /* posix_memalign doesn't modify ptr on error: ptr will still be NULL and
+     * so we will return MAP_FAILED with no need to check explicitly the value
+     * returned by posix_memalign */
     posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
   } else {
     if ((flags & MAP_FIXED) != 0) {
