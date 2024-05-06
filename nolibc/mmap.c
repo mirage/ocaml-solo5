@@ -7,14 +7,19 @@
 void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
 
   /* man page for mmap says:
-   * If addr is NULL, then the kernel chooses the (page-aligned) address  at
-   * which to create the mapping; this is the most portable method of creat‐
-   * ing a new mapping. If addr is not NULL, then the kernel takes it as a hint
-   * about where to place the mapping; [...] If another apping already exists
-   * there, the kernel picks a new address that may or *may not* depend on the hint.
+   * If addr is NULL, then the kernel chooses the (page-aligned) address at
+   * which to create the mapping; this is the most portable method of creating a
+   * new mapping.
    *
    * For our purpose (Solo5 & OCaml), OCaml might use a NULL addr and force us to
-   * use posix_memalign. If addr is not NULL we can use [malloc()] instead of.
+   * use posix_memalign.
+   * OCaml calls mmap with a non-null address and with the MAP_FIXED flag only
+   * on already reserved memory to commit or decommit that memory block, ie to
+   * set its protection to PROT_READ|PROT_WRITE or to PROT_NONE, in the
+   * caml_mem_commit and caml_mem_decommit functions.
+   * So we accept this particular case without allocating memory that would leak
+   * since the OCaml code base simply ignores the returned value (as MAP_FIXED
+   * enforces the returned value to be either addr or MAP_FAILED).
    *
    * The OCaml usage of [mmap()] is only to allocate some spaces, only [fildes
    * == -1] is handled so.
@@ -31,16 +36,20 @@ void *mmap(void *addr, size_t len, int prot, int flags, int fildes, off_t off) {
   }
 
   void *ptr = NULL;
-  /* XXX(palainp): Does it worth to have a test on addr here? */
+
   if (addr == NULL) {
     /* Solo5 may returns -1 and set errno on error, just return MAP_FAILED.
        It doesn't modify ptr on error: ptr will still be NULL
      */
     posix_memalign(&ptr, OCAML_SOLO5_PAGESIZE, len);
   } else {
-    ptr = malloc(len);
-    if (ptr == NULL) {
-      errno = ENOMEM;
+    if ((flags & MAP_FIXED) != 0) {
+      /* Case where mmap is called to commit or decommit already reserved
+       * memory. Since we ignore prot, we can simply let it go through */
+      return addr;
+    } else {
+      /* We cannot handle this case */
+      errno = EINVAL;
     }
   }
 
