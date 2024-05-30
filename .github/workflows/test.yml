@@ -24,7 +24,7 @@ jobs:
     - name: Compile example with spt
       run: MODE=spt opam exec -- dune build --root example
     - name: Run example with spt
-      run: opam exec -- solo5-spt example/_build/solo5/main.exe || [ $? -eq 1 ]
+      run: opam exec -- solo5-spt example/_build/solo5/main.exe
     - name: Compile example with virtio
       run: MODE=virtio opam exec -- dune build --root example
     - name: Compile example with muen
