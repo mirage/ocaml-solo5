@@ -5,7 +5,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
-        ocaml-version: [4.12.1,4.13.0,4.13.1]
+        ocaml-version: [4.12.1,4.13.1,4.14.1]
     name: OCaml ${{ matrix.ocaml-version }}
     runs-on: ${{ matrix.operating-system }}
     steps:
