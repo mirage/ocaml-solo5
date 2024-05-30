@@ -1,6 +1,17 @@
 (executable
  (name main)
- (link_flags -cclib "-z solo5-abi=hvt")
+ (link_flags
+  -g
+  -w
+  +A-4-41-42-44
+  -bin-annot
+  -strict-sequence
+  -principal
+  -safe-string
+  -color
+  always
+  -cclib
+  (:include solo5_abi_flag))
  (foreign_stubs
   (language c)
   (names startup manifest)))
@@ -11,9 +22,36 @@
  (action
   (run solo5-elftool gen-manifest manifest.json manifest.c)))
 
+(rule
+ (target mode)
+ (deps
+  (env_var MODE))
+ (action
+  (with-stdout-to
+   %{target}
+   (bash
+     "if [ ! -z \"${MODE+x}\" ]; then echo -n \"$MODE\"; else echo -n \"hvt\"; fi"))))
+
+(rule
+ (target solo5_abi_flag)
+ (deps mode)
+ (action
+  (with-stdout-to
+   %{target}
+   (bash "echo -n \"\\\"-z solo5-abi=\" && cat mode && echo -n \\\""))))
+
+(rule
+ (alias runtest)
+ (enabled_if
+  (= %{context_name} solo5))
+ (action
+  (with-accepted-exit-codes
+   1
+   (run "solo5-%{read:mode}" "%{dep:main.exe}"))))
+
 (alias
  (name default)
  (enabled_if
-  (= %{context_name} default.solo5))
+  (= %{context_name} solo5))
  (deps
   (alias_rec all)))

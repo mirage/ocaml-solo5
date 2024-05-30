@@ -26,4 +26,4 @@ freebsd_task:
     - opam install -t ocaml-solo5 --deps-only
   build_script: opam reinstall -t ocaml-solo5
   test_script:
-    - MODE=hvt opam exec -- dune build --root test
+    - MODE=hvt opam exec -- dune build --root example
