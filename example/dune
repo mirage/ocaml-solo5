@@ -1,6 +1,6 @@
 (executable
  (name main)
- (link_flags -cclib "-z solo5-abi=hvt")
+ (link_flags :standard -cclib "-z solo5-abi=%{env:MODE=hvt}")
  (foreign_stubs
   (language c)
   (names startup manifest)))
@@ -11,9 +11,16 @@
  (action
   (run solo5-elftool gen-manifest manifest.json manifest.c)))
 
+(rule
+ (alias runtest)
+ (enabled_if
+  (= %{context_name} solo5))
+ (action
+  (run "solo5-%{env:MODE=hvt}" "%{dep:main.exe}")))
+
 (alias
  (name default)
  (enabled_if
-  (= %{context_name} default.solo5))
+  (= %{context_name} solo5))
  (deps
   (alias_rec all)))

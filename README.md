@@ -62,16 +62,16 @@ ocamlfind or dune:
 
 #### Example
 
-The `example` describes the minimal structure needed to build an
-ocaml-solo5 executable with dune, linked with the hvt bindings. It
-requires an application manifest and a startup file to initialize the libc.
+The `example` describes the minimal structure needed to build an ocaml-solo5
+executable with dune, linked with the hvt bindings by default. It requires an
+application manifest and a startup file to initialize the libc.
 
 Build: `dune build -x solo5`
-Run: `solo5-hvt _build/default.solo5/main.exe`
+Run: `solo5-hvt _build/solo5/main.exe`
 
 ## Supported compiler versions
 
-Tested against OCaml 4.12.1 through 4.13.0. Other versions may require
+Tested against OCaml 4.12.1 through 4.14.1. Other versions may require
 changing `configure.sh`.
 
 ## Porting to a different (uni)kernel base layer

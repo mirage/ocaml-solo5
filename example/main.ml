@@ -1,1 +1,1 @@
-let () = Printf.printf "\nHello from solo5!\n\n"
+let () = Printf.printf "Hello from OCaml on Solo5!\n%!";;
