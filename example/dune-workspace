@@ -2,8 +2,8 @@
 
 (context (default))
 
-(context (default
- (name solo5)
- (toolchain solo5)
- (host default)
-))
+(context
+ (default
+  (name solo5)
+  (toolchain solo5)
+  (host default)))
