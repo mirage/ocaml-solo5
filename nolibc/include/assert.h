@@ -14,3 +14,7 @@ extern void _assert_fail(const char *, const char *, const char *)
     } while (0)
 
 #endif
+
+#ifndef static_assert
+# define static_assert _Static_assert
+#endif

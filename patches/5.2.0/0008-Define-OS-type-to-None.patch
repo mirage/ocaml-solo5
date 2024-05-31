@@ -1,0 +1,38 @@
+From 4f15eb0496bc6bcbcdc63815228b0106d833f3a1 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel.hym@rustyne.lautre.net>
+Date: Mon, 26 Feb 2024 12:06:45 +0100
+Subject: [PATCH 08/14] Define OS type to None
+
+---
+ configure    | Bin 682822 -> 682872 bytes
+ configure.ac |   4 +++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index ee63acd91c3aa31ceb58584792c0651e25d26391..bd248cf0671fff88bbd11f6d034b13df369f7ffb 100755
+GIT binary patch
+delta 79
+zcmX?hP4mY!&4w1n7N!>F7M2#)Eo?E@)pfLVwRH3H^HOWHz|7Q~G))C7E(IXSFD|Jp
+aNVQe+1Io4sUS|Vhb|B{19(bMe>tp~>WgKS!
+
+delta 44
+ycmexyP4n0_&4w1n7N!>F7M2#)Eo?E@r_Wx>CfvU8IvWtP12M<;h1WT+PX++I#1wG=
+
+diff --git a/configure.ac b/configure.ac
+index 4701a6afc1..a2cf4b8989 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1091,7 +1091,9 @@ AS_CASE([$ocaml_cc_vendor,$target],
+     [oc_ldflags='-brtl -bexpfull'
+     AC_DEFINE([HAS_ARCH_CODE32], [1])],
+   [gcc-*,powerpc-*-linux*],
+-    [oc_ldflags="-mbss-plt"])
++    [oc_ldflags="-mbss-plt"],
++  [*,*-*-none|*,*-*-elf],
++    [ostype="None"])
+ 
+ ## Program to use to install files
+ AC_PROG_INSTALL
+-- 
+2.45.1
+

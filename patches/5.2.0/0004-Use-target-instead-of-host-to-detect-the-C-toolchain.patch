@@ -1,0 +1,112 @@
+From f58d862f6ee668ae00620634876c320f2d6e2205 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel.hym@rustyne.lautre.net>
+Date: Thu, 22 Feb 2024 13:37:28 +0100
+Subject: [PATCH 04/14] Use `target` instead of `host` to detect the C
+ toolchain
+
+When building a cross-compiler, the runtime will run on the target, not
+the host so:
+- set `cross_compiling` by comparing `build` to `target` (rather than to
+  `host`), as this variable will be used later
+- use `target` to set up the tool prefix,
+- as the libtool configuration will configure a `build` to `host`
+  toolchain, temporarily assign `host*` values to `target*` values
+---
+ configure    | Bin 682391 -> 682947 bytes
+ configure.ac |  18 ++++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/configure b/configure
+index 4edee451f1e66ed77232e80e609dc22bbc52fde9..96a3fabf04ce5083219d31b0c70561c7c9207cdb 100755
+GIT binary patch
+delta 1997
+zcmZ`(e@v8R9N#@Z?%*Urew|^$Bb+uum`E7%BVssonzD3=DSE!#y}%pS`yTh6K&`^u
+z$_YlR29L6GP)*m=;*ZADXoZD3)LCQBSmo@8X*og}&6*n4bKLU;^WwI5``qXIdB4BE
+zFTIdHIFi2mW6RFAmhwi`@7Fvkar+I^bh(XZeVSL(Yl)(Jh~jny48!a4`PCY&nKUYX
+zO{w;(CNVYLt&%{UN=ivk;jU9OooJ>#jqEa259dg&s;hn_z*UOBRt*rh!Gko_sXD3N
+zrFlJ5A&5IU7?s<CQB}WPt04i^43Oqj=ah=Bv|63<TwA0YcGYXD#HpAr-SFAp>OGVQ
+zYBW03Y+HO^o<+`3NSET(6f@Iaqp_+s%f82w1Z|iz<4lqC?w6K_@DyZ8gO-xG5T-r9
+zTQ&(;G69y+fxj%-w9#RWrsZQ6JIfle_!4H9#<G=TmdVKf7clPY>cWUnP7i0%MK<s#
+zyPN<(SxC>WYy<640tf0q>AYF|Jn=k87P(WU6RZ}pqn)5Zyq!Wp01KMqZM5!fKspbC
+z2=?GRzyXD2Sq{o(o^G&bjv!_f|5OLeX1-$}0|}Rhdck?&lIeY51rYp^Pe6Nwz<FN)
+zh!%tjOf3j*i*6^xtpukSYW2obV38>C{#LWUhry>7;i>-u&>jfkFx|1AKw(Unjq!1f
+z*u&|DNuWxv-`)dp65sp>^oqRcyAg1=2)sBFUdj*{<-!apU%mo<Alk$(m%#a=e9Cbi
+z%U%Vq%N{IT4^w8#{M1%x$mS2c50h!-0FI|8bTFTG_kb++(GHjsUIGm+BCFS6$85HJ
+z0azYxW7#dRGn}S;w7IOJ6}}g4W879BEz0K^4$1Oc55t4vMA(vk7%x_w6%E3QG|}{q
+zYjBN#KVE}}1<Wr-Pt!^(a?s=BFpA#34d<|!-{1n-hc|A)O1kAZN?={1@Q#Q_+y8_P
+z_Td<;5$i`C6L9Uc^D1^?0)8cDz+K!4*%*IssW=<<nGN~mDEX?NlN)<47hSXpU*8lW
+zMZB6{geGOVJn5W7!TTyup5%{iMlDH#&ul=g(q+GizLyJd;04qr4<&aGDwYS-^eP&b
+znsu+EuDLR9F`5MIYB#zeZ(1KfkMw<x>Sa{^U$Y7Icc)R0Y~4#|(Yg>#Idrn|vnZd)
+z>_$<c%+5Q8u1H@SZ=&r{OF}2=YE*TP;h(-#!hbWbb@(p&SuRPR6?;Xn(P*4XpR?g;
+zw%LZ?lr?eoR}qC?oQH3TM9#<lM>7_WBV|&9iTLGMp;?`dGeuFXX(_G{(_vpP#}08z
+z?0PXCmzqnZxJ3FPW!NL}-Zl7ff$7j%yd_4|X_&<0^<<d_{b4;$qs|TZ54P$_{F+Sn
+zTscmm1JCe+zy^F;wu-YuGGgZ@d{Xk;EAZAdk$HbJ9+Cro<wcx7H*Pwl7X0{CtA<HS
+z_TzZ=OB>#qBRa@GJ`T2H0GG-2J~D`J2$u&=;%-6jEjWYuW95&HKM}0pOk`E}ze-K!
+A-2eap
+
+delta 1502
+zcmZuxYitx%6wcgxZo4~uEW2Bv3cABUG<9p$ls*6{sn`aTM>JVmXt5$)X>G#-(^4Wy
+zTNR@O#7NQ}y8%;T!ZS1m#jBv!E-jEieKnvU5}=Az(L%tgKZwqpTSGE+lAC-v=X~FJ
+z+;ivXH(5B4)%w2n%x2lXMSG<nuO?<SRK+a4_Bo>=YBd<^&1s`1)0l0T>zis<RmYkv
+zQ*Wq=t}<rohGDzqQ@vVo5Wi1o<M2WSFLh8Z*8Q#p@Q%N=kc@n*Z5r=#OWW<!T}I+a
+zn=^11cXY2$U^7YyJ+O>zO(m45Wpn*5p4_&9-8~tcO7Y9>tOT5*QG1K6aVU6g2dluG
+z4rXB8+ia3d>tGjvv}{M56MADOdoRVU`o#g3O@SXAWc`BTzLqSX5lTDEwt5J4CK!i_
+zPI7aW;mpOJ%8KPy)NrbhpB`gVQr*h+1MG-K<m}U|HqGre2ie2p+{RyTu-)!~$<RM6
+zkAw~_;X$RiM&s{NVR(<uTPewYou3cmmF0R+ZqMhFRNTh}d~XW5pP$P!sVTHkVS6c0
+zl6@t7P<3};5f6<ia7iVPsloME@%>|}5_P<7jPc%ee6h<oUBZhz>N4iak<EP17-Jau
+zEFXq{@%Zp;6%WWwyZAoUNZ}sd5u`@W9N`&WLc_g0GS!LpW7!a&>DaJ+i0{HJZCZ+)
+z|1*zs^2(8`yqqa(#V~IKmEqD2Ui2TQQnudYpED(9htJ1-fAV(}W$9mhnx7KB?1j}~
+zqS&kSkj%=1xT4521#mn`$#xY%grYrj;Fd-bXxH)t7MuegUhIZc*<1|W<0<BmGAL9H
+zwv<E5ounXr7Bs8<+tvu*sT*3`3~{xc{*5q4ZFb}}_)2-hZ$do%e^V88LQ{xR9qxuU
+zN`*GM4=?sW5N8iT_U=!5AekZ(CtxRCIM$qk$I0~JDR|nTsmQF~AV*bIIShlU=tr-^
+zvQ*P~6;<n^_D^H&?Z;u*-|Yu-{1#l+9YyT&h<cI^dBst+!ZtFcHz4}7bdri$MtyaT
+z6*KYDJbg0u2Shr0GQ?*@>(3BBspKC`5Z=-8pUxCkfZPki;(oQXEjc2hu0;MgU8JOu
+z`;TIAjh4bEM@mGV>gU0EqFSMj$3zh!JikDc6Jy3g(WRVM7mJ%}fHn$Acv9?DnGQxo
+zuPSLnnOHiNXy;xKCuq<7@=%M&PAB7)*TqY@4nq6=PLvyaL@8kYvw9}}&?nCNsQDGE
+k8%KwT#fjt$dHI-VrR#om<w;?mB>N=W$0Jvs^j3EM3%C3?y#N3J
+
+diff --git a/configure.ac b/configure.ac
+index e23db6acd5..4f8cecf15a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -288,6 +288,14 @@ AC_CANONICAL_BUILD
+ AC_CANONICAL_HOST
+ AC_CANONICAL_TARGET
+ 
++# Override cross_compiling and ac_tool_prefix variables since the C toolchain is
++# used to generate target code when building a cross compiler
++AS_IF([test x"$build" = x"$target"],
++  [cross_compiling=no],
++  [cross_compiling=yes])
++AS_IF([test -n "$target_alias"],
++  [ac_tool_prefix=$target_alias-])
++
+ # Ensure that AC_CONFIG_LINKS will either create symlinks which are compatible
+ # with native Windows (i.e. NTFS symlinks, not WSL or Cygwin-emulated ones) or
+ # use its fallback mechanisms. Native Windows versions of ocamlc/ocamlopt cannot
+@@ -594,12 +602,22 @@ AC_CHECK_TOOLS([LD],[ld link])
+ # Also, it has been observed that, on some platforms (e.g. msvc) LT_INIT
+ # alters the CFLAGS variable, so we save its value before calling the macro
+ # and restore it after the call
++pushdef([host], target)dnl
++pushdef([host_alias], target_alias)dnl
++pushdef([host_cpu], target_cpu)dnl
++pushdef([host_vendor], target_vendor)dnl
++pushdef([host_os], target_os)dnl
+ old_host_os=$host_os
+ AS_IF([test x"$host_os" = "xwindows"],[host_os=mingw])
+ saved_CFLAGS="$CFLAGS"
+ LT_INIT
+ CFLAGS="$saved_CFLAGS"
+ host_os=$old_host_os
++popdef([host_os])dnl
++popdef([host_vendor])dnl
++popdef([host_cpu])dnl
++popdef([host_alias])dnl
++popdef([host])dnl
+ 
+ AS_CASE([$host],
+   [sparc-sun-solaris*],
+-- 
+2.45.1
+

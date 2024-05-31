@@ -1,0 +1,34 @@
+From 4b632a1a37961c4f658b22b8b25f57b2d4a64ead Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel.hym@rustyne.lautre.net>
+Date: Tue, 27 Feb 2024 16:22:58 +0100
+Subject: [PATCH 02/14] Include `config.h` before `HAS_GETTIMEOFDAY` is tested
+
+Also remove a duplicate `errno.h`
+---
+ runtime/unix.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/runtime/unix.c b/runtime/unix.c
+index b397fd2c9c..abdc8cd630 100644
+--- a/runtime/unix.c
++++ b/runtime/unix.c
+@@ -21,6 +21,7 @@
+            /* Helps finding RTLD_DEFAULT in glibc */
+            /* also secure_getenv */
+ 
++#include "caml/config.h"
+ #include <stddef.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -32,8 +33,6 @@
+ #endif
+ #include <sys/stat.h>
+ #include <fcntl.h>
+-#include <errno.h>
+-#include "caml/config.h"
+ #if defined(SUPPORT_DYNAMIC_LINKING) && !defined(BUILDING_LIBCAMLRUNS)
+ #define WITH_DYNAMIC_LINKING
+ #ifdef __CYGWIN__
+-- 
+2.45.1
+

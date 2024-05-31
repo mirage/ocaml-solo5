@@ -1,0 +1,27 @@
+From d348ae928f06909d0da1b748c64ffbf484f88730 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel.hym@rustyne.lautre.net>
+Date: Tue, 27 Feb 2024 16:14:38 +0100
+Subject: [PATCH 01/14] Add missing `defined` in preprocessor test
+
+When `HAS_CLOCK_GETTIME_NSEC_NP` is not defined,
+`#elif HAS_CLOCK_GETTIME_NSEC_NP` triggers a warning
+---
+ runtime/unix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/runtime/unix.c b/runtime/unix.c
+index b5fd4de17b..b397fd2c9c 100644
+--- a/runtime/unix.c
++++ b/runtime/unix.c
+@@ -47,7 +47,7 @@
+ #endif
+ #ifdef HAS_POSIX_MONOTONIC_CLOCK
+ #include <time.h>
+-#elif HAS_CLOCK_GETTIME_NSEC_NP
++#elif defined(HAS_CLOCK_GETTIME_NSEC_NP)
+ #include <time.h>
+ #endif
+ #ifdef HAS_DIRENT
+-- 
+2.45.1
+

@@ -15,5 +15,12 @@ ssize_t write(int, const void *, size_t);
 ssize_t readlink(const char *, char *, size_t);
 int unlink(const char *);
 int rmdir(const char *);
+int usleep(useconds_t);
+int ftruncate(int, off_t);
+long sysconf(int);
+int execv(const char *, char *const []);
+
+#define _SC_PAGESIZE 1
+#define _SC_PAGE_SIZE _SC_PAGESIZE
 
 #endif
