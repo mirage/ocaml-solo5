@@ -4,21 +4,19 @@ jobs:
   test:
     strategy:
       matrix:
-        operating-system: [ubuntu-latest]
-        ocaml-version: [4.12.1,4.13.1,4.14.1]
-    name: OCaml ${{ matrix.ocaml-version }}
-    runs-on: ${{ matrix.operating-system }}
+        ocaml-compiler: ["4.12", "4.13", "4.14"]
+    name: OCaml ${{ matrix.ocaml-compiler }}
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ocaml/setup-ocaml@v2
+    - uses: actions/checkout@v4
+    - uses: ocaml/setup-ocaml@v3
       with:
-        ocaml-compiler: ${{ matrix.ocaml-version }}
+        ocaml-compiler: ${{ matrix.ocaml-compiler }}
         opam-local-packages: |
+          *.opam
           !ocaml-solo5-cross-aarch64.opam
-    - name: Pin package
-      run: opam pin add -n -t -y ocaml-solo5 .
     - name: Install ocaml-solo5 and dune
-      run: opam depext -iyt ocaml-solo5 conf-libseccomp dune
+      run: opam install ocaml-solo5 conf-libseccomp dune
     - name: Compile example with hvt
       run: MODE=hvt opam exec -- dune build --root example
     - name: Compile example with spt
