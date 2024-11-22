@@ -1,15 +1,15 @@
 #!/bin/sh
 
-prog_NAME="$(basename $0)"
+prog_NAME="$(basename "$0")"
 
 err()
 {
-    echo "${prog_NAME}: ERROR: $@" 1>&2
+    echo "${prog_NAME}: ERROR: $*" 1>&2
 }
 
 die()
 {
-    echo "${prog_NAME}: ERROR: $@" 1>&2
+    echo "${prog_NAME}: ERROR: $*" 1>&2
     exit 1
 }
 
