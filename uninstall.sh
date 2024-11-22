@@ -2,7 +2,7 @@
 
 prefix=$1
 if [ "$prefix" = "" ]; then
-  prefix="$(opam var prefix)"
+  prefix="$(ocamlfind query ocaml-src)/../.."
 fi
 
 odir=$prefix/lib

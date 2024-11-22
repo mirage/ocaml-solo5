@@ -2,7 +2,7 @@
 
 prefix="${1:-$PREFIX}"
 if [ "$prefix" = "" ]; then
-    prefix="$(opam var prefix)"
+    prefix="$(ocamlfind query ocaml-src)/../.."
 fi
 
 DESTINC="${prefix}/solo5-sysroot/include/nolibc"
