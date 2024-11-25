@@ -12,6 +12,7 @@ int strcmp(const char *, const char *);
 size_t strlen(const char *);
 size_t strnlen(const char *, size_t);
 char *strerror(int);
+int strerror_r(int errnum, char *buf, size_t buflen);
 /*
  * The following definitions are not required by the OCaml runtime, but are
  * needed to build the freestanding version of GMP used by Mirage.
@@ -27,7 +28,6 @@ int strncmp(const char*, const char*, size_t);
 
 /* TODO(dinosaure): we must track where they are used to know if we need
  * to implement them or not. */
-int strerror_r(int errnum, char *buf, size_t buflen);
 char *strdup(const char *);
 
 #endif

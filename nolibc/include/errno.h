@@ -3,21 +3,24 @@
 
 extern int errno;
 
-/* The following values are taken from:
- * https://github.com/openbsd/src/blob/master/sys/sys/errno.h
- */
-#define ENOENT       2    /* No such file or directory */
-#define EINTR        4    /* Interrupted system call */
-#define EBADF        9    /* Bad file number */
-#define ENOMEM      12    /* Out of memory */
-#define EBUSY       16    /* Device or resource busy */
-#define EINVAL      22    /* Invalid argument */
-#define EMFILE      24    /* Too many open files */
-#define EPIPE       32    /* Broken pipe */
-#define ERANGE      34    /* Math result not representable */
-#define EAGAIN      35    /* Resource temporarily unavailable */
-#define ECONNRESET  54    /* Connection reset by peer */
-#define ENOSYS      78    /* Invalid system call number */
-#define EOVERFLOW   87    /* Value too large for defined data type */
+/* This list of errors must be kept in sync with errlist.c */
+
+#define ENOERROR     0 /* Actual error codes should be > 0 */
+
+#define ENOENT       1
+#define EINTR        2
+#define EBADF        3
+#define ENOMEM       4
+#define EBUSY        5
+#define EINVAL       6
+#define EMFILE       7
+#define EPIPE        8
+#define ERANGE       9
+#define EAGAIN      10
+#define ECONNRESET  11
+#define ENOSYS      12
+#define EOVERFLOW   13
+
+#define NB_ERRORS   14
 
 #endif

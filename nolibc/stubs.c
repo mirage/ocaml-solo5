@@ -144,4 +144,3 @@ STUB_ABORT(pthread_detach);
 STUB_IGNORE(int, sigfillset, 0);
 STUB_ABORT(sigwait);
 STUB_ABORT(usleep);
-STUB_ABORT(strerror_r);

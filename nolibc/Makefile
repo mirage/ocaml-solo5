@@ -16,6 +16,7 @@ CFLAGS+=$(FREESTANDING_CFLAGS)
 OBJS=assert.o \
      ctype.o \
      dtoa.o \
+     errlist.o strerror_r.o \
      memchr.o memcmp.o memcpy.o memmove.o memset.o \
      strcmp.o strlen.o strnlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
      strstr.o strncmp.o puts.o \
