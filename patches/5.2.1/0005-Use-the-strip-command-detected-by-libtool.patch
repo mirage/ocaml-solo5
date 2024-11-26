@@ -1,0 +1,42 @@
+From a67f2491770af3937b9cf5c548855dff678d99b5 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Fri, 5 Jul 2024 12:42:36 +0200
+Subject: [PATCH 05/14] Use the `strip` command detected by libtool
+
+Instead of using `strip` unconditionally to build `tmpheader.exe`, use
+the `strip` command detected by `libtool` during configure so that it is
+replaced with `:` when the command is absent and it becomes easy to
+override it if need be
+---
+ Makefile.config.in | 1 +
+ stdlib/Makefile    | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.config.in b/Makefile.config.in
+index 4243bebad9..b91634efb6 100644
+--- a/Makefile.config.in
++++ b/Makefile.config.in
+@@ -185,6 +185,7 @@ OCAMLOPT_CFLAGS=@ocamlc_cflags@
+ OCAMLOPT_CPPFLAGS=@ocamlc_cppflags@
+ NATIVECCLIBS=@cclibs@
+ SYSTHREAD_SUPPORT=@systhread_support@
++STRIP=@STRIP@
+ PACKLD=@PACKLD@$(EMPTY)
+ CCOMPTYPE=@ccomptype@
+ TOOLCHAIN=@toolchain@
+diff --git a/stdlib/Makefile b/stdlib/Makefile
+index 50f825a1b3..b6286920f2 100644
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -98,7 +98,7 @@ tmpheader.exe: $(HEADERPROGRAM).$(O)
+ 	$(V_MKEXE)$(call MKEXE_VIA_CC,$@,$^)
+ # FIXME This is wrong - mingw could invoke strip; MSVC equivalent?
+ ifneq "$(UNIX_OR_WIN32)" "win32"
+-	strip $@
++	$(STRIP) $@
+ endif
+ 
+ stdlib.cma: $(OBJS)
+-- 
+2.45.2
+

@@ -1,0 +1,53 @@
+From d6d0345ba0d079ffc17c397ae1773e50ecc470b1 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Mon, 29 Apr 2024 18:21:24 +0200
+Subject: [PATCH 14/14] Set stack as non-executable on freestanding targets
+
+---
+ asmcomp/amd64/emit.mlp | 2 +-
+ asmcomp/arm64/emit.mlp | 2 +-
+ runtime/amd64.S        | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/asmcomp/amd64/emit.mlp b/asmcomp/amd64/emit.mlp
+index 619ce9c3c5..19f896c1ac 100644
+--- a/asmcomp/amd64/emit.mlp
++++ b/asmcomp/amd64/emit.mlp
+@@ -1079,7 +1079,7 @@ let end_assembly() =
+     D.size frametable (ConstSub (ConstThis, ConstLabel frametable))
+   end;
+ 
+-  if system = S_linux then
++  if system = S_linux || system = S_unknown then
+     (* Mark stack as non-executable, PR#4564 *)
+     D.section [".note.GNU-stack"] (Some "") [ "%progbits" ];
+ 
+diff --git a/asmcomp/arm64/emit.mlp b/asmcomp/arm64/emit.mlp
+index 1816f8c345..41769e4f93 100644
+--- a/asmcomp/arm64/emit.mlp
++++ b/asmcomp/arm64/emit.mlp
+@@ -1217,7 +1217,7 @@ let end_assembly () =
+   emit_symbol_type emit_symbol lbl "object";
+   emit_symbol_size lbl;
+   begin match Config.system with
+-  | "linux" ->
++  | "linux" | "none" ->
+       (* Mark stack as non-executable *)
+       `	.section	.note.GNU-stack,\"\",%progbits\n`
+   | _ -> ()
+diff --git a/runtime/amd64.S b/runtime/amd64.S
+index 49c712b167..be0856a72b 100644
+--- a/runtime/amd64.S
++++ b/runtime/amd64.S
+@@ -1386,7 +1386,7 @@ G(caml_negf_mask):
+ G(caml_absf_mask):
+         .quad   0x7FFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF
+ 
+-#if defined(SYS_linux)
++#if defined(SYS_linux) || defined(SYS_none)
+     /* Mark stack as non-executable, PR#4564 */
+         .section .note.GNU-stack,"",%progbits
+ #endif
+-- 
+2.45.2
+

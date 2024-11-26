@@ -1,0 +1,44 @@
+From 40f00c44630bae376edf63dc5f76150b3a8065af Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Wed, 20 Mar 2024 17:41:26 +0100
+Subject: [PATCH 11/14] Use the target pkg-config to detect zstd
+
+Make sure that we don't detect zstd on build when we are building a
+cross-compiler, as the native zstd has no reason to be compatible with
+the cross toolchain
+---
+ configure    | Bin 683595 -> 683354 bytes
+ configure.ac |   2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 58c25a0c685bf6860c63c9c394d191f9281bd1b3..e364c57560a234055311de9b09ff0f399fd0f44a 100755
+GIT binary patch
+delta 151
+zcmV;I0BHZq+$q}HDS(6lgaU*Egam{Iga(8Mv<N(Mmy~M<E0>RQ2tN&UVRC0>bYEd?
+zX<>6Mx88CHV+59$0ST8ba0d&QSa%2*m(sogDwlJ22ppG`a0ef^tak{b1DEr^2oaZv
+zcnA~)A|NIvAeVu72pb4JB4%N1b7dm8OnV4E0hi=`2q6SzY;$FouzUy_hXsBJw*`I)
+FM({SFH0=NY
+
+delta 171
+zcmcb0OY`&{&4w1n7N!>F7M2#)7Pc1lEgUvQ)4#lA3T7_IPM_Ylo5Ongft!qiVBUq@
+z9J8lOlyUHFk1yuf&OAL}1(W!6t#S^D>6zsm^3z4WFv@OUUe2+YdHSzX4({zst2qo9
+zr~BKp@ktbv#0Pl0$2<G`xp}%PDcCAhSSyrdq~=ZkRl^}Qo%=G=<mn1GSOuofjbU~J
+Wv5co*ui=ny7pdjgE>g?s_5lEp)jm4_
+
+diff --git a/configure.ac b/configure.ac
+index c5b2a3f217..14d0356368 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2261,7 +2261,7 @@ AC_CHECK_HEADER([spawn.h],
+   [AC_CHECK_FUNC([posix_spawn],
+     [AC_CHECK_FUNC([posix_spawnp], [AC_DEFINE([HAS_POSIX_SPAWN])])])])
+ 
+-AC_PATH_TOOL([PKG_CONFIG], [pkg-config], [false])
++AC_PATH_TARGET_TOOL([PKG_CONFIG], [pkg-config], [false])
+ 
+ ## ZSTD compression library
+ 
+-- 
+2.45.2
+
