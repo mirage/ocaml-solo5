@@ -71,7 +71,8 @@ Run: `solo5-hvt _build/solo5/main.exe`
 
 ## Supported compiler versions
 
-Tested against OCaml 5.0. Other versions may require changing `configure.sh`.
+Tested against OCaml 5.2.1. Other versions would require specific patches (see
+the `patches` directory).
 
 ## Porting to a different (uni)kernel base layer
 
