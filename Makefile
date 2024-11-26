@@ -1,4 +1,4 @@
-.PHONY: all clean install uninstall distclean ocaml
+.PHONY: all clean install distclean ocaml
 
 include Makeconf
 
@@ -121,9 +121,6 @@ solo5.conf: solo5.conf.in
 # COMMANDS
 install: all
 	MAKE=$(MAKE) PREFIX=$(MAKECONF_PREFIX) ./install.sh
-
-uninstall:
-	./uninstall.sh
 
 clean:
 	$(RM) -r ocaml/
