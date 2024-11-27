@@ -1,13 +1,8 @@
 #!/bin/sh -ex
 
-prefix="${1:-$PREFIX}"
-if [ "$prefix" = "" ]; then
-    prefix="$(opam var prefix)"
-fi
-
-DESTINC="${prefix}/solo5-sysroot/include/nolibc"
-DESTLIB="${prefix}/solo5-sysroot/lib/nolibc"
-SYSROOT="${prefix}/solo5-sysroot"
+DESTINC="${PREFIX}/solo5-sysroot/include/nolibc"
+DESTLIB="${PREFIX}/solo5-sysroot/lib/nolibc"
+SYSROOT="${PREFIX}/solo5-sysroot"
 mkdir -p "${DESTINC}" "${DESTLIB}" "${SYSROOT}"
 
 # nolibc
@@ -20,7 +15,6 @@ cp openlibm/src/*h "${DESTINC}"
 cp openlibm/libopenlibm.a "${DESTLIB}"
 
 # OCaml
-MAKE=${MAKE:=make}
 ${MAKE} -C ocaml install
 
 # META: ocamlfind and other build utilities test for existance ${DESTLIB}/META
@@ -28,8 +22,8 @@ ${MAKE} -C ocaml install
 touch "${DESTLIB}/META"
 
 # findlib
-mkdir -p "${prefix}/lib/findlib.conf.d"
-cp solo5.conf "${prefix}/lib/findlib.conf.d/solo5.conf"
+mkdir -p "${PREFIX}/lib/findlib.conf.d"
+cp solo5.conf "${PREFIX}/lib/findlib.conf.d/solo5.conf"
 
 # dummy packages
 mkdir -p "${SYSROOT}/lib/threads"
