@@ -76,6 +76,7 @@ static uintptr_t sbrk_start;
 static uintptr_t sbrk_end;
 static uintptr_t sbrk_cur;
 static uintptr_t sbrk_guard_size;
+static uintptr_t tls_main;
 
 /*
  * To be called by Mirage/Solo5 before calling caml_startup().
@@ -96,6 +97,20 @@ void _nolibc_init(uintptr_t heap_start, size_t heap_size)
 
     sbrk_start = sbrk_cur = heap_start;
     sbrk_end = heap_start + heap_size;
+
+    tls_main = (uintptr_t)calloc(solo5_tls_size(), sizeof(uint8_t));
+    if (tls_main == (uintptr_t)NULL) {
+        solo5_console_write("TLS alloc failed\n", 17);
+        abort();
+    }
+    if (solo5_tls_init(tls_main) != SOLO5_R_OK) {
+        solo5_console_write("TLS init failed\n", 16);
+        abort();
+    }
+    if (solo5_set_tls_base(solo5_tls_tp_offset(tls_main)) != SOLO5_R_OK) {
+        solo5_console_write("TLS set failed\n", 15);
+        abort();
+    }
 }
 
 /*

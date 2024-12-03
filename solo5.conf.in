@@ -1,8 +1,0 @@
-path(solo5) = "@@PREFIX@@/solo5-sysroot/lib"
-destdir(solo5) = "@@PREFIX@@/solo5-sysroot/lib"
-stdlib(solo5) = "@@PREFIX@@/solo5-sysroot/lib/ocaml"
-ocamlopt(solo5) = "@@PREFIX@@/solo5-sysroot/bin/ocamlopt"
-ocamlc(solo5) = "@@PREFIX@@/solo5-sysroot/bin/ocamlc"
-ocamlmklib(solo5) = "@@PREFIX@@/solo5-sysroot/bin/ocamlmklib"
-ocamldep(solo5) = "@@PREFIX@@/solo5-sysroot/bin/ocamldep"
-ocamlcp(solo5) = "@@PREFIX@@/solo5-sysroot/bin/ocamlcp"

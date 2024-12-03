@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        ocaml-compiler: ["4.12", "4.13", "4.14"]
+        ocaml-compiler: [5.2.1]
     name: OCaml ${{ matrix.ocaml-compiler }}
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +23,11 @@ jobs:
       run: MODE=spt opam exec -- dune build --root example
     - name: Run example with spt
       run: opam exec -- solo5-spt example/_build/solo5/main.exe
+    - name: Compile a failing example with spt
+      run: MODE=spt SOLO5TEST=sysfail opam exec -- dune build --root example
+    - name: Run a failing example with spt
+      run: |
+        ! opam exec -- solo5-spt example/_build/solo5/main.exe
     - name: Compile example with virtio
       run: MODE=virtio opam exec -- dune build --root example
     - name: Compile example with muen

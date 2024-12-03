@@ -6,6 +6,9 @@
   (names startup manifest)))
 
 (rule
+ (copy main.%{env:SOLO5TEST=hello}.ml main.ml))
+
+(rule
  (targets manifest.c)
  (deps manifest.json)
  (action

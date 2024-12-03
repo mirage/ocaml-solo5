@@ -1,0 +1,311 @@
+From acd2f9c4ae0ee5dd550796b547e781794eb9b58c Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Wed, 21 Feb 2024 18:47:12 +0100
+Subject: [PATCH 02/14] Detect and use {CC,...}_FOR_BUILD to build sak
+
+---
+ Makefile                          |   9 +-
+ Makefile.config.in                |   4 +
+ aclocal.m4                        |   1 +
+ build-aux/ax_prog_cc_for_build.m4 | 155 ++++++++++++++++++++++++++++++
+ configure                         | Bin 647326 -> 682393 bytes
+ configure.ac                      |  10 +-
+ 6 files changed, 172 insertions(+), 7 deletions(-)
+ create mode 100644 build-aux/ax_prog_cc_for_build.m4
+
+diff --git a/Makefile b/Makefile
+index 71d41cd2d6..df191af79c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1284,11 +1284,10 @@ runtime/caml/jumptbl.h : runtime/caml/instruct.h
+ 	sed -n -e '/^  /s/ \([A-Z]\)/ \&\&lbl_\1/gp' \
+ 	       -e '/^}/q' > $@
+ 
+-# These are provided as a temporary shim to allow cross-compilation systems
+-# to supply a host C compiler and different flags and a linking macro.
+-SAK_CC ?= $(CC)
+-SAK_CFLAGS ?= $(OC_CFLAGS) $(CFLAGS) $(OC_CPPFLAGS) $(CPPFLAGS)
+-SAK_LINK ?= $(MKEXE_VIA_CC)
++SAK_CC ?= $(CC_FOR_BUILD)
++SAK_CFLAGS ?=\
++  $(OC_CFLAGS) $(CFLAGS_FOR_BUILD) $(OC_CPPFLAGS) $(CPPFLAGS_FOR_BUILD)
++SAK_LINK ?= $(SAK_CC) $(SAK_CFLAGS) $(OC_EXE_LDFLAGS) $(OUTPUTEXE)$(1) $(2)
+ 
+ $(SAK): runtime/sak.$(O)
+ 	$(V_MKEXE)$(call SAK_LINK,$@,$^)
+diff --git a/Makefile.config.in b/Makefile.config.in
+index 559738f6ed..4243bebad9 100644
+--- a/Makefile.config.in
++++ b/Makefile.config.in
+@@ -65,11 +65,13 @@ LIBTOOL = $(TOP_BUILDDIR)/libtool
+ ### Which C compiler to use
+ TOOLPREF=@ac_tool_prefix@
+ CC=@CC@
++CC_FOR_BUILD=@CC_FOR_BUILD@
+ 
+ CC_HAS_DEBUG_PREFIX_MAP=@cc_has_debug_prefix_map@
+ AS_HAS_DEBUG_PREFIX_MAP=@as_has_debug_prefix_map@
+ 
+ LDFLAGS?=@LDFLAGS@
++LDFLAGS_FOR_BUILD=@LDFLAGS_FOR_BUILD@
+ 
+ ### How to invoke the C preprocessor through the C compiler
+ CPP=@CPP@
+@@ -160,7 +162,9 @@ UNIX_OR_WIN32=@unix_or_win32@
+ INSTALL_SOURCE_ARTIFACTS=@install_source_artifacts@
+ 
+ CFLAGS=@CFLAGS@
++CFLAGS_FOR_BUILD=@CFLAGS_FOR_BUILD@
+ CPPFLAGS=@CPPFLAGS@
++CPPFLAGS_FOR_BUILD=@CPPFLAGS_FOR_BUILD@
+ OCAMLC_CFLAGS=@ocamlc_cflags@
+ 
+ OCAMLC_CPPFLAGS=@ocamlc_cppflags@
+diff --git a/aclocal.m4 b/aclocal.m4
+index cb73385dda..d2e58a45f6 100644
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -30,6 +30,7 @@ m4_include([build-aux/ax_check_compile_flag.m4])
+ 
+ # Macros from the autoconf macro archive
+ m4_include([build-aux/ax_func_which_gethostbyname_r.m4])
++m4_include([build-aux/ax_prog_cc_for_build.m4])
+ m4_include([build-aux/ax_pthread.m4])
+ 
+ # OCaml version
+diff --git a/build-aux/ax_prog_cc_for_build.m4 b/build-aux/ax_prog_cc_for_build.m4
+new file mode 100644
+index 0000000000..1db8d73f96
+--- /dev/null
++++ b/build-aux/ax_prog_cc_for_build.m4
+@@ -0,0 +1,155 @@
++# ===========================================================================
++#   https://www.gnu.org/software/autoconf-archive/ax_prog_cc_for_build.html
++# ===========================================================================
++#
++# SYNOPSIS
++#
++#   AX_PROG_CC_FOR_BUILD
++#
++# DESCRIPTION
++#
++#   This macro searches for a C compiler that generates native executables,
++#   that is a C compiler that surely is not a cross-compiler. This can be
++#   useful if you have to generate source code at compile-time like for
++#   example GCC does.
++#
++#   The macro sets the CC_FOR_BUILD and CPP_FOR_BUILD macros to anything
++#   needed to compile or link (CC_FOR_BUILD) and preprocess (CPP_FOR_BUILD).
++#   The value of these variables can be overridden by the user by specifying
++#   a compiler with an environment variable (like you do for standard CC).
++#
++#   It also sets BUILD_EXEEXT and BUILD_OBJEXT to the executable and object
++#   file extensions for the build platform, and GCC_FOR_BUILD to `yes' if
++#   the compiler we found is GCC. All these variables but GCC_FOR_BUILD are
++#   substituted in the Makefile.
++#
++# LICENSE
++#
++#   Copyright (c) 2008 Paolo Bonzini <bonzini@gnu.org>
++#
++#   Copying and distribution of this file, with or without modification, are
++#   permitted in any medium without royalty provided the copyright notice
++#   and this notice are preserved. This file is offered as-is, without any
++#   warranty.
++
++#serial 21
++
++AU_ALIAS([AC_PROG_CC_FOR_BUILD], [AX_PROG_CC_FOR_BUILD])
++AC_DEFUN([AX_PROG_CC_FOR_BUILD], [dnl
++AC_REQUIRE([AC_PROG_CC])dnl
++AC_REQUIRE([AC_PROG_CPP])dnl
++AC_REQUIRE([AC_CANONICAL_BUILD])dnl
++
++dnl Use the standard macros, but make them use other variable names
++dnl
++pushdef([ac_cv_prog_CPP], ac_cv_build_prog_CPP)dnl
++pushdef([ac_cv_prog_cc_c89], ac_cv_build_prog_cc_c89)dnl
++pushdef([ac_cv_prog_cc_c99], ac_cv_build_prog_cc_c99)dnl
++pushdef([ac_cv_prog_cc_c11], ac_cv_build_prog_cc_c11)dnl
++pushdef([ac_cv_prog_gcc], ac_cv_build_prog_gcc)dnl
++pushdef([ac_cv_prog_cc_works], ac_cv_build_prog_cc_works)dnl
++pushdef([ac_cv_prog_cc_cross], ac_cv_build_prog_cc_cross)dnl
++pushdef([ac_cv_prog_cc_g], ac_cv_build_prog_cc_g)dnl
++pushdef([ac_cv_c_compiler_gnu], ac_cv_build_c_compiler_gnu)dnl
++pushdef([ac_cv_exeext], ac_cv_build_exeext)dnl
++pushdef([ac_cv_objext], ac_cv_build_objext)dnl
++pushdef([ac_exeext], ac_build_exeext)dnl
++pushdef([ac_objext], ac_build_objext)dnl
++pushdef([CC], CC_FOR_BUILD)dnl
++pushdef([CPP], CPP_FOR_BUILD)dnl
++pushdef([GCC], GCC_FOR_BUILD)dnl
++pushdef([CFLAGS], CFLAGS_FOR_BUILD)dnl
++pushdef([CPPFLAGS], CPPFLAGS_FOR_BUILD)dnl
++pushdef([EXEEXT], BUILD_EXEEXT)dnl
++pushdef([LDFLAGS], LDFLAGS_FOR_BUILD)dnl
++pushdef([OBJEXT], BUILD_OBJEXT)dnl
++pushdef([host], build)dnl
++pushdef([host_alias], build_alias)dnl
++pushdef([host_cpu], build_cpu)dnl
++pushdef([host_vendor], build_vendor)dnl
++pushdef([host_os], build_os)dnl
++pushdef([ac_cv_host], ac_cv_build)dnl
++pushdef([ac_cv_host_alias], ac_cv_build_alias)dnl
++pushdef([ac_cv_host_cpu], ac_cv_build_cpu)dnl
++pushdef([ac_cv_host_vendor], ac_cv_build_vendor)dnl
++pushdef([ac_cv_host_os], ac_cv_build_os)dnl
++pushdef([ac_tool_prefix], ac_build_tool_prefix)dnl
++pushdef([am_cv_CC_dependencies_compiler_type], am_cv_build_CC_dependencies_compiler_type)dnl
++pushdef([am_cv_prog_cc_c_o], am_cv_build_prog_cc_c_o)dnl
++pushdef([cross_compiling], cross_compiling_build)dnl
++
++cross_compiling_build=no
++
++ac_build_tool_prefix=
++AS_IF([test -n "$build"],      [ac_build_tool_prefix="$build-"],
++      [test -n "$build_alias"],[ac_build_tool_prefix="$build_alias-"])
++
++AC_LANG_PUSH([C])
++
++dnl The pushdef([ac_cv_c_compiler_gnu], ...) currently does not cover
++dnl the use of this variable in _AC_LANG_COMPILER_GNU called by
++dnl AC_PROG_CC. Unset this cache variable temporarily as a workaround.
++was_set_c_compiler_gnu=${[ac_cv_c_compiler_gnu]+y}
++AS_IF([test ${was_set_c_compiler_gnu}],
++    [saved_c_compiler_gnu=$[ac_cv_c_compiler_gnu]
++    AS_UNSET([[ac_cv_c_compiler_gnu]])])
++
++AC_PROG_CC
++
++dnl Restore ac_cv_c_compiler_gnu
++AS_IF([test ${was_set_c_compiler_gnu}],
++  [[ac_cv_c_compiler_gnu]=$[saved_c_compiler_gnu]])
++
++_AC_COMPILER_EXEEXT
++_AC_COMPILER_OBJEXT
++AC_PROG_CPP
++
++dnl Restore the old definitions
++dnl
++popdef([cross_compiling])dnl
++popdef([am_cv_prog_cc_c_o])dnl
++popdef([am_cv_CC_dependencies_compiler_type])dnl
++popdef([ac_tool_prefix])dnl
++popdef([ac_cv_host_os])dnl
++popdef([ac_cv_host_vendor])dnl
++popdef([ac_cv_host_cpu])dnl
++popdef([ac_cv_host_alias])dnl
++popdef([ac_cv_host])dnl
++popdef([host_os])dnl
++popdef([host_vendor])dnl
++popdef([host_cpu])dnl
++popdef([host_alias])dnl
++popdef([host])dnl
++popdef([OBJEXT])dnl
++popdef([LDFLAGS])dnl
++popdef([EXEEXT])dnl
++popdef([CPPFLAGS])dnl
++popdef([CFLAGS])dnl
++popdef([GCC])dnl
++popdef([CPP])dnl
++popdef([CC])dnl
++popdef([ac_objext])dnl
++popdef([ac_exeext])dnl
++popdef([ac_cv_objext])dnl
++popdef([ac_cv_exeext])dnl
++popdef([ac_cv_c_compiler_gnu])dnl
++popdef([ac_cv_prog_cc_g])dnl
++popdef([ac_cv_prog_cc_cross])dnl
++popdef([ac_cv_prog_cc_works])dnl
++popdef([ac_cv_prog_cc_c89])dnl
++popdef([ac_cv_prog_gcc])dnl
++popdef([ac_cv_prog_CPP])dnl
++
++dnl restore global variables ac_ext, ac_cpp, ac_compile,
++dnl ac_link, ac_compiler_gnu (dependant on the current
++dnl language after popping):
++AC_LANG_POP([C])
++
++dnl Finally, set Makefile variables
++dnl
++AC_SUBST(BUILD_EXEEXT)dnl
++AC_SUBST(BUILD_OBJEXT)dnl
++AC_SUBST([CFLAGS_FOR_BUILD])dnl
++AC_SUBST([CPPFLAGS_FOR_BUILD])dnl
++AC_SUBST([LDFLAGS_FOR_BUILD])dnl
++])
+diff --git a/configure b/configure
+index 49d5bff6495b2f38d91d97ec777a4212e3c23677..9f16ca87352a88b5e995631c15fd8914f6b2ebfc 100755
+GIT binary patch
+delta 6754
+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
+
+delta 62
+zcmbPvS##b&^$i_<&20YdZ2pWu%ml>DK+Lk8&7U=4`}CCy*!ib_XJZp-XX|GJVs;?r
+L*v{6^Ir$a<qSX}Z
+
+diff --git a/configure.ac b/configure.ac
+index dff57a2782..2e3a11f60c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -784,8 +784,14 @@ dnl nefarious single quotes which may appear in any of the strings.
+ 
+ AS_IF(
+   [test x"$host" = x"$target"],
+-    [cross_compiler=false],
+-    [cross_compiler=true])
++    [cross_compiler=false
++    CC_FOR_BUILD='$(CC)'
++    CFLAGS_FOR_BUILD='$(CFLAGS)'
++    CPPFLAGS_FOR_BUILD='$(CPPFLAGS)'
++    LDFLAGS_FOR_BUILD='$(LDFLAGS)'],
++    [cross_compiler=true
++    AC_MSG_NOTICE([detecting the C toolchain for build])
++    AX_PROG_CC_FOR_BUILD])
+ 
+ # Checks for programs
+ 
+-- 
+2.45.2
+

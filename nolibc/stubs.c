@@ -55,8 +55,11 @@ STUB_WARN_ONCE(int, getc, EOF);
 STUB_WARN_ONCE(int, ungetc, EOF);
 STUB_WARN_ONCE(int, fwrite, 0);
 STUB_WARN_ONCE(int, fputc, EOF);
+STUB_WARN_ONCE(int, fputs, EOF);
 STUB_WARN_ONCE(int, putc, EOF);
 STUB_WARN_ONCE(int, ferror, 1);
+STUB_WARN_ONCE(int, fopen, 1);
+STUB_WARN_ONCE(int, fclose, 1);
 
 /* stdlib.h */
 STUB_WARN_ONCE(char *, getenv, NULL);
@@ -75,6 +78,8 @@ STUB_ABORT(read);
 STUB_IGNORE(int, readlink, -1);
 STUB_ABORT(unlink);
 STUB_ABORT(rmdir);
+STUB_ABORT(ftruncate);
+STUB_ABORT(execv);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
@@ -100,3 +105,42 @@ STUB_ABORT(strerror);
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
 STUB_ABORT(mkdir);
+
+/* pthread.h */
+STUB_IGNORE(int, pthread_join, 0);
+STUB_IGNORE(int, pthread_create, EAGAIN);
+STUB_IGNORE(int, pthread_attr_init, 0);
+STUB_ABORT(pthread_cleanup_push);
+STUB_ABORT(pthread_cleanup_pop);
+
+/* above that line, for OCaml 5, those are only required (i guess) for the configure step */
+STUB_IGNORE(int, pthread_mutex_lock, 0);
+STUB_IGNORE(int, pthread_mutex_trylock, 0);
+STUB_IGNORE(int, pthread_mutex_unlock, 0);
+STUB_IGNORE(int, pthread_mutex_destroy, 0);
+STUB_IGNORE(int, pthread_mutex_init, 0);
+
+STUB_IGNORE(int, pthread_mutexattr_init, 0);
+STUB_IGNORE(int, pthread_mutexattr_destroy, 0);
+STUB_IGNORE(int, pthread_mutexattr_settype, 0);
+
+STUB_IGNORE(int, pthread_sigmask, 0);
+
+STUB_IGNORE(int, pthread_equal, 1);
+
+STUB_IGNORE(int, pthread_condattr_init, 0);
+/* pthread_condattr_destroy: not used by Ocaml 5 (pthread_condattr_init is only used in
+   ocaml/runtime/platform.c with a function local variable as argument)
+ */
+
+STUB_IGNORE(int, pthread_cond_init, 0);
+STUB_ABORT(pthread_cond_destroy);
+STUB_ABORT(pthread_cond_wait);
+STUB_ABORT(pthread_cond_signal);
+STUB_IGNORE(int, pthread_cond_broadcast, 0);
+STUB_ABORT(pthread_self);
+STUB_ABORT(pthread_detach);
+
+STUB_IGNORE(int, sigfillset, 0);
+STUB_ABORT(sigwait);
+STUB_ABORT(usleep);

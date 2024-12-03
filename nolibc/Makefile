@@ -1,11 +1,8 @@
 ifeq ($(FREESTANDING_CFLAGS),)
     $(error FREESTANDING_CFLAGS not set)
 endif
-ifeq ($(SYSDEP_OBJS),)
-    $(error SYSDEP_OBJS not set)
-endif
 
-all: libnolibc.a
+all: libnolibc.a test-headers
 
 .PHONY: all test-headers clean
 
@@ -19,15 +16,20 @@ CFLAGS+=$(FREESTANDING_CFLAGS)
 OBJS=assert.o \
      ctype.o \
      dtoa.o \
+     errlist.o strerror_r.o \
      memchr.o memcmp.o memcpy.o memmove.o memset.o \
-     strcmp.o strlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
-     strstr.o strncmp.o \
+     strcmp.o strlen.o strnlen.o strtol.o strchr.o strchrnul.o strncpy.o stpncpy.o \
+     strstr.o strncmp.o puts.o \
      stubs.o \
-     vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o
+     vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o \
+     sysconf.o \
+     mmap.o
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
 
-libnolibc.a: $(OBJS) $(SYSDEP_OBJS) test-headers
+SYSDEP_OBJS=sysdeps_solo5.o
+
+libnolibc.a: $(OBJS) $(SYSDEP_OBJS)
 	$(AR) rcs $@ $(OBJS) $(SYSDEP_OBJS)
 
 # The following test ensures that each header file provided by nolibc is both
@@ -42,15 +44,15 @@ TEST_H_OBJS=$(patsubst %.h,test-%.o,$(HEADERS))
 
 # For each HEADER we want to test, generate a C source file including only
 # that HEADER. As above, HEADER may include subdirectories.
-test-include/%.c: include/%.h | test-include/sys
+test-include/%.c: include/%.h | test-include/sys/
 	echo "#include \"../$<\"" >$@
 
 .PRECIOUS: test-include/%.c
 
-test-include:
-	mkdir $@
+test-include/:
+	mkdir -p $@
 
-test-include/sys: test-include
-	mkdir $@
+test-include/sys/: test-include/
+	mkdir -p $@
 
-test-headers: $(TEST_H_OBJS)
+test-headers: $(TEST_H_OBJS) | test-include/sys/

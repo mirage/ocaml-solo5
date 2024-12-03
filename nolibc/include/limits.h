@@ -18,5 +18,6 @@
 #define ULONG_MAX (2UL*LONG_MAX+1)
 #define NL_ARGMAX 9
 #define UCHAR_MAX 255
+#define CHAR_BIT 8
 
 #endif
