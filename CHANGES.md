@@ -1,3 +1,11 @@
+## v0.8.5 (2024-12-04)
+
+* use ocamlfind instead of opam to discover ocaml-src (@hannesm #142)
+* CI fixes (@shym #136, @hannesm #140)
+* Deduplicate example, fix formatting (@shym #137)
+* Update GitHub actions (@smorimoto #138)
+* Fix errors reported by shellcheck (@shym #141)
+
 ## v0.8.4 (2024-04-23)
 
 * malloc: fix the memory allocation tracking for posix_memalign (used in
