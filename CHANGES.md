@@ -1,3 +1,7 @@
+## v1.0.0 (2024-12-04)
+
+* Support for OCaml 5.2.1 (#134 @dinosaure @haesbaert @shym @palainp @kit-ty-kate)
+
 ## v0.8.4 (2024-04-23)
 
 * malloc: fix the memory allocation tracking for posix_memalign (used in
