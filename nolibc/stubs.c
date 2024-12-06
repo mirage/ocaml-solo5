@@ -134,7 +134,13 @@ STUB_IGNORE(int, pthread_condattr_init, 0);
  */
 
 STUB_IGNORE(int, pthread_cond_init, 0);
-STUB_ABORT(pthread_cond_destroy);
+STUB_IGNORE(int, pthread_cond_destroy, 0);
+/* it's possible to create a [Stdlib.Condition.t] but an execution path exists
+ * where we don't really use it. However, OCaml will try to destroy this
+ * [Stdlib.Condition.t] and we must ignore such execution path which is still
+ * safe for unikernels (with one core). The real issue with [pthread_cond_*] is
+ * when we would like to suspend the execution with [pthread_cond_wait] but
+ * [pthread_cond_init] and [pthread_cond_destroy] are safe to just ignore. */
 STUB_ABORT(pthread_cond_wait);
 STUB_ABORT(pthread_cond_signal);
 STUB_IGNORE(int, pthread_cond_broadcast, 0);
