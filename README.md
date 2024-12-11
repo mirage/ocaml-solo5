@@ -20,30 +20,39 @@ on your system as a dependency when you build this package.
 
 ## Components
 
-The following components are built and installed:
+The following components are built and installed, where `$prefix` and `$sysroot`
+are the values given to the corresponding `configure` arguments (ie the value of
+`opam var prefix` and `opam var <pkg>:lib` when installed via OPAM).
 
-In `PREFIX/solo5-sysroot/bin`:
+In `$prefix/bin`:
 
-- `ocamlc`: a bytecode OCaml compiler configured for the chosen target. Please
-  note that the bytecode runtime is not supported.
-- `ocamlopt`: a native OCaml compiler configured for the chosen
+- the toolchain to build binaries, using the `<arch>-solo5-ocaml-` prefix.
+
+`$sysroot` will contain the installation of the OCaml compiler and the `nolibc`
+and OpenLibm support libraries.
+
+In `$sysroot/bin`:
+- `ocamlopt.{opt,byte}`: a native OCaml compiler configured for the chosen
   target.
+- Some other standard tools such as the `ocaml` interpreter and
+  `ocamlc.{byte,opt}` a bytecode OCaml compiler configured for the chosen
+  target. Please note that the bytecode runtime is not supported.
 
-In `PREFIX/solo5-sysroot/lib/ocaml`:
-- `libasmrun.a`, `libotherlibs.a`: OCaml native code runtime.
-- Compiler libraries.
+In `$sysroot/lib/ocaml`:
+- `libasmrun.a`: the OCaml native code runtime for the Solo5 target.
+- The standard library.
 - In `caml/`: Header files for the OCaml runtime.
 
-In `PREFIX/solo5-sysroot/lib/nolibc`:
+In `$prefix/lib`:
 
 - `libnolibc.a`: libc interfaces required by the OCaml runtime.
 - `libopenlibm.a`: libm required by the OCaml runtime.
 
-In `PREFIX/solo5-sysroot/include/nolibc`:
+In `$sysroot/include`:
 
-- Header files for nolibc and openlibm.
+- Header files for `nolibc` and OpenLibm.
 
-In `PREFIX/lib/findlib.conf.d`:
+In `$prefix/lib/findlib.conf.d`:
 
 - `solo5.conf`: ocamlfind definition of the cross-compilation toolchain.
 
