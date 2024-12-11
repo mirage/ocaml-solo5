@@ -45,12 +45,12 @@ In `PREFIX/solo5-sysroot/include/nolibc`:
 
 In `PREFIX/lib/findlib.conf.d`:
 
-- `solo5.conf`: ocamlfind definition of the cross-compilation switch.
+- `solo5.conf`: ocamlfind definition of the cross-compilation toolchain.
 
 ### Usage
 
-The installed compiler is able to build solo5 executables. The solo5 bindings
-(xen, hvt, spt, ...) is chosen at link time, using the solo5-specific
+The installed compiler is able to build Solo5 executables. The Solo5 bindings
+(xen, hvt, spt, ...) are chosen at link time, using the Solo5-specific
 `-z solo5-abi=XXX` compiler/linker option. Linking an executable with no
 bindings results in a _dummy_ executable.
 
@@ -66,8 +66,8 @@ The `example` describes the minimal structure needed to build an ocaml-solo5
 executable with dune, linked with the hvt bindings by default. It requires an
 application manifest and a startup file to initialize the libc.
 
-Build: `dune build -x solo5`
-Run: `solo5-hvt _build/solo5/main.exe`
+- Build: `dune build -x solo5`
+- Run: `solo5-hvt _build/solo5/main.exe`
 
 ## Supported compiler versions
 
