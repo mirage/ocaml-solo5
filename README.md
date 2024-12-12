@@ -71,7 +71,7 @@ application manifest and a startup file to initialize the libc.
 
 ## Supported compiler versions
 
-Tested against OCaml 4.12.1 through 4.14.1. Other versions may require
+Tested against OCaml 4.12.1 through 4.14.2. Other versions may require
 changing `configure.sh`.
 
 ## Porting to a different (uni)kernel base layer
