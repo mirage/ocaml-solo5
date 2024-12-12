@@ -1,7 +1,14 @@
 # ocaml-solo5 -- OCaml compiler with Solo5 backend
 
 This package provides a OCaml compiler suitable for linking with a
-Solo5 base layer.
+Solo5 base layer:
+
+- package versions ≥ 1.0 and the `main` branch are compatible with OCaml 5+
+  compilers, see the “[Supported compiler versions]” section for details,
+- package versions 0.8.x and the `4.14` branch are compatible with OCaml 4.14
+  compilers.
+
+[Supported compiler versions]: #supported-compiler-versions
 
 ## License and contributions
 
@@ -20,37 +27,46 @@ on your system as a dependency when you build this package.
 
 ## Components
 
-The following components are built and installed:
+The following components are built and installed, where `$prefix` and `$sysroot`
+are the values given to the corresponding `configure` arguments (ie the value of
+`opam var prefix` and `opam var <pkg>:lib` when installed via OPAM).
 
-In `PREFIX/solo5-sysroot/bin`:
+In `$prefix/bin`:
 
-- `ocamlc`: a bytecode OCaml compiler configured for the chosen target. Please
-  note that the bytecode runtime is not supported.
-- `ocamlopt`: a native OCaml compiler configured for the chosen
+- the toolchain to build binaries, using the `<arch>-solo5-ocaml-` prefix.
+
+`$sysroot` will contain the installation of the OCaml compiler and the `nolibc`
+and OpenLibm support libraries.
+
+In `$sysroot/bin`:
+- `ocamlopt.{opt,byte}`: a native OCaml compiler configured for the chosen
   target.
+- Some other standard tools such as the `ocaml` interpreter and
+  `ocamlc.{byte,opt}` a bytecode OCaml compiler configured for the chosen
+  target. Please note that the bytecode runtime is not supported.
 
-In `PREFIX/solo5-sysroot/lib/ocaml`:
-- `libasmrun.a`, `libotherlibs.a`: OCaml native code runtime.
-- Compiler libraries.
+In `$sysroot/lib/ocaml`:
+- `libasmrun.a`: the OCaml native code runtime for the Solo5 target.
+- The standard library.
 - In `caml/`: Header files for the OCaml runtime.
 
-In `PREFIX/solo5-sysroot/lib/nolibc`:
+In `$prefix/lib`:
 
 - `libnolibc.a`: libc interfaces required by the OCaml runtime.
 - `libopenlibm.a`: libm required by the OCaml runtime.
 
-In `PREFIX/solo5-sysroot/include/nolibc`:
+In `$sysroot/include`:
 
-- Header files for nolibc and openlibm.
+- Header files for `nolibc` and OpenLibm.
 
-In `PREFIX/lib/findlib.conf.d`:
+In `$prefix/lib/findlib.conf.d`:
 
-- `solo5.conf`: ocamlfind definition of the cross-compilation switch.
+- `solo5.conf`: ocamlfind definition of the cross-compilation toolchain.
 
 ### Usage
 
-The installed compiler is able to build solo5 executables. The solo5 bindings
-(xen, hvt, spt, ...) is chosen at link time, using the solo5-specific
+The installed compiler is able to build Solo5 executables. The Solo5 bindings
+(xen, hvt, spt, ...) are chosen at link time, using the Solo5-specific
 `-z solo5-abi=XXX` compiler/linker option. Linking an executable with no
 bindings results in a _dummy_ executable.
 
@@ -66,8 +82,8 @@ The `example` describes the minimal structure needed to build an ocaml-solo5
 executable with dune, linked with the hvt bindings by default. It requires an
 application manifest and a startup file to initialize the libc.
 
-Build: `dune build -x solo5`
-Run: `solo5-hvt _build/solo5/main.exe`
+- Build: `dune build -x solo5`
+- Run: `solo5-hvt _build/solo5/main.exe`
 
 ## Supported compiler versions
 
