@@ -1,7 +1,14 @@
 # ocaml-solo5 -- OCaml compiler with Solo5 backend
 
 This package provides a OCaml compiler suitable for linking with a
-Solo5 base layer.
+Solo5 base layer:
+
+- package versions ≥ 1.0 and the `main` branch are compatible with OCaml 5+
+  compilers, see the “[Supported compiler versions]” section for details,
+- package versions 0.8.x and the `4.14` branch are compatible with OCaml 4.14
+  compilers.
+
+[Supported compiler versions]: #supported-compiler-versions
 
 ## License and contributions
 
