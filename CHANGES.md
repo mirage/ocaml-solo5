@@ -3,7 +3,7 @@
 * allow findlib/dune use libraries available from OPAM (@dinosaure #144)
 * Ignore pthread_cond_destroy (@dinosaure #144)
 * README: fixes (@shym #145)
-* opam: add missing depopt (@hannes 52c9f8d20d9d80dc51e416cc67d03b80dce257af)
+* opam: add missing depopt (@hannesm 52c9f8d20d9d80dc51e416cc67d03b80dce257af)
 
 ## v1.0.0 (2024-12-04)
 
