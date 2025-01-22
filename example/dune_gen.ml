@@ -53,4 +53,8 @@ let print_rule test exitcode extraifs extralibs =
 
 let _ =
   print_rule "hello" None [] [];
-  print_rule "sysfail" (Some 2) [] []
+  print_rule "sysfail" (Some 2) [] [];
+  print_rule "config" None [] [];
+  print_rule "compilerlibsx86" None
+    [ "(>= %{ocaml_version} 5.3.0)"; "(= %{architecture} amd64)" ]
+    [ "compiler-libs.optcomp" ]
