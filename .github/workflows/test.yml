@@ -17,20 +17,15 @@ jobs:
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
       run: opam install ocaml-solo5 conf-libseccomp dune
-    - name: Compile example with hvt
+    - name: Compile examples with hvt
       run: MODE=hvt opam exec -- dune build --root example
-    - name: Compile example with spt
+    - name: Compile examples with spt
       run: MODE=spt opam exec -- dune build --root example
-    - name: Run example with spt
-      run: opam exec -- solo5-spt example/_build/solo5/main.exe
-    - name: Compile a failing example with spt
-      run: MODE=spt SOLO5TEST=sysfail opam exec -- dune build --root example
-    - name: Run a failing example with spt
-      run: |
-        ! opam exec -- solo5-spt example/_build/solo5/main.exe
-    - name: Compile example with virtio
+    - name: Run examples with spt
+      run: MODE=spt opam exec -- dune runtest --root example
+    - name: Compile examples with virtio
       run: MODE=virtio opam exec -- dune build --root example
-    - name: Compile example with muen
+    - name: Compile examples with muen
       run: MODE=muen opam exec -- dune build --root example
-    - name: Compile example with xen
+    - name: Compile examples with xen
       run: MODE=xen opam exec -- dune build --root example
