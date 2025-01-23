@@ -121,17 +121,9 @@ ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
 
 OCAML_IS_BUILT := _build/ocaml_is_built
 $(OCAML_IS_BUILT): ocaml/Makefile.config | _build
-	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" $(MAKE) -C ocaml cross.opt
-	cd ocaml && ocamlrun tools/stripdebug ocamlc ocamlc.tmp
-	cd ocaml && ocamlrun tools/stripdebug ocamlopt ocamlopt.tmp
+	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" \
+	  $(MAKE) -C ocaml crossopt OLDS="-o yacc/ocamlyacc -o lex/ocamllex"
 	touch $@
-
-DOT_INSTALL_PREFIX_FOR_OCAML := _build/ocaml.install
-DOT_INSTALL_CHUNKS_FOR_OCAML := $(addprefix $(DOT_INSTALL_PREFIX_FOR_OCAML),\
-    .lib .libexec)
-$(DOT_INSTALL_CHUNKS_FOR_OCAML): | ocaml/Makefile.config
-	MAKE="$(MAKE)" ./gen_ocaml_install.sh \
-	  $(DOT_INSTALL_PREFIX_FOR_OCAML) ocaml $(MAKECONF_SYSROOT)
 
 # CONFIGURATION FILES
 _build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
@@ -144,14 +136,19 @@ _build/empty-META: | _build
 PACKAGES := $(basename $(wildcard *.opam))
 INSTALL_FILES := $(foreach pkg,$(PACKAGES),$(pkg).install)
 
-$(INSTALL_FILES): $(TOOLCHAIN_FINAL) $(DOT_INSTALL_CHUNKS_FOR_OCAML)
-	./gen_dot_install.sh $(DOT_INSTALL_PREFIX_FOR_OCAML) $(TOOLCHAIN_FINAL)\
-	     > $@
+$(INSTALL_FILES): $(TOOLCHAIN_FINAL)
+	./gen_dot_install.sh $(TOOLCHAIN_FINAL) > $@
 
 # COMMANDS
+.PHONY: install-ocaml
+install-ocaml:
+	ln -sf "$$(command -v ocamllex)" ocaml/lex/ocamllex
+	ln -sf "$$(command -v ocamlyacc)" ocaml/yacc/ocamlyacc
+	$(MAKE) -C ocaml installcross
+
 PACKAGE := ocaml-solo5
 .PHONY: install
-install: $(PACKAGE).install
+install: $(PACKAGE).install install-ocaml
 	opam-installer --prefix=$(MAKECONF_PREFIX) $<
 
 .PHONY: clean
