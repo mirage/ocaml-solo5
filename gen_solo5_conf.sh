@@ -43,7 +43,7 @@ checkopt() {
 # mirage tool takes care of this detail, using opam monorepo.
 
 cat << EOF
-path(solo5) = "$SYSROOT/lib/:$PREFIX/lib"
+path(solo5) = "$SYSROOT/lib/ocaml:$SYSROOT/lib:$PREFIX/lib"
 destdir(solo5) = "$PREFIX/lib"
 stdlib(solo5) = "$SYSROOT/lib/ocaml"
 ocamlopt(solo5) = "$SYSROOT/bin/ocamlopt$(checkopt ocamlopt)"
