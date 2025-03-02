@@ -1,25 +1,33 @@
 (executable
- (name main)
- (link_flags :standard -cclib "-z solo5-abi=%{env:MODE=hvt}")
+ (name dune_gen)
+ (modules dune_gen))
+
+(rule
+ (alias runtest)
+ (mode promote)
+ (action
+  (with-stdout-to
+   dune.inc
+   (run ./dune_gen.exe))))
+
+(include dune.inc)
+
+; As we add the manifest to a library, we'll need to explicitly ask for it to be
+; linked in (for instance by telling the compiler / linker that the
+; `__solo5_mft1_note` symbol is undefined) otherwise we'll end up with errors such
+; as: `solo5-hvt: ...: Invalid or unsupported executable`
+(library
+ (name solo5os)
+ (modules)
  (foreign_stubs
   (language c)
   (names startup manifest)))
-
-(rule
- (copy main.%{env:SOLO5TEST=hello}.ml main.ml))
 
 (rule
  (targets manifest.c)
  (deps manifest.json)
  (action
   (run solo5-elftool gen-manifest manifest.json manifest.c)))
-
-(rule
- (alias runtest)
- (enabled_if
-  (= %{context_name} solo5))
- (action
-  (run "solo5-%{env:MODE=hvt}" "%{dep:main.exe}")))
 
 (alias
  (name default)
