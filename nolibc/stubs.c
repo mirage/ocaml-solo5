@@ -65,6 +65,7 @@ STUB_WARN_ONCE(int, fclose, 1);
 STUB_WARN_ONCE(char *, getenv, NULL);
 STUB_WARN_ONCE(char *, secure_getenv, NULL);
 STUB_ABORT(system);
+STUB_ABORT(qsort);
 
 /* unistd.h */
 STUB_WARN_ONCE(int, chdir, -1);
@@ -150,3 +151,5 @@ STUB_ABORT(pthread_detach);
 STUB_IGNORE(int, sigfillset, 0);
 STUB_ABORT(sigwait);
 STUB_ABORT(usleep);
+
+STUB_ABORT(longjmp);
