@@ -1,3 +1,8 @@
+## XXX
+
+* Support for Ocaml 5.3.0 (@shym #148)
+* Update the FreeBSD version for CI (@shym #149)
+
 ## v1.0.1 (2024-12-17)
 
 * allow findlib/dune use libraries available from OPAM (@dinosaure #144)
