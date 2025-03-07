@@ -1,22 +1,15 @@
 freebsd_instance:
-  image_family: freebsd-14-1
+  image_family: freebsd-14-2
 
 freebsd_task:
   env:
     OPAMYES: 1
   env:
     matrix:
-      - OCAML_VERSION: 5.2.1
+      - OCAML_VERSION: 5.3.0
   pkg_install_script: pkg install -y ocaml-opam gmp gmake pkgconf bash
-  opam_ocaml_cache:
-    folder: $HOME/.opam
-    reupload_on_changes: false # since there is a fingerprint script
-    fingerprint_script:
-      - echo $CIRRUS_OS
-      - echo $OCAML_VERSION
-    populate_script:
-      - opam init -a --comp=$OCAML_VERSION
   setup_script:
+    - opam init -a --comp=$OCAML_VERSION
     - opam update
     - opam install dune
     - opam pin add -n -t .

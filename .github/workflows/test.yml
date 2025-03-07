@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        ocaml-compiler: [5.2.1]
+        ocaml-compiler: [5.3.0]
     name: OCaml ${{ matrix.ocaml-compiler }}
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +17,12 @@ jobs:
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
       run: opam install ocaml-solo5 conf-libseccomp dune
+    - name: Show the toolchain configuration
+      run: |
+        set -x
+        opam exec -- ocamlfind -toolchain solo5 opt -config
+        opam exec -- ocamlfind -toolchain solo5 printconf
+        opam exec -- ocamlfind -toolchain solo5 list
     - name: Compile examples with hvt
       run: MODE=hvt opam exec -- dune build --root example
     - name: Compile examples with spt
