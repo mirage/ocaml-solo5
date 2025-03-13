@@ -1,7 +1,8 @@
-## XXX
+## v1.1.0 (2025-03-13)
 
 * Support for Ocaml 5.3.0 (@shym #148)
 * Update the FreeBSD version for CI (@shym #149)
+* Reorganise the examples and add new ones (@shym #147)
 
 ## v1.0.1 (2024-12-17)
 
