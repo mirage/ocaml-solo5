@@ -100,6 +100,7 @@ ocaml:
 	cp -r "$$(ocamlfind query ocaml-src)" $@
 	VERSION="$$(head -n1 ocaml/VERSION)" ; \
 	if test -d "patches/$$VERSION" ; then \
+	  git init -q && \
 	  for p in "patches/$$VERSION"/*; do \
 	    ( set -x ; git apply -v --directory=$@ "$$p" \
 	    ; echo " PATCH $$p: $$?") ; \
