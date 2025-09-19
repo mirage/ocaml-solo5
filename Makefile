@@ -100,7 +100,10 @@ ocaml:
 	cp -r "$$(ocamlfind query ocaml-src)" $@
 	VERSION="$$(head -n1 ocaml/VERSION)" ; \
 	if test -d "patches/$$VERSION" ; then \
-	  git apply --directory=$@ "patches/$$VERSION"/*; \
+	  for p in "patches/$$VERSION"/*; do \
+	    ( set -x ; git apply -v --directory=$@ "$$p" \
+	    ; echo " PATCH $$p: $$?") ; \
+	  done ; \
 	fi
 
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
