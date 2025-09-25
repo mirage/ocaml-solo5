@@ -14,19 +14,39 @@ Set `system` to `none` and `os_type` to `None` in such cases
  2 files changed, 16 insertions(+), 2 deletions(-)
 
 diff --git a/configure b/configure
-index d7921b85866b3adb0de8a9469b5a3d0966c1516b..e4efe90505bfeba237bce9057e33f6924fd4ed28 100755
-GIT binary patch
-delta 444
-zcmcb$LVNl;?S>Y{7N!>F7M2#)7Pc+yr`a`hv~;y}^YZgjYqY@3)SNUeO$9411t7>T
-zE~zX?wN>&1N>3N;WtZ80hn;=<>gng#uydIv7A0qxnZPtB7Ud#w;Bp|-YG86e&h&p9
-z*-eZ=)+tz9D=2FKttrSaPc14)HZ#ddg*ydJ45X27BfHvk&lT*l`q*`2>II1)>l8Aw
-zRw%A4E=kR`MKPi%vpBg7;dlfWuDNhCyR15jo?>H5g9^Bna2{L--%55#R2>x-X7LD1
-i;5?`f6IPJ%T+<J-v&*z^*vt;Z96-#ueZyw1RSEzq=Z!4@
-
-delta 62
-zcmbQfPW#ph?S>Y{7N!>F7M2#)7Pc+yr`f01++-Kn&d0&NWA${!A`ao{4OiK?+H<$D
-Q12G2>b8gSw#<fZT0N_s-mjD0&
-
+index d7921b8586..e4efe90505 100755
+--- a/configure
++++ b/configure
+@@ -16145,6 +16145,8 @@ esac
+  ;; #(
+   gcc-*,powerpc-*-linux*) :
+     oc_ldflags="-mbss-plt" ;; #(
++  *,*-*-none|*,*-*-elf*) :
++    ostype="None" ;; #(
+   *) :
+      ;;
+ esac
+@@ -17761,7 +17763,19 @@ fi ;; #(
+   x86_64-*-cygwin*) :
+     has_native_backend=yes; arch=amd64; system=cygwin ;; #(
+   riscv64-*-linux*) :
+-    has_native_backend=yes; arch=riscv; model=riscv64; system=linux
++    has_native_backend=yes; arch=riscv; model=riscv64; system=linux ;; #(
++  aarch64-*-none|arm64-*-none|aarch64-*-elf*|arm64-*-elf*) :
++    has_native_backend=yes; arch=arm64; system=none ;; #(
++  powerpc64le*-*-none|powerpc64le*-*-elf*) :
++    has_native_backend=yes; arch=power; model=ppc64le; system=none ;; #(
++  powerpc64*-*-none|powerpc64*-*-elf*) :
++    has_native_backend=yes; arch=power; model=ppc64; system=none ;; #(
++  riscv64-*-none|riscv64-*-elf*) :
++    has_native_backend=yes; arch=riscv; model=riscv64; system=none ;; #(
++  s390x*-*-none|s390x*-*-elf*) :
++    has_native_backend=yes; arch=s390x; model=z10; system=none ;; #(
++  x86_64-*-none|x86_64-*-elf*) :
++    has_native_backend=yes; arch=amd64; system=none
+  ;; #(
+   *) :
+      ;;
 diff --git a/configure.ac b/configure.ac
 index e1f2e85610..04d31b4962 100644
 --- a/configure.ac

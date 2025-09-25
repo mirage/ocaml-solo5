@@ -18,21 +18,39 @@ targets
  2 files changed, 13 insertions(+)
 
 diff --git a/configure b/configure
-index e4efe90505bfeba237bce9057e33f6924fd4ed28..c11e7ad19c318385e30455286cbc53d285786ef7 100755
-GIT binary patch
-delta 532
-zcmZ8du}(rU6wOl*eIu*O^+AGy&%wpSh>45F(a27&<pNDgOWGnD2izQ3nB*@^OpJV;
-ziMQ_&6o%9Gp0?+nbLSt8pU=kYSJawLDsZKg8AD<O4pai(zyra^Q3ue0?-M9=9)uYT
-zjVA5EbTihY?U4s><xuf1H3)PRS71zlHYiBl0|YU0-V9jQDA7lL)-{&tt|f9F^`sM?
-z<zgq$GSD&L%yDSJTANMS5U~%7R;p*PG`7-v(!q3cfmZY{Q_U{36v6Sx(^5$wUr2#!
-zsTn(bq_)RNNYO?m(KVB5-Y+kcI0S+<F2t-H#sKxSo@N6(f^#kbP_#3}+w1#gm6wbR
-zMJ=smXU9W&T2~7^C(Q=AvT&LwSpBd5Q=Z>_m-gr7_vmafoklN(gN?t-On;G*x8f{f
-YY%#VO1xAsv!zeL!8GDQ3EH2;t0=9m!@c;k-
-
-delta 64
-zcmeynQG5D2?S?IkA>GsWv@@D-_wQw_W@&#jkr9ZQfS4JGL3~yqW&>h&Am#vK&h2j|
-IatXQv0N^JcY5)KL
-
+index e4efe90505..c11e7ad19c 100755
+--- a/configure
++++ b/configure
+@@ -3677,6 +3677,21 @@ IFS=$ac_save_IFS
+ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+ 
+ 
++# Allow "ocaml" to be used as the last component of the target triplet in case
++# we are using a custom toolchain for a freestanding target. To do so, the
++# target triplet is temporarily rewritten to "<arch>-none" to compute the
++# canonical target
++save_target_alias="$target_alias"
++case $target_alias in #(
++  *-*-ocaml) :
++    ac_save_IFS=$IFS
++    IFS='-'
++    set x $target_alias
++    target_alias="$2-none"
++    IFS=$ac_save_IFS ;; #(
++  *) :
++     ;;
++esac
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking target system type" >&5
+ printf %s "checking target system type... " >&6; }
+ if test ${ac_cv_target+y}
+@@ -3717,6 +3732,7 @@ test -n "$target_alias" &&
+   test "$program_prefix$program_suffix$program_transform_name" = \
+     NONENONEs,x,x, &&
+   program_prefix=${target_alias}-
++target_alias="$save_target_alias"
+ 
+ # Override cross_compiling and ac_tool_prefix variables since the C toolchain is
+ # used to generate target code when building a cross compiler
 diff --git a/configure.ac b/configure.ac
 index 04d31b4962..6d0d1be9c0 100644
 --- a/configure.ac
