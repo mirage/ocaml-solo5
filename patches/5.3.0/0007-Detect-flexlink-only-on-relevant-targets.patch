@@ -13,16 +13,32 @@ non-cross compiler
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/configure b/configure
-index 21a2617e3958bd64ddfc1fb914d1c6c9b9fed1dc..8e8f2351c65874ed71a60f10a88584157cb6b08a 100755
-GIT binary patch
-delta 75
-zcmX@utUbR)yP<`#g{g(Pg{6gc3!C4?=`PZ2;?paH*?6Ygo@P^=u4cm~yFL3NTOiAH
-dp~;Lg)0G~x3AbOo$_B*jK+LiI;#JNMuL0Y&9UK4v
-
-delta 55
-zcmbQ=qJ6MgyP<`#g{g(Pg{6gc3!C4?=`J4`Ww)=t$QH;l{mv6M<#yX^Y(UHo#2njg
-JuW>$l4FF~P7dZd`
-
+index 21a2617e39..8e8f2351c6 100755
+--- a/configure
++++ b/configure
+@@ -15649,7 +15649,9 @@ fi ;;
+ esac
+ fi
+ 
+-  # Extract the first word of "flexlink", so it can be a program name with args.
++  case $target in #(
++  *-*-cygwin*|*-w64-mingw32*|*-pc-windows) :
++    # Extract the first word of "flexlink", so it can be a program name with args.
+ set dummy flexlink; ac_word=$2
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+ printf %s "checking for $ac_word... " >&6; }
+@@ -15690,7 +15692,10 @@ else
+ printf "%s\n" "no" >&6; }
+ fi
+ 
+-
++ ;; #(
++  *) :
++     ;;
++esac
+ 
+   if test -n "$flexlink" && test -z "$flexdll_source_dir"
+ then :
 diff --git a/configure.ac b/configure.ac
 index 9b0331cdee..ea5fa86609 100644
 --- a/configure.ac
