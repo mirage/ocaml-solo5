@@ -52,18 +52,64 @@ index e432851cde..522c0f6338 100644
  STUBLIBDIR=@libdir@/stublibs
  
 diff --git a/configure b/configure
-index b9cd0229890350b736c804eaa7cc97a9e8910aef..21a2617e3958bd64ddfc1fb914d1c6c9b9fed1dc 100755
-GIT binary patch
-delta 252
-zcmX@zsC}?mdqYehZ-`@%yK6|ikEfH1XVB*8K!1KNgwW<?35FR+{K>s1lvr{ylZqzq
-zIw9q*qfnBskd&%WTAZ4qkd|M>rGNrbD)VwO^RlfKQc}|rOLIz!LCQ-qQWeS)b4pVc
-z^3xQ6CZ%K+ZN75i@TTq4su^94r;Fz^Nw$Al#|XqsK+FupEI`Z(#B4y!zWviWjtj4h
-p5iSHeT1mlHp@Iu&aGrt{&<QAVwn{1xOO)C-&E(v^X(pGXIsjQ~TZ;ey
-
-delta 79
-zcmX@utbMvsdqYg%=Bz+J{>{e{bTc-$pFFT>yGIS9i}7@p?Tq5>OV=|3F%u9o12GE_
-cvjQ<25VLPzx}M|0tM(nUIJfVZ#l@)(0Ik*}S^xk5
-
+index b9cd022989..21a2617e39 100755
+--- a/configure
++++ b/configure
+@@ -796,6 +796,7 @@ build_cpu
+ build
+ ar_supports_response_files
+ QS
++TARGET_LIBDIR
+ ocaml_libdir
+ ocaml_bindir
+ compute_deps
+@@ -1055,6 +1056,7 @@ DLLIBS
+ LIBUNWIND_CPPFLAGS
+ LIBUNWIND_LDFLAGS
+ TARGET_BINDIR
++TARGET_LIBDIR
+ WINDOWS_UNICODE_MODE
+ DEFAULT_STRING
+ CC
+@@ -1778,6 +1780,9 @@ Some influential environment variables:
+               linker flags for libunwind (e.g. -L<location of libunwind>
+   TARGET_BINDIR
+               location of the runtime binaries on the target system
++  TARGET_LIBDIR
++              location of the libraries on the target system, to be used for
++              dynlink; defaults to the value of libdir
+   WINDOWS_UNICODE_MODE
+               how to handle Unicode under Windows: ansi, compatible
+   DEFAULT_STRING
+@@ -3531,6 +3536,7 @@ LINEAR_MAGIC_NUMBER=Caml1999L035
+ 
+ 
+ 
++
+ 
+ 
+ ## Generated files
+@@ -4088,6 +4094,8 @@ fi
+ 
+ 
+ 
++
++
+ # Check whether --with-target-sh was given.
+ if test ${with_target_sh+y}
+ then :
+@@ -22452,6 +22460,11 @@ then :
+   libdir="$libdir"/ocaml
+ fi
+ 
++if test x"$TARGET_LIBDIR" = x
++then :
++  TARGET_LIBDIR="$libdir"
++fi
++
+ if test x"$mandir" = x'${datarootdir}/man'
+ then :
+   mandir='${prefix}/man'
 diff --git a/configure.ac b/configure.ac
 index bb661f9f6a..9b0331cdee 100644
 --- a/configure.ac

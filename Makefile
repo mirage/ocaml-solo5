@@ -90,17 +90,21 @@ $(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 .PHONY: toolchains
 toolchains: $(TOOLCHAIN_FOR_BUILD) $(TOOLCHAIN_FINAL)
 
+# OPATCH
+opatch: opatch.ml
+	ocamlfind opt -package unix -package patch -linkpkg $< -o $@
+
 # OCAML
 # Extract sources from the ocaml-src package and apply patches if there any in
 # `patches/<OCaml version>/`
-ocaml:
+ocaml: | opatch
 # First make sure the ocaml directory doesn't exist, otherwise the cp would
 # create an ocaml-src subdirectory
 	test ! -d $@
 	cp -r "$$(ocamlfind query ocaml-src)" $@
 	VERSION="$$(head -n1 ocaml/VERSION)" ; \
 	if test -d "patches/$$VERSION" ; then \
-	  git apply --directory=$@ "patches/$$VERSION"/*; \
+	  ./opatch -v -C $@ "patches/$$VERSION"/*; \
 	fi
 
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml

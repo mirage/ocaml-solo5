@@ -20,21 +20,96 @@ Suggested-by: David Allsopp <david.allsopp@metastack.com>
  2 files changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/configure b/configure
-index 328a177641cce86671c394ddde17eae70192f3b1..b9cd0229890350b736c804eaa7cc97a9e8910aef 100755
-GIT binary patch
-delta 252
-zcmeBd);`^+y+I*>H^ec>-8CfM$<xopGibAXfHmLd+&B{^H1P!qUlTU}KlqeQ1VufU
-z0vJqYJR~xC^+Bb{+K0F{KRLnlZ2HxFCdu{<>luNV35c12m<5PgftU@5*@2j2`-b(L
-z0<7971}Z7oDyUbebCqPI<|$YKjYpB){(1}N$68esF<W&Njnw3fd<7*H6!Gnh#$1;>
-NP`$DJ;cl)KtN<YjSrGsL
-
-delta 339
-zcmX@zsNLDDy+I*hvtED|A6rspUP@-s=IA&_rp>Doz9c{eCeJ=$G&ymPG+S|HaY<_K
-z=H7$f*fw83!Srmp%OXah>2KFD@<3HiXI#!GCRCnTk`Z5$Sd^Yx5)UzQ`owLF(w-<n
-z)(R+GTNRM5vcw#&)STi}1(n3&_`LiAE(J7I>grr+nOxHy7cq*q1MLN3CLm@8Viq7~
-z1!6WJW(Q)9?Qhp{in31sC(XvL0&#_sf~|sjg*sPBMrxjd6}s8mb+>SStd&D`mAZ;X
-rYH~)tf|3eEeEJVVE|u*GMqJxE*q|c&cX3HfzahgWvfX1hS2HUBFztl)
-
+index 328a177641..b9cd022989 100755
+--- a/configure
++++ b/configure
+@@ -772,6 +772,7 @@ ac_ct_LD
+ LD
+ DEFAULT_STRING
+ WINDOWS_UNICODE_MODE
++TARGET_BINDIR
+ LIBUNWIND_LDFLAGS
+ LIBUNWIND_CPPFLAGS
+ DLLIBS
+@@ -1019,7 +1020,6 @@ enable_native_compiler
+ enable_flambda
+ enable_flambda_invariants
+ enable_cmm_invariants
+-with_target_bindir
+ with_target_sh
+ enable_reserved_header_bits
+ enable_stdlib_manpages
+@@ -1054,6 +1054,7 @@ COMPILER_NATIVE_CPPFLAGS
+ DLLIBS
+ LIBUNWIND_CPPFLAGS
+ LIBUNWIND_LDFLAGS
++TARGET_BINDIR
+ WINDOWS_UNICODE_MODE
+ DEFAULT_STRING
+ CC
+@@ -1740,8 +1741,6 @@ Optional Packages:
+   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+   --with-odoc             build documentation with odoc
+-  --with-target-bindir    location of the runtime binaries on the target
+-                          system
+   --with-target-sh        location of Posix sh on the target system
+   --with-afl              use the AFL fuzzer
+   --with-flexdll          bootstrap FlexDLL from the given sources
+@@ -1777,6 +1776,8 @@ Some influential environment variables:
+               libunwind headers>)
+   LIBUNWIND_LDFLAGS
+               linker flags for libunwind (e.g. -L<location of libunwind>
++  TARGET_BINDIR
++              location of the runtime binaries on the target system
+   WINDOWS_UNICODE_MODE
+               how to handle Unicode under Windows: ansi, compatible
+   DEFAULT_STRING
+@@ -4085,14 +4086,6 @@ fi
+ 
+ 
+ 
+-# Check whether --with-target-bindir was given.
+-if test ${with_target_bindir+y}
+-then :
+-  withval=$with_target_bindir; target_bindir=$withval
+-else $as_nop
+-  target_bindir=''
+-fi
+-
+ 
+ 
+ # Check whether --with-target-sh was given.
+@@ -22677,9 +22670,9 @@ fi
+   eval "exec_prefix=\"$exec_prefix\""
+   eval "ocaml_bindir=\"$bindir\""
+   eval "ocaml_libdir=\"$libdir\""
+-  if test x"$target_bindir" = 'x'
++  if test x"$TARGET_BINDIR" = 'x'
+ then :
+-  target_bindir="$ocaml_bindir"
++  TARGET_BINDIR="$ocaml_bindir"
+ fi
+   if test x"$target_launch_method" = 'x'
+ then :
+@@ -23642,7 +23635,7 @@ fi
+   target_launch_method=\
+ '$(echo "$target_launch_method" | sed -e "s/'/'\"'\"'/g")'
+   ocaml_bindir='$(echo "$ocaml_bindir" | sed -e "s/'/'\"'\"'/g")'
+-  target_bindir='$(echo "$target_bindir" | sed -e "s/'/'\"'\"'/g")'
++  TARGET_BINDIR='$(echo "$TARGET_BINDIR" | sed -e "s/'/'\"'\"'/g")'
+ 
+ _ACEOF
+ 
+@@ -24813,7 +24806,7 @@ ltmain=$ac_aux_dir/ltmain.sh
+  ;;
+     "shebang":C) printf '%s\n%s\000\n' "$launch_method" "$ocaml_bindir" \
+     > stdlib/runtime.info
+-  printf '%s\n%s\000\n' "$target_launch_method" "$target_bindir" \
++  printf '%s\n%s\000\n' "$target_launch_method" "$TARGET_BINDIR" \
+     > stdlib/target_runtime.info ;;
+ 
+   esac
 diff --git a/configure.ac b/configure.ac
 index 7e3b3a054e..bb661f9f6a 100644
 --- a/configure.ac
