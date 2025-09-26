@@ -104,9 +104,7 @@ ocaml: | opatch
 	cp -r "$$(ocamlfind query ocaml-src)" $@
 	VERSION="$$(head -n1 ocaml/VERSION)" ; \
 	if test -d "patches/$$VERSION" ; then \
-	  for patch in "patches/$$VERSION"/*; do \
-	    (cd $@ && ../opatch) < "$$patch"; \
-	  done; \
+	  ./opatch -v -C $@ "patches/$$VERSION"/*; \
 	fi
 
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml

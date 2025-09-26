@@ -82,9 +82,61 @@ let apply ~force ~dir diffs =
   in
   List.iter apply diffs
 
-let main ~dir patch =
+let apply ~dir ~strip patch =
   let content = In_channel.input_all patch in
-  let diffs = Patch.parse ~p:1 content in
+  let diffs = Patch.parse ~p:strip content in
   apply ~force:false ~dir diffs
 
-let _ = main ~dir:"." In_channel.stdin
+let parse_argv argv =
+  let open Arg in
+  let strip = ref 1
+  and dir = ref "."
+  and patches = ref []
+  and verbose = ref false in
+  let add_patch special = function
+    | "-" when special -> patches := None :: !patches
+    | x -> patches := Some x :: !patches
+  in
+  let specs =
+    [
+      ( "-p",
+        Arg.Set_int strip,
+        "<NUM>  Strip <NUM> directories from the diff paths (default: 1)" );
+      ( "-C",
+        Arg.Set_string dir,
+        "<DIR>  Locate files to patch as if launched in <DIR> instead of ." );
+      ( "-v",
+        Arg.Set verbose,
+        " Set verbose mode, where applied patches are logged" );
+      ( "--",
+        Arg.Rest (add_patch false),
+        " Process all remaining arguments as patches" );
+    ]
+  and usage = "opatch [-C <DIR>] [-p <NUM>] [PATCH...]: apply a diff file" in
+  try
+    parse_argv ~current:(ref 0) argv specs (add_patch true) usage;
+    let rec open_all chs = function
+      | [] -> chs
+      | Some p :: patches ->
+          open_all ((In_channel.open_bin p, p) :: chs) patches
+      | None :: patches -> open_all ((In_channel.stdin, "-") :: chs) patches
+    in
+    ( !strip,
+      !dir,
+      open_all [] (match !patches with [] -> [ None ] | p -> p),
+      !verbose )
+  with
+  | Help msg ->
+      Printf.printf "%s" msg;
+      exit 0
+  | Bad msg ->
+      Printf.eprintf "%s" msg;
+      exit 1
+
+let () =
+  let strip, dir, patches, verbose = parse_argv Sys.argv in
+  List.iter
+    (fun (patch, path) ->
+      apply ~dir ~strip patch;
+      if verbose then Printf.printf "%S applied.\n%!" path)
+    patches
