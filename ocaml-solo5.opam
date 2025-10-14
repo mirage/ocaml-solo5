@@ -32,7 +32,7 @@ depends: [
   "conf-pkg-config" {build} # to detect how to link with zstd
   "ocamlfind" {build} # needed by dune context (for tests)
   "ocaml-src" {build}
-  "ocaml" {= "5.3.0"}
+  "ocaml" {>= "5.3.0" & <= "5.4.0"}
   "solo5" {>= "0.9.1"}
 ]
 conflicts: [
