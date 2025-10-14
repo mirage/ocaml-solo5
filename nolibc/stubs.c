@@ -147,6 +147,8 @@ STUB_ABORT(pthread_cond_signal);
 STUB_IGNORE(int, pthread_cond_broadcast, 0);
 STUB_ABORT(pthread_self);
 STUB_ABORT(pthread_detach);
+STUB_IGNORE(int, pthread_cancel, 0);
+STUB_ABORT(pthread_exit);
 
 STUB_IGNORE(int, sigfillset, 0);
 STUB_ABORT(sigwait);
