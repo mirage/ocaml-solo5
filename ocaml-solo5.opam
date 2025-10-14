@@ -29,8 +29,7 @@ run-test: [
 ]
 depends: [
   "conf-git" {build} # to patch the compiler sources
-  "conf-pkg-config" {build} # to detect how to link with zstd
-  "ocamlfind" {build} # needed by dune context (for tests)
+  "ocamlfind" {build}
   "ocaml-src" {build}
   "ocaml" {= "5.3.0"}
   "solo5" {>= "0.9.1"}
