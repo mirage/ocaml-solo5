@@ -79,29 +79,130 @@ index 9c6feb1034..daf2f0ce5e 100644
    AC_CACHE_CHECK([whether $CC supports the labels as values extension],
      [ocaml_cv_prog_cc_labels_as_values],
 diff --git a/configure b/configure
-index 1735c1178d1f8c7c322f108c4f0207e6ff2576a1..d7921b85866b3adb0de8a9469b5a3d0966c1516b 100755
-GIT binary patch
-delta 1614
-zcmbW1&rcIU6vtC^3*C!p1Oesn0w|OpO(YFOn;MNaSPupZ(P#|YWp~;RZf7>TTM&ix
-zU<?OOjfwLwn3x!D^-8=Oxq4AVIpD>+#`tziTiUb&Hhp`TnfICZzVFTZSRDQIdUWGw
-z^0ZB#5XD(BiK0`BXbxQ>&-Rj~y`*nAB!a8H+w1eIKD0Kp6KE$(^Q+PyD&BvVZuNy-
-zZ%~;IVHW|aor4NSZ2k84iK}0v;33C^zgL7_wFi69TWJ!GEw*0xBBi&Pz@Sh3+Lk_?
-zYjrTjxG2&<;u>WRq>1V%I&m;3g)b~d<;KNyo@v8Noa!NXDg#)=$y*E}6H$3h7TfQn
-zZjrjw)>puwJb92&lL&7@7x(AJ;_bV*RtLPSS{)dGdjxb2j5}a({s_|C0u{>I>V-;G
-zyk#d#00Y6C@M542P}}v}k7WQdgb_=1hz^v2lT{tCY0fkVXsS&-0%f+NGL68(3Ld}>
-zo-?UItSZ9f%fvFZ$%sM54a!pa$Kx56AJ1qST#SS#U^z>*ERY;^FaU%RRmTp1uz{pn
-z^~pYureSb88J~fnhhB?>M;hufB#HrFmw3J-bxv2ctk-&l*m9a43FvBkfOxY?Y!JUC
-z(ydf|j19;_wfX*q^yD6_-d>l_SZ%!?QQm0MD{e6dhEV_vyD)|y*FtdFlZ0z(&QP=^
-z#k6=v(KMwRVEwDMW9S6YXqm+LnD;+6Wfoh%N*Ot}dkhQ2nP%i|95l$0iLGj4dohqK
-zb$*l1`_43v{^gw?JtFm83fAOr$gUr*T$qf)nv9~9)jzT@2j#6K)I1Dg3(f*VowJDt
-zab@oQOkBB<NXD<vCGN&&g_`U*+t2u+gw37y9`R<kV`?hR^Ef)GtB6hUCE?Vvh@Cg^
-zWw|q;ak^F}D~i!8Ha6Q%8UG0&wyV}ebj@p^R;k9)s)0jezechscKf^5&0Pu2kJgUX
-LQ8IS}sjq(lgNZ_^
-
-delta 67
-zcmcb$Li@r*?F}D-nmL2Fa|SaiX-?OvVf1aUs$m3TCLm@8VwUYyHLQO#+n;@81!6WJ
-PW(Q)9?aw}PmOKIg)T$qh
-
+index 1735c1178d..d7921b8586 100755
+--- a/configure
++++ b/configure
+@@ -823,6 +823,7 @@ mkdll_exp
+ mkdll
+ rpath
+ sharedlib_cflags
++asm_size_type_directives
+ asm_cfi_supported
+ AS
+ endianness
+@@ -3490,6 +3491,7 @@ LINEAR_MAGIC_NUMBER=Caml1999L035
+ 
+ 
+ 
++
+ 
+ 
+  # TODO: rename this variable
+@@ -3538,6 +3540,7 @@ LINEAR_MAGIC_NUMBER=Caml1999L035
+ 
+ 
+ 
++
+ 
+ 
+ ## Generated files
+@@ -13598,6 +13601,96 @@ else $as_nop
+   with_nonexecstack_note=false
+ fi
+ 
++  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if $CC generates .size and .type asm directives" >&5
++printf %s "checking if $CC generates .size and .type asm directives... " >&6; }
++if test ${ocaml_cv_prog_cc_asm_size_type_directives+y}
++then :
++  printf %s "(cached) " >&6
++else $as_nop
++
++  saved_CC="$CC"
++  saved_CFLAGS="$CFLAGS"
++  saved_CPPFLAGS="$CPPFLAGS"
++  saved_LIBS="$LIBS"
++  saved_ac_ext="$ac_ext"
++  saved_ac_compile="$ac_compile"
++  # Move the content of confdefs.h to another file so it does not
++  # get included
++  mv confdefs.h confdefs.h.bak
++  touch confdefs.h
++
++
++    # We write the assembly into the .$ac_objext file as AC_COMPILE_IFELSE
++    # assumes an error if such a file doesn't exist after compiling
++    CFLAGS="$CFLAGS -S -o conftest.$ac_objext"
++
++    ocaml_cv_prog_cc_asm_size_type_directives=no
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++int feat_detect_obj;
++int feat_detect_func(void) {
++  return 42;
++}
++
++_ACEOF
++if ac_fn_c_try_compile "$LINENO"
++then :
++  asm_type_obj_directive=no
++      asm_type_func_directive=no
++      asm_size_func_directive=no
++      # We do not look for a .size directive for the object as it is not
++      # generated in that simple case for instance by the compiler
++      # powerpc64le-linux-gnu-gcc 14.2 which emits instead an .lcomm directive
++      if $GREP '\.type.*feat_detect_obj' conftest.$ac_objext >/dev/null
++then :
++  asm_type_obj_directive=yes
++fi
++      if $GREP '\.type.*feat_detect_func' conftest.$ac_objext >/dev/null
++then :
++  asm_type_func_directive=yes
++fi
++      if $GREP '\.size.*feat_detect_func' conftest.$ac_objext >/dev/null
++then :
++  asm_size_func_directive=yes
++fi
++      case $asm_type_obj_directive,$asm_type_func_directive,$asm_size_func_directive in #(
++  yes,yes,yes) :
++    ocaml_cv_prog_cc_asm_size_type_directives=yes ;; #(
++  no,no,no) :
++    ocaml_cv_prog_cc_asm_size_type_directives=no ;; #(
++  *) :
++    ocaml_cv_prog_cc_asm_size_type_directives=unconclusive ;;
++esac
++fi
++rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
++
++  # Restore the content of confdefs.h
++  mv confdefs.h.bak confdefs.h
++  ac_compile="$saved_ac_compile"
++  ac_ext="$saved_ac_ext"
++  CPPFLAGS="$saved_CPPFLAGS"
++  CFLAGS="$saved_CFLAGS"
++  CC="$saved_CC"
++  LIBS="$saved_LIBS"
++
++fi
++{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ocaml_cv_prog_cc_asm_size_type_directives" >&5
++printf "%s\n" "$ocaml_cv_prog_cc_asm_size_type_directives" >&6; }
++
++  case $ocaml_cv_prog_cc_asm_size_type_directives in #(
++  yes) :
++    asm_size_type_directives=true
++      printf "%s\n" "#define ASM_SIZE_TYPE_DIRECTIVES 1" >>confdefs.h
++ ;; #(
++  no) :
++    asm_size_type_directives=false ;; #(
++  *) :
++    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: found inconsistent results for .size and .type directives" >&5
++printf "%s\n" "$as_me: WARNING: found inconsistent results for .size and .type directives" >&2;}
++    asm_size_type_directives=false ;;
++esac
++
+ 
+ case $host in #(
+   sparc-sun-solaris*) :
 diff --git a/configure.ac b/configure.ac
 index 6cf1dbe353..e1f2e85610 100644
 --- a/configure.ac
