@@ -28,7 +28,7 @@ run-test: [
   [make "test"]
 ]
 depends: [
-  "conf-git" {build} # to patch the compiler sources
+  "opatch" {build} # to patch the compiler sources
   "ocamlfind" {build}
   "ocaml-src" {build}
   "ocaml" {= "5.3.0"}
