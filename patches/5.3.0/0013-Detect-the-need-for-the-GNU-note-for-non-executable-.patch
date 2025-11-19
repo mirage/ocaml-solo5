@@ -56,24 +56,84 @@ index b17e11d511..9c6feb1034 100644
    AC_CACHE_CHECK([whether $CC supports the labels as values extension],
      [ocaml_cv_prog_cc_labels_as_values],
 diff --git a/configure b/configure
-index 8e8f2351c65874ed71a60f10a88584157cb6b08a..1735c1178d1f8c7c322f108c4f0207e6ff2576a1 100755
-GIT binary patch
-delta 669
-zcmbQ=qJ3ea_6CVCvGUB4jQG6#ywr-+<l>UV<ZK|PB(+&QtX({e5r~<9m>Gy!wu^_c
-zPVJn&`39@y^xRZ-c7^oRywsw^lGI{_L<K#NCOvn*P+hPY3dO0(CDR4_*=46Y=(DgW
-zJ3A9r9oNsUEr{We=?kATnr#1@z^TGmAD*gEUX)pqs!)=Vs*qS*oSK`IQ>l=dSCS7F
-z(NjrGj?YiZO06hSNXyItDN%5Aj(7I=4e<1FjrVkO^$B+6QUC&FknYl4kjwKFQj3c6
-zixe``6pBleGk{(JYfZ^dEzVOfQAn-GEG|(<Oe;w(Qs7F?&n?Kz$;?aVn$9T3DZ->1
-zJY7GAQ&J0TW`1&FZcco1S$siJetLXzGG>_C=H*Xc_?g{vI&&JQp(M~k6*u=F*8ude
-zn||;Ylj!6IQ<3S*Ca?=)36b-qtgh1yS~-NK2mE4XnJ${ieq(xbE2Gu)&WY@T0_Y()
-z{h=AV`1AunDJgWRR3!yFH8X34TCV9YC$h`)qsdR-=+7a7BYjN&5Y3?|7Va715%1^k
-z=NjSa930~4><#3ExK3aHj$Kg!d%ChsOUx-w<x0!sn*Kn5O|*UgeO4f517da{=Geaf
-IK4-!s0JReFT>t<8
-
-delta 61
-zcmcaGQG0%i_6CWtX8o{s{V+x#W&&bnAZFRFAI3VRbNXa)HsSVyXRJWX2E^<@%(1=T
-I8E3*H0JA6;*#H0l
-
+index 8e8f2351c6..1735c1178d 100755
+--- a/configure
++++ b/configure
+@@ -874,6 +874,7 @@ flexdll_dir
+ bootstrapping_flexdll
+ flexdll_source_dir
+ zstd_libs
++with_nonexecstack_note
+ native_ldflags
+ cclibs
+ oc_dll_ldflags
+@@ -13538,6 +13539,66 @@ CC=$lt_save_CC
+ CFLAGS="$saved_CFLAGS"
+ target_os=$old_host_os
+ 
++  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if $CC generates a .note.GNU-stack section" >&5
++printf %s "checking if $CC generates a .note.GNU-stack section... " >&6; }
++if test ${ocaml_cv_prog_cc_nonexecstack_note+y}
++then :
++  printf %s "(cached) " >&6
++else $as_nop
++
++  saved_CC="$CC"
++  saved_CFLAGS="$CFLAGS"
++  saved_CPPFLAGS="$CPPFLAGS"
++  saved_LIBS="$LIBS"
++  saved_ac_ext="$ac_ext"
++  saved_ac_compile="$ac_compile"
++  # Move the content of confdefs.h to another file so it does not
++  # get included
++  mv confdefs.h confdefs.h.bak
++  touch confdefs.h
++
++
++    # We write the assembly into the .$ac_objext file as AC_COMPILE_IFELSE
++    # assumes an error if such a file doesn't exist after compiling
++    CFLAGS="$CFLAGS -S -o conftest.$ac_objext"
++
++    ocaml_cv_prog_cc_nonexecstack_note=no
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++_ACEOF
++if ac_fn_c_try_compile "$LINENO"
++then :
++  if $FGREP .note.GNU-stack conftest.$ac_objext >/dev/null
++then :
++  ocaml_cv_prog_cc_nonexecstack_note=yes
++fi
++fi
++rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
++
++  # Restore the content of confdefs.h
++  mv confdefs.h.bak confdefs.h
++  ac_compile="$saved_ac_compile"
++  ac_ext="$saved_ac_ext"
++  CPPFLAGS="$saved_CPPFLAGS"
++  CFLAGS="$saved_CFLAGS"
++  CC="$saved_CC"
++  LIBS="$saved_LIBS"
++
++fi
++{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ocaml_cv_prog_cc_nonexecstack_note" >&5
++printf "%s\n" "$ocaml_cv_prog_cc_nonexecstack_note" >&6; }
++
++  if test "x$ocaml_cv_prog_cc_nonexecstack_note" = xyes
++then :
++  with_nonexecstack_note=true
++    printf "%s\n" "#define WITH_NONEXECSTACK_NOTE 1" >>confdefs.h
++
++else $as_nop
++  with_nonexecstack_note=false
++fi
++
++
+ case $host in #(
+   sparc-sun-solaris*) :
+     DEP_CC="false" ;; #(
 diff --git a/configure.ac b/configure.ac
 index ea5fa86609..6cf1dbe353 100644
 --- a/configure.ac
