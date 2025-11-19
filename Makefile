@@ -98,7 +98,7 @@ ocaml:
 # create an ocaml-src subdirectory
 	test ! -d $@
 	cp -r "$$(ocamlfind query ocaml-src)" $@
-	VERSION="$$(head -n1 ocaml/VERSION)" ; \
+	VERSION="$$(head -n1 ocaml/VERSION | cut -d. -f-2)" ; \
 	if test -d "patches/$$VERSION" ; then \
 	  opatch -v -C $@ "patches/$$VERSION"/*; \
 	fi
