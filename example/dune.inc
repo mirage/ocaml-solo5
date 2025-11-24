@@ -10,7 +10,7 @@
   ; Force linking the manifest in
   -cclib
   "-u __solo5_mft1_note")
- (libraries solo5os)
+ (libraries solo5os fmt)
  (modes native))
 
 (rule

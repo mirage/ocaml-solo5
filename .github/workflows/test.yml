@@ -18,7 +18,7 @@ jobs:
           *.opam
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
-      run: opam install ocaml-solo5 conf-libseccomp dune
+      run: opam install ocaml-solo5 conf-libseccomp dune fmt
     - name: Show the toolchain configuration
       run: |
         set -x
@@ -27,6 +27,13 @@ jobs:
         opam exec -- ocamlfind -toolchain solo5 list
     - name: Compile examples with hvt
       run: MODE=hvt opam exec -- dune build --root example
+    - name: Run the hello example with hvt
+      run: |
+        set -x
+        MODE=hvt opam exec -- dune describe location --root example \
+          --context solo5 --no-print-directory ./hello.exe |& tee hello.path
+        sudo setfacl -m u:${USER}:rw /dev/kvm
+        opam exec -- solo5-hvt -- "example/$(cat hello.path)"
     - name: Compile examples with spt
       run: MODE=spt opam exec -- dune build --root example
     - name: Run examples with spt

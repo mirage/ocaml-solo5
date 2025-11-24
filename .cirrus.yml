@@ -12,7 +12,7 @@ freebsd_task:
   setup_script:
     - opam init -a --comp=$OCAML_VERSION
     - opam update
-    - opam install dune
+    - opam install dune fmt
     - opam pin add -n -t .
     - opam depext -yt ocaml-solo5
     - opam install -t ocaml-solo5 --deps-only
