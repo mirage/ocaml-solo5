@@ -35,3 +35,19 @@ jobs:
       run: MODE=muen opam exec -- dune build --root example
     - name: Compile examples with xen
       run: MODE=xen opam exec -- dune build --root example
+    - name: Enable KVM group perms
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+        sudo apt-get update
+        sudo apt-get install -y libvirt-clients libvirt-daemon-system libvirt-daemon virtinst bridge-utils qemu-kvm qemu-system-x86
+        sudo usermod -a -G kvm,libvirt $USER
+    - name: Compile a simple Hello World!
+      run: |
+        opam install fmt
+        opam exec -- dune build --root unikernel main.exe
+        opam exec -- dune describe location --root unikernel --context solo5 --no-print-directory ./main.exe &> unikernel.tmp
+        echo "UNIKERNEL=$(cat unikernel.tmp)" >> $GITHUB_ENV
+    - name: Run a simple Hello World!
+      run: opam exec -- solo5-hvt -- "unikernel/$UNIKERNEL"
