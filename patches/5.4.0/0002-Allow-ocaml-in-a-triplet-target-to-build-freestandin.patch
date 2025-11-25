@@ -1,0 +1,81 @@
+From 126ef9d01e512a82c6cd79bf74d0b3e9e9d5cec0 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Mon, 26 Feb 2024 11:51:11 +0100
+Subject: [PATCH 2/3] Allow `ocaml` in a triplet target to build freestanding
+ cross compilers
+
+Allow `ocaml` to be used as the last component of the target triplet in
+case we are using a custom toolchain for a freestanding target. The
+target triplet is then temporarily rewritten to "<arch>-none" to compute
+the canonical target.
+
+This allows to use a `*-*-ocaml-` prefixes (ie `x86_64-solo5-ocaml-`) to
+create cross-compiler toolchains dedicated to specific freestanding
+targets
+---
+ configure    | Bin 738624 -> 739110 bytes
+ configure.ac |  13 +++++++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/configure b/configure
+index 1f0c06d943..04f729c00c 100755
+--- a/configure
++++ b/configure
+@@ -3690,6 +3690,21 @@ IFS=$ac_save_IFS
+ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+ 
+ 
++# Allow "ocaml" to be used as the last component of the target triplet in case
++# we are using a custom toolchain for a freestanding target. To do so, the
++# target triplet is temporarily rewritten to "<arch>-none" to compute the
++# canonical target
++save_target_alias="$target_alias"
++case $target_alias in #(
++  *-*-ocaml) :
++    ac_save_IFS=$IFS
++    IFS='-'
++    set x $target_alias
++    target_alias="$2-none"
++    IFS=$ac_save_IFS ;; #(
++  *) :
++     ;;
++esac
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking target system type" >&5
+ printf %s "checking target system type... " >&6; }
+ if test ${ac_cv_target+y}
+@@ -3730,6 +3745,7 @@ test -n "$target_alias" &&
+   test "$program_prefix$program_suffix$program_transform_name" = \
+     NONENONEs,x,x, &&
+   program_prefix=${target_alias}-
++target_alias="$save_target_alias"
+ 
+ # Override cross_compiling and ac_tool_prefix variables since the C toolchain is
+ # used to generate target code when building a cross compiler
+diff --git a/configure.ac b/configure.ac
+index 8e5e1e9300..d634d70bf2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -302,7 +302,20 @@ AC_CONFIG_COMMANDS_PRE(OCAML_QUOTED_STRING_ID)
+ 
+ AC_CANONICAL_BUILD
+ AC_CANONICAL_HOST
++# Allow "ocaml" to be used as the last component of the target triplet in case
++# we are using a custom toolchain for a freestanding target. To do so, the
++# target triplet is temporarily rewritten to "<arch>-none" to compute the
++# canonical target
++save_target_alias="$target_alias"
++AS_CASE([$target_alias],
++  [*-*-ocaml],
++    [ac_save_IFS=$IFS
++    IFS='-'
++    set x $target_alias
++    target_alias="$2-none"
++    IFS=$ac_save_IFS])
+ AC_CANONICAL_TARGET
++target_alias="$save_target_alias"
+ 
+ # Override cross_compiling and ac_tool_prefix variables since the C toolchain is
+ # used to generate target code when building a cross compiler
+-- 
+2.51.0
+

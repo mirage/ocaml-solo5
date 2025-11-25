@@ -54,4 +54,7 @@ int pthread_cond_broadcast(pthread_cond_t *);
 int pthread_cond_signal(pthread_cond_t *);
 int pthread_cond_destroy(pthread_cond_t *);
 
+int pthread_cancel(pthread_t thread);
+void pthread_exit(void *retval);
+
 #endif

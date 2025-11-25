@@ -52,7 +52,7 @@ let print_rule test exitcode extraifs extralibs =
     exitcode
 
 let _ =
-  print_rule "hello" None [] [];
+  print_rule "hello" None [] ["fmt"];
   print_rule "sysfail" (Some 2) [] [];
   print_rule "config" None [] [];
   print_rule "compilerlibsx86" None

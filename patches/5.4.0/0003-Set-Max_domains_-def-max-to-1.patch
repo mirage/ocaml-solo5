@@ -1,0 +1,44 @@
+From 038db6e2efd54d13a6841b250f9efe338eea72e2 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Fri, 12 Apr 2024 19:21:52 +0200
+Subject: [PATCH 3/3] Set `Max_domains_{def,max}` to 1
+
+Solo5 is single-core with no scheduler, so avoid the useless memory
+waste
+
+Note that since PR#13272 the maximum number of domains can set using a
+parameter in `OCAMLRUNPARAM` so a patchless implementation could be to
+add to `nolibc`:
+- a `secure_getenv` returning `"d=1"` for the `OCAMLRUNPARAM` value,
+- a `sscanf`; it could be hard-coded version just for that use case
+  (namely recover the `1`)
+but this would still be rather brittle
+---
+ runtime/caml/domain.h | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/runtime/caml/domain.h b/runtime/caml/domain.h
+index c7d6c1136f..ef3ff52ede 100644
+--- a/runtime/caml/domain.h
++++ b/runtime/caml/domain.h
+@@ -26,15 +26,11 @@
+ #include "mlvalues.h"
+ #include "domain_state.h"
+ 
+-#ifdef ARCH_SIXTYFOUR
+-#define Max_domains_def 128
+-#else
+-#define Max_domains_def 16
+-#endif
++#define Max_domains_def 1
+ 
+ /* Upper limit for the number of domains. Chosen to be arbitrarily large. Used
+  * for sanity checking [max_domains] value in OCAMLRUNPARAM. */
+-#define Max_domains_max 4096
++#define Max_domains_max 1
+ 
+ /* is the minor heap full or an external interrupt has been triggered */
+ Caml_inline int caml_check_gc_interrupt(caml_domain_state * dom_st)
+-- 
+2.51.0
+
