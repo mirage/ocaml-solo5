@@ -1,3 +1,10 @@
+## v1.2.0 (2025-11-25)
+
+* Support OCaml 5.4.0 (@shym #155)
+* Add test of (host) ocaml-installed fmt in one example (@dinosaure #155)
+* Use plain text diffs, use opatch instead of git apply (@shym @dinosaure @hannesm #154)
+* Cleanup opam package dependencies (@shym #156)
+
 ## v1.1.0 (2025-03-13)
 
 * Support for Ocaml 5.3.0 (@shym #148)
