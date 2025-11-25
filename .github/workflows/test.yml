@@ -16,7 +16,7 @@ jobs:
           *.opam
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
-      run: opam install ocaml-solo5 conf-libseccomp dune
+      run: opam install ocaml-solo5 conf-libseccomp dune fmt
     - name: Show the toolchain configuration
       run: |
         set -x
@@ -43,11 +43,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libvirt-clients libvirt-daemon-system libvirt-daemon virtinst bridge-utils qemu-kvm qemu-system-x86
         sudo usermod -a -G kvm,libvirt $USER
-    - name: Compile a simple Hello World!
+    - name: Run a Solo5 unikernel (hvt)
       run: |
-        opam install fmt
-        opam exec -- dune build --root unikernel main.exe
-        opam exec -- dune describe location --root unikernel --context solo5 --no-print-directory ./main.exe &> unikernel.tmp
+        opam exec -- dune describe location --root example --context solo5 --no-print-directory ./hello.exe &> unikernel.tmp
         echo "UNIKERNEL=$(cat unikernel.tmp)" >> $GITHUB_ENV
     - name: Run a simple Hello World!
-      run: opam exec -- solo5-hvt -- "unikernel/$UNIKERNEL"
+      run: opam exec -- solo5-hvt -- "example/$UNIKERNEL"
