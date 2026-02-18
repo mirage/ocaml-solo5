@@ -1,3 +1,8 @@
+## v1.2.1 (2026-02-18)
+
+* Drop support for OCaml 5.3.0 and 5.4.0 (@hannesm #163)
+* Support OCaml 5.4.1 (@hannesm #162)
+
 ## v1.2.0 (2025-11-25)
 
 * Support OCaml 5.4.0 (@shym #155)
