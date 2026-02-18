@@ -1,0 +1,68 @@
+From fb64bf56cd52896765a53007aa723a4346ef12c4 Mon Sep 17 00:00:00 2001
+From: Samuel Hym <samuel@tarides.com>
+Date: Mon, 26 Feb 2024 19:35:26 +0100
+Subject: [PATCH 1/3] Accept native freestanding targets at configure time
+
+Accept `*-none` and `*-elf*` triplets for all the architectures with a
+native backend to describe the corresponding freestanding target; `none`
+and `elf*` are the most commonly-used last components in triplets for
+freestanding targets
+Set `system` to `none` in such cases
+---
+ configure    | Bin 737974 -> 738624 bytes
+ configure.ac |  14 +++++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 8bb7306cb1..1f0c06d943 100755
+--- a/configure
++++ b/configure
+@@ -18612,7 +18612,19 @@ fi ;; #(
+   riscv64-*-linux*) :
+     has_native_backend=yes; arch=riscv; model=riscv64; system=linux ;; #(
+   x86_64-*-gnu*) :
+-    has_native_backend=yes; arch=amd64; system=gnu
++    has_native_backend=yes; arch=amd64; system=gnu ;; #(
++  aarch64-*-none|arm64-*-none|aarch64-*-elf*|arm64-*-elf*) :
++    has_native_backend=yes; arch=arm64; system=none ;; #(
++  powerpc64le*-*-none|powerpc64le*-*-elf*) :
++    has_native_backend=yes; arch=power; model=ppc64le; system=none ;; #(
++  powerpc64*-*-none|powerpc64*-*-elf*) :
++    has_native_backend=yes; arch=power; model=ppc64; system=none ;; #(
++  riscv64-*-none|riscv64-*-elf*) :
++    has_native_backend=yes; arch=riscv; model=riscv64; system=none ;; #(
++  s390x*-*-none|s390x*-*-elf*) :
++    has_native_backend=yes; arch=s390x; model=z10; system=none ;; #(
++  x86_64-*-none|x86_64-*-elf*) :
++    has_native_backend=yes; arch=amd64; system=none
+  ;; #(
+   *) :
+      ;;
+diff --git a/configure.ac b/configure.ac
+index 0535f404b0..8e5e1e9300 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1609,7 +1609,19 @@ AS_CASE([$target],
+   [riscv64-*-linux*],
+     [has_native_backend=yes; arch=riscv; model=riscv64; system=linux],
+   [x86_64-*-gnu*],
+-    [has_native_backend=yes; arch=amd64; system=gnu]
++    [has_native_backend=yes; arch=amd64; system=gnu],
++  [aarch64-*-none|arm64-*-none|aarch64-*-elf*|arm64-*-elf*],
++    [has_native_backend=yes; arch=arm64; system=none],
++  [powerpc64le*-*-none|powerpc64le*-*-elf*],
++    [has_native_backend=yes; arch=power; model=ppc64le; system=none],
++  [powerpc64*-*-none|powerpc64*-*-elf*],
++    [has_native_backend=yes; arch=power; model=ppc64; system=none],
++  [riscv64-*-none|riscv64-*-elf*],
++    [has_native_backend=yes; arch=riscv; model=riscv64; system=none],
++  [s390x*-*-none|s390x*-*-elf*],
++    [has_native_backend=yes; arch=s390x; model=z10; system=none],
++  [x86_64-*-none|x86_64-*-elf*],
++    [has_native_backend=yes; arch=amd64; system=none]
+ )
+ 
+ AS_CASE([$arch],
+-- 
+2.51.0
+
