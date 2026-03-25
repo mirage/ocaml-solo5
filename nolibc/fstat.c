@@ -2,6 +2,14 @@
 #include <string.h>
 #include <time.h>
 
+/* It is possible that a dependency required for compiling a unikernel necessitates the
+   `runtime_events` (other)library provided by OCaml (as is the case with `lwt`, see this PR:
+   https://github.com/ocsigen/lwt/pull/1083). In this case, it is necessary to provide an
+   implementation of `fstat` (required here for OCaml 5.3:
+   https://github.com/ocaml/ocaml/blob/5.3/otherlibs/runtime_events/runtime_events_consumer.c#L205),
+   hence the reason for this function.
+ */
+
 /* definition is taken from https://man.openbsd.org/stat.2 */ 
 struct stat {
     dev_t           st_dev;      /* inode's device */
