@@ -23,7 +23,7 @@ OBJS=assert.o \
      stubs.o \
      vfprintf.o vsnprintf.o snprintf.o fprintf.o printf.o \
      sysconf.o \
-     fstat.o mmap.o
+     mmap.o
 
 dtoa.o: CFLAGS+=-fno-strict-aliasing
 
