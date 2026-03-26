@@ -1,3 +1,7 @@
+## v1.2.2 (2026-03-26)
+
+* Add fstat symbol (to allow runtime_events, and lwt 6) (#165 @palainp)
+
 ## v1.2.1 (2026-02-18)
 
 * Drop support for OCaml 5.3.0 and 5.4.0 (@hannesm #163)
