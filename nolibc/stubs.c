@@ -155,3 +155,12 @@ STUB_ABORT(sigwait);
 STUB_ABORT(usleep);
 
 STUB_ABORT(longjmp);
+
+/* It is possible that a dependency required for compiling a unikernel necessitates the
+   `runtime_events` (other)library provided by OCaml (as is the case with `lwt`, see this PR:
+   https://github.com/ocsigen/lwt/pull/1083). In this case, it is necessary to provide an
+   implementation of `fstat` (required here for OCaml 5.3:
+   https://github.com/ocaml/ocaml/blob/5.3/otherlibs/runtime_events/runtime_events_consumer.c#L205),
+   hence the reason for this function.
+ */
+STUB_ABORT(fstat);
