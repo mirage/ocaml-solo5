@@ -19,5 +19,6 @@
 #define NL_ARGMAX 9
 #define UCHAR_MAX 255
 #define CHAR_BIT 8
+#define PATH_MAX 1024
 
 #endif

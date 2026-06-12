@@ -19,8 +19,10 @@ int usleep(useconds_t);
 int ftruncate(int, off_t);
 long sysconf(int);
 int execv(const char *, char *const []);
+int execvp(const char *, char *const []);
 
 #define _SC_PAGESIZE 1
 #define _SC_PAGE_SIZE _SC_PAGESIZE
+#define SEEK_END 2
 
 #endif

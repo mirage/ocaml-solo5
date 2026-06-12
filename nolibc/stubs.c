@@ -81,6 +81,7 @@ STUB_ABORT(unlink);
 STUB_ABORT(rmdir);
 STUB_ABORT(ftruncate);
 STUB_ABORT(execv);
+STUB_ABORT(execvp);
 
 /* dirent.h */
 STUB_WARN_ONCE(int, closedir, -1);
@@ -102,6 +103,7 @@ STUB_ABORT(raise);
 
 /* string.h */
 STUB_ABORT(strerror);
+STUB_ABORT(strcpy);
 
 /* sys/stat.h */
 STUB_WARN_ONCE(int, stat, -1);
