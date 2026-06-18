@@ -100,18 +100,24 @@ gen_tool() {
       TARGET_TOOL="$TARGET_STRIP"
       ;;
   esac
+  # Resolve to an absolute path so the generated wrapper does not depend on the
+  # tool's directory being on PATH when the wrapper runs. This matters for the
+  # OTHERTOOLPREFIX tools (e.g. llvm-ar on macOS), which live outside the Solo5
+  # toolchain and the opam switch, so a plain `dune build -x` would otherwise
+  # fail to find them.
   if test "$TARGET_TOOL" ; then
     TOOL="$TARGET_TOOL"
-  elif command -v -- "$SOLO5_TOOLCHAIN-$TOOL" > /dev/null; then
-    TOOL="$SOLO5_TOOLCHAIN-$TOOL"
+  elif resolved="$(command -v -- "$SOLO5_TOOLCHAIN-$TOOL")"; then
+    TOOL="$resolved"
   else
     case "$TOOL" in
       as)
-        TOOL="$SOLO5_TOOLCHAIN-cc -c"
+        resolved="$(command -v -- "$SOLO5_TOOLCHAIN-cc")"
+        TOOL="${resolved:-$SOLO5_TOOLCHAIN-cc} -c"
         ;;
       *)
-        if command -v -- "$OTHERTOOLPREFIX$TOOL" > /dev/null; then
-          TOOL="$OTHERTOOLPREFIX$TOOL"
+        if resolved="$(command -v -- "$OTHERTOOLPREFIX$TOOL")"; then
+          TOOL="$resolved"
         fi
         ;;
     esac
