@@ -1,0 +1,39 @@
+From 1271f2a6a55483e9a0825a6f79f384b710444510 Mon Sep 17 00:00:00 2001
+From: Calascibetta Romain <romain.calascibetta@gmail.com>
+Date: Sat, 20 Jun 2026 13:04:38 +0200
+Subject: [PATCH] Use the same os_type as the host
+
+---
+ configure    | Bin 764478 -> 764503 bytes
+ configure.ac |   2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index b159afee80..0ce6c1a1c2 100755
+--- a/configure
++++ b/configure
+@@ -16461,7 +16461,7 @@ esac
+   gcc-*,powerpc-*-linux*) :
+     oc_ldflags="-mbss-plt" ;; #(
+   *,*-*-none|*,*-*-elf*) :
+-    ostype="None" ;; #(
++    ostype="$(ocamlc -config-var os_type)" ;; #(
+   *) :
+      ;;
+ esac
+diff --git a/configure.ac b/configure.ac
+index 167629fbbf..a92274bf43 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1348,7 +1348,7 @@ AS_CASE([$ocaml_cc_vendor,$target],
+   [gcc-*,powerpc-*-linux*],
+     [oc_ldflags="-mbss-plt"],
+   [*,*-*-none|*,*-*-elf*],
+-    [ostype="None"])
++    [ostype="$(ocamlc -config-var os_type)"])
+ 
+ # How to build sak
+ 
+-- 
+2.54.0
+
