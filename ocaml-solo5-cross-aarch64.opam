@@ -37,7 +37,7 @@ depends: [
   "opatch" {build} # to patch the compiler sources
   "ocamlfind" {build}
   "ocaml-src" {build}
-  "ocaml" {= "5.4.1" | "5.5.0"}
+  "ocaml" {= "5.4.1" | = "5.5.0"}
   # On macOS the native solo5 (tenders) has no build; the cross OCaml needs
   # only the cross toolchain + headers from solo5-cross-aarch64.
   "solo5" {>= "0.9.1" & os != "macos"}
