@@ -77,6 +77,20 @@ TARGET_TRIPLET="$("$CONFIG_TARGET-cc" -dumpmachine)"
 
 MAKECONF_TOOLPREFIX="${MAKECONF_TOOLPREFIX:-$TARGET_TRIPLET-}"
 
+# On macOS the llvm- tools (ar, ranlib, nm) live in a keg-only/MacPorts bindir
+# off PATH; pin the prefix there so the build and wrappers resolve them.
+if ! command -v "${MAKECONF_TOOLPREFIX}ar" >/dev/null 2>&1; then
+    for bindir in \
+        "$(command -v brew >/dev/null 2>&1 && brew --prefix llvm 2>/dev/null)/bin" \
+        /opt/homebrew/opt/llvm/bin /usr/local/opt/llvm/bin \
+        /opt/local/libexec/llvm-*/bin; do
+        if [ -x "${bindir}/${MAKECONF_TOOLPREFIX}ar" ]; then
+            MAKECONF_TOOLPREFIX="${bindir}/${MAKECONF_TOOLPREFIX}"
+            break
+        fi
+    done
+fi
+
 case "${TARGET_TRIPLET}" in
     amd64-*|x86_64-*)
         TARGET_ARCH="x86_64"

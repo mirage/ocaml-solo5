@@ -14,13 +14,6 @@ gen_cc() {
 
   CFLAGS="$TOOL_CFLAGS"
   LDFLAGS="$TOOL_LDFLAGS"
-  EXTRALIBS=""
-
-  case "$ARCH" in
-    aarch64)
-      EXTRALIBS="-lgcc"
-      ;;
-  esac
 
   # Add the -Wno-unused-command-line-argument option for clang, as we always
   # give it compiling options, even if it will be only linking
@@ -60,7 +53,6 @@ if [ -z "\$compiling" ]; then
     -Wl,--start-group \\
     -lnolibc \\
     -lopenlibm \\
-    $EXTRALIBS \\
     -Wl,--end-group
 fi
 
@@ -100,18 +92,21 @@ gen_tool() {
       TARGET_TOOL="$TARGET_STRIP"
       ;;
   esac
+  # Resolve to an absolute path: the OTHERTOOLPREFIX tools (e.g. llvm-ar on
+  # macOS) are off the wrapper's PATH when it runs at build time.
   if test "$TARGET_TOOL" ; then
     TOOL="$TARGET_TOOL"
-  elif command -v -- "$SOLO5_TOOLCHAIN-$TOOL" > /dev/null; then
-    TOOL="$SOLO5_TOOLCHAIN-$TOOL"
+  elif resolved="$(command -v -- "$SOLO5_TOOLCHAIN-$TOOL")"; then
+    TOOL="$resolved"
   else
     case "$TOOL" in
       as)
-        TOOL="$SOLO5_TOOLCHAIN-cc -c"
+        resolved="$(command -v -- "$SOLO5_TOOLCHAIN-cc")"
+        TOOL="${resolved:-$SOLO5_TOOLCHAIN-cc} -c"
         ;;
       *)
-        if command -v -- "$OTHERTOOLPREFIX$TOOL" > /dev/null; then
-          TOOL="$OTHERTOOLPREFIX$TOOL"
+        if resolved="$(command -v -- "$OTHERTOOLPREFIX$TOOL")"; then
+          TOOL="$resolved"
         fi
         ;;
     esac

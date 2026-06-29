@@ -13,6 +13,9 @@ build: [
    "--target=aarch64-solo5-none-static"
    "--ocaml-configure-option=--disable-flat-float-array" {ocaml-option-no-flat-float-array:installed}
    "--ocaml-configure-option=--enable-flambda" {ocaml-option-flambda:installed}
+   "--othertoolprefix=llvm-" {os = "macos"}
+   # required: crossopt's ocamlopt is built without function-sections support
+   "--ocaml-configure-option=--disable-function-sections" {os = "macos"}
   ]
   [make "-j%{jobs}%"]
   [make "%{name}%.install"]
@@ -32,7 +35,7 @@ depends: [
   "ocamlfind" {build}
   "ocaml-src" {build}
   "ocaml" {= "5.4.1" | "5.5.0"}
-  "solo5" {>= "0.9.1"}
+  "solo5" {>= "0.9.1" & os != "macos"} # no native solo5 build on macOS
   "solo5-cross-aarch64" {>= "0.9.1" }
 ]
 conflicts: [
@@ -45,7 +48,8 @@ conflicts: [
 available: [
   ((os = "linux" & (arch = "x86_64" | arch = "arm64"))
   | (os = "freebsd" & arch = "x86_64")
-  | (os = "openbsd" & arch = "x86_64"))
+  | (os = "openbsd" & arch = "x86_64")
+  | (os = "macos" & arch = "arm64"))
 ]
 x-maintenance-intent: [ "(latest)" ]
 synopsis: "OCaml cross-compiler to the freestanding 64-bit ARM Solo5 backend"
