@@ -121,7 +121,9 @@ static const unsigned char states[]['z'-'A'+1] = {
 union arg
 {
 	uintmax_t i;
-	long double f;
+	/* double, not long double: avoids pulling libgcc soft-float (__*tf*) into
+	   freestanding links; %L is treated as double (fmt_fp formats at double). */
+	double f;
 	void *p;
 };
 
@@ -151,7 +153,7 @@ static void pop_arg(union arg *arg, int type, va_list *ap)
 	break; case UIPTR:	arg->i = (uintptr_t)va_arg(*ap, void *);
 #endif
 	break; case DBL:	arg->f = va_arg(*ap, double);
-	break; case LDBL:	arg->f = va_arg(*ap, long double);
+	break; case LDBL:	arg->f = va_arg(*ap, double);
 	}
 }
 
