@@ -1,3 +1,7 @@
+## v1.3.0 (2026-06-22)
+
+- Add the support of OCaml 5.5 (@hannesm, @shym, @Octachron, @dinosaure & @MisterDA, #167)
+
 ## v1.2.2 (2026-03-26)
 
 * Add fstat symbol (to allow runtime_events, and lwt 6) (#165 @palainp)
