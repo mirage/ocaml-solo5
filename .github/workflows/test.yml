@@ -44,3 +44,42 @@ jobs:
       run: MODE=muen opam exec -- dune build --root example
     - name: Compile examples with xen
       run: MODE=xen opam exec -- dune build --root example
+
+  # TEMP: end-to-end macOS check that pins the not-yet-released stack
+  # (Solo5/solo5#641 + #642, mirage/ocaml-gmp#29, ocaml/Zarith#173). solo5 is a
+  # tar pin to exercise the SOLO5_VERSION fallback. Drop once those land in opam.
+  macos-e2e:
+    name: macOS aarch64 e2e (zarith)
+    runs-on: macos-latest
+    env:
+      OPAMYES: 1
+    steps:
+    - uses: actions/checkout@v6
+    # No brew install or PATH setup: opam pulls the LLVM toolchain and target
+    # runtime through solo5-cross-aarch64's depexts, and configure resolves the
+    # keg-only tools to absolute paths.
+    - uses: ocaml/setup-ocaml@v3
+      with:
+        ocaml-compiler: 5.4.1
+        opam-pin: false
+    - name: Pin the stack and build the cross-compiler
+      run: |
+        opam pin add -n solo5 https://github.com/samoht/solo5/archive/refs/heads/macos.tar.gz
+        opam pin add -n solo5-cross-aarch64 https://github.com/samoht/solo5/archive/refs/heads/macos.tar.gz
+        opam pin add -n gmp git+https://github.com/samoht/ocaml-gmp.git#ship-gmp-pc
+        opam pin add -n zarith git+https://github.com/samoht/zarith.git#honor-ocaml-env
+        opam pin add -n ocaml-solo5-cross-aarch64 .
+        opam install ocaml-solo5-cross-aarch64
+    - name: Cross-build zarith against ocaml-gmp's pkg-config (Zarith#173)
+      run: |
+        set -euo pipefail
+        opam remove -y zarith gmp conf-gmp || true
+        opam install gmp   # ocaml-gmp fork: relocatable gmp.pc under lib/pkgconfig
+        OCAMLC="ocamlfind -toolchain solo5 ocamlc" \
+        OCAMLOPT="ocamlfind -toolchain solo5 ocamlopt" \
+        OCAMLDEP="ocamlfind -toolchain solo5 ocamldep" \
+        OCAMLMKLIB="ocamlfind -toolchain solo5 ocamlmklib" \
+        PKG_CONFIG_PATH="$(opam var lib)/pkgconfig:${PKG_CONFIG_PATH:-}" \
+        opam install zarith --verbose 2>&1 | tee zarith-build.log
+        # fail unless zarith was actually built through the solo5 cross toolchain
+        grep -qE 'aarch64-solo5-ocaml|toolchain solo5' zarith-build.log

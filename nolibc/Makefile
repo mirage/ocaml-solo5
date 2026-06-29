@@ -10,7 +10,7 @@ clean:
 	$(RM) libnolibc.a *.o test-include/*.[co] test-include/sys/*.[co]
 
 CC=cc
-CFLAGS=-O2 -std=c99 -Wall -Wno-parentheses -Werror
+CFLAGS=-O2 -std=c99 -Wall -Wno-parentheses -Wno-asm-operand-widths -Werror
 CFLAGS+=$(FREESTANDING_CFLAGS)
 
 OBJS=assert.o \

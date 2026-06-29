@@ -13,6 +13,12 @@ build: [
    "--target=aarch64-solo5-none-static"
    "--ocaml-configure-option=--disable-flat-float-array" {ocaml-option-no-flat-float-array:installed}
    "--ocaml-configure-option=--enable-flambda" {ocaml-option-flambda:installed}
+   # macOS uses the LLVM "other" tools (llvm-ar/ranlib/nm/objcopy); the
+   # freestanding nolibc lacks the C99 float ops clang would otherwise inline,
+   # and the cross compiler is built without function sections.
+   "--othertoolprefix=llvm-" {os = "macos"}
+   "--ocaml-configure-option=--enable-imprecise-c99-float-ops" {os = "macos"}
+   "--ocaml-configure-option=--disable-function-sections" {os = "macos"}
   ]
   [make "-j%{jobs}%"]
   [make "%{name}%.install"]
@@ -31,8 +37,10 @@ depends: [
   "opatch" {build} # to patch the compiler sources
   "ocamlfind" {build}
   "ocaml-src" {build}
-  "ocaml" {= "5.4.1" | "5.5.0"}
-  "solo5" {>= "0.9.1"}
+  "ocaml" {= "5.4.1" | = "5.5.0"}
+  # On macOS the native solo5 (tenders) has no build; the cross OCaml needs
+  # only the cross toolchain + headers from solo5-cross-aarch64.
+  "solo5" {>= "0.9.1" & os != "macos"}
   "solo5-cross-aarch64" {>= "0.9.1" }
 ]
 conflicts: [
@@ -45,7 +53,8 @@ conflicts: [
 available: [
   ((os = "linux" & (arch = "x86_64" | arch = "arm64"))
   | (os = "freebsd" & arch = "x86_64")
-  | (os = "openbsd" & arch = "x86_64"))
+  | (os = "openbsd" & arch = "x86_64")
+  | (os = "macos" & arch = "arm64"))
 ]
 x-maintenance-intent: [ "(latest)" ]
 synopsis: "OCaml cross-compiler to the freestanding 64-bit ARM Solo5 backend"
