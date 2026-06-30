@@ -28,6 +28,8 @@ nolibc/libnolibc.a: phony-nolibc
 phony-nolibc:
 	$(MAKE) -C nolibc libnolibc.a \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	    "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	    "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
 
 # OPENLIBM
@@ -38,6 +40,8 @@ openlibm/libopenlibm.a: phony-openlibm
 phony-openlibm:
 	$(MAKE) -C openlibm libopenlibm.a \
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	     "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	     "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	     "CPPFLAGS=$(LIB_CFLAGS)"
 
 # TOOLCHAIN

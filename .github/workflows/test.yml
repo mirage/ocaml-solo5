@@ -44,3 +44,21 @@ jobs:
       run: MODE=muen opam exec -- dune build --root example
     - name: Compile examples with xen
       run: MODE=xen opam exec -- dune build --root example
+
+  macos:
+    name: macOS aarch64 cross-compiler
+    runs-on: macos-latest
+    env:
+      OPAMYES: 1
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ocaml/setup-ocaml@v3
+      with:
+        ocaml-compiler: 5.4.1
+        opam-pin: false
+    - name: Build the cross-compiler
+      run: |
+        opam pin add -n solo5 git+https://github.com/samoht/solo5.git#macos
+        opam pin add -n solo5-cross-aarch64 git+https://github.com/samoht/solo5.git#macos
+        opam pin add -n ocaml-solo5-cross-aarch64 .
+        opam install ocaml-solo5-cross-aarch64
