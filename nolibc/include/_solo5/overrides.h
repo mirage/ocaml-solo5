@@ -1,6 +1,7 @@
 #ifndef __FREESTANDING_OVERRIDES_H
 #define __FREESTANDING_OVERRIDES_H
 
+#undef __DragonFly__
 #undef __FreeBSD__
 #undef __OpenBSD__
 #undef __gnu_linux__
