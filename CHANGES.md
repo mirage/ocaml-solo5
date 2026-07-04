@@ -1,3 +1,9 @@
+## v1.3.1 (2026-07-04)
+
+- Support DragonFlyBSD (@mneumann #172)
+- Fix ocaml-solo5-cross-aarch64.opam syntax (@hannesm #174)
+- Fix 0003 patch for Max_domains on 5.5.0 (@hannesm #175, fixes #173)
+
 ## v1.3.0 (2026-06-22)
 
 - Add the support of OCaml 5.5 (@hannesm, @shym, @Octachron, @dinosaure & @MisterDA, #167)
