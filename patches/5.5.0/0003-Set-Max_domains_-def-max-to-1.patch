@@ -21,10 +21,10 @@ diff --git a/runtime/caml/domain.h b/runtime/caml/domain.h
 index c7d6c1136f..ef3ff52ede 100644
 --- a/runtime/caml/domain.h
 +++ b/runtime/caml/domain.h
-@@ -30,2 +30,2 @@
+@@ -30,15 +30,11 @@
  CAMLextern bool caml_thread_running_on_expected_domain(uintnat);
  CAMLextern void caml_thread_record_domain_id(uintnat);
-
+ 
 -#ifdef ARCH_SIXTYFOUR
 -#define Max_domains_def 128
 -#else
