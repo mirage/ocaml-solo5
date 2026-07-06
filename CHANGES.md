@@ -1,3 +1,7 @@
+## v1.3.2 (2026-07-06)
+
+- Fix 0003 patch again for Max_domains on 5.5.0 (@hannesm #176, fixes #173)
+
 ## v1.3.1 (2026-07-04)
 
 - Support DragonFlyBSD (@mneumann #172)
