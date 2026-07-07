@@ -18,6 +18,8 @@
 #include <math.h>
 #else /* !OPENLIBM_USE_HOST_MATH_H */
 
+#include <openlibm_defs.h>
+
 #ifndef OPENLIBM_MATH_H
 #define	OPENLIBM_MATH_H
 
@@ -25,22 +27,12 @@
     #define __WIN32__
 #endif
 
-#ifndef __arm__
-#define LONG_DOUBLE
+#if !defined(__arm__) && !defined(__wasm__)
+#define OLM_LONG_DOUBLE
 #endif
 
 #ifndef __pure2
 #define __pure2
-#endif
-
-#ifdef _WIN32
-# ifdef IMPORT_EXPORTS
-#  define OLM_DLLEXPORT __declspec(dllimport)
-# else
-#  define OLM_DLLEXPORT __declspec(dllexport)
-# endif
-#else
-#define OLM_DLLEXPORT __attribute__ ((visibility("default")))
 #endif
 
 /*
@@ -182,7 +174,7 @@ extern const union __nan_un {
 #define	MAXFLOAT	((float)3.40282346638528860e+38)
 
 #ifndef OPENLIBM_ONLY_THREAD_SAFE
-extern int signgam;
+OLM_DLLEXPORT extern int signgam;
 #endif
 #endif /* __BSD_VISIBLE || __XSI_VISIBLE */
 
@@ -312,6 +304,7 @@ OLM_DLLEXPORT double	trunc(double);
  * BSD math library entry points
  */
 #if __BSD_VISIBLE
+OLM_DLLEXPORT int	isinff(float) __pure2;
 OLM_DLLEXPORT int	isnanf(float) __pure2;
 
 /*

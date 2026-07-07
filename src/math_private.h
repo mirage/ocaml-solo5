@@ -18,7 +18,7 @@
 #define	_MATH_PRIVATE_H_
 
 #include <openlibm_complex.h>
-
+#include <openlibm_defs.h>
 #include "cdefs-compat.h"
 #include "types-compat.h"
 #include "fpmath.h"
@@ -203,10 +203,9 @@ do {								\
 } while (0)
 
 
-//VBS
+#ifndef __FreeBSD__
 #define	STRICT_ASSIGN(type, lval, rval)	((lval) = (rval))
-
-/* VBS
+#else
 #ifdef FLT_EVAL_METHOD
 // Attempt to get strict C99 semantics for assignment with non-C99 compilers.
 #if FLT_EVAL_METHOD == 0 || __GNUC__ == 0
@@ -215,7 +214,7 @@ do {								\
 #define	STRICT_ASSIGN(type, lval, rval) do {	\
 	volatile type __lval;			\
 						\
-	if (sizeof(type) >= sizeof(double))	\
+	if (sizeof(type) >= sizeof(long double))	\
 		(lval) = (rval);		\
 	else {					\
 		__lval = (rval);		\
@@ -224,12 +223,30 @@ do {								\
 } while (0)
 #endif
 #endif
-*/
+#endif
 
 /*
  * Common routine to process the arguments to nan(), nanf(), and nanl().
  */
 void __scan_nan(u_int32_t *__words, int __num_words, const char *__s);
+
+/*
+ * Mix 1 or 2 NaNs.  First add 0 to each arg.  This normally just turns
+ * signaling NaNs into quiet NaNs by setting a quiet bit.  We do this
+ * because we want to never return a signaling NaN, and also because we
+ * don't want the quiet bit to affect the result.  Then mix the converted
+ * args using addition.  The result is typically the arg whose mantissa
+ * bits (considered as in integer) are largest.
+ *
+ * Technical complications: the result in bits might depend on the precision
+ * and/or on compiler optimizations, especially when different register sets
+ * are used for different precisions.  Try to make the result not depend on
+ * at least the precision by always doing the main mixing step in long double
+ * precision.  Try to reduce dependencies on optimizations by adding the
+ * the 0's in different precisions (unless everything is in long double
+ * precision).
+ */
+#define	nan_mix(x, y)	(((x) + 0.0L) + ((y) + 0))
 
 #ifdef __GNUCLIKE_ASM
 
@@ -354,17 +371,5 @@ float complex __ldexp_cexpf(float complex,int);
 long double __kernel_sinl(long double, long double, int);
 long double __kernel_cosl(long double, long double);
 long double __kernel_tanl(long double, long double, int);
-
-#undef OLM_DLLEXPORT
-#ifdef _WIN32
-# ifdef IMPORT_EXPORTS
-#  define OLM_DLLEXPORT __declspec(dllimport)
-# else
-#  define OLM_DLLEXPORT __declspec(dllexport)
-# endif
-#else
-#define OLM_DLLEXPORT __attribute__ ((visibility("default")))
-#endif
-
 
 #endif /* !_MATH_PRIVATE_H_ */

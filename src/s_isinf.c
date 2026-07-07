@@ -51,7 +51,7 @@ __isinff(float f)
 	return (u.bits.exp == 255 && u.bits.man == 0);
 }
 
-#ifdef LONG_DOUBLE
+#ifdef OLM_LONG_DOUBLE
 OLM_DLLEXPORT int
 __isinfl(long double e)
 {
@@ -63,4 +63,4 @@ __isinfl(long double e)
 }
 #endif
 
-__weak_reference(__isinff, isinff);
+openlibm_weak_reference(__isinff, isinff);
