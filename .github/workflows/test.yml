@@ -18,7 +18,9 @@ jobs:
           *.opam
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
-      run: opam install ocaml-solo5 conf-libseccomp dune fmt
+      run: |
+        opam install conf-libseccomp dune fmt \
+          ocaml-solo5 --verbose-on=ocaml-solo5
     - name: Show the toolchain configuration
       run: |
         set -x
