@@ -39,7 +39,7 @@ jobs:
     - name: Compile examples with spt
       run: MODE=spt opam exec -- dune build --root example
     - name: Run examples with spt
-      run: MODE=spt opam exec -- dune runtest --root example
+      run: MODE=spt opam exec -- dune runtest --root example _build/solo5
     - name: Compile examples with virtio
       run: MODE=virtio opam exec -- dune build --root example
     - name: Compile examples with muen
