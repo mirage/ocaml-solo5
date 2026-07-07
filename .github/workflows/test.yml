@@ -28,7 +28,7 @@ jobs:
         opam exec -- ocamlfind -toolchain solo5 printconf
         opam exec -- ocamlfind -toolchain solo5 list
     - name: Compile examples with hvt
-      run: MODE=hvt opam exec -- dune build --root example
+      run: MODE=hvt opam exec -- dune build --root example --display short
     - name: Run the hello example with hvt
       run: |
         set -x
@@ -37,12 +37,12 @@ jobs:
         sudo setfacl -m u:${USER}:rw /dev/kvm
         opam exec -- solo5-hvt -- "example/$(cat hello.path)"
     - name: Compile examples with spt
-      run: MODE=spt opam exec -- dune build --root example
+      run: MODE=spt opam exec -- dune build --root example --display short
     - name: Run examples with spt
       run: MODE=spt opam exec -- dune runtest --root example _build/solo5
     - name: Compile examples with virtio
-      run: MODE=virtio opam exec -- dune build --root example
+      run: MODE=virtio opam exec -- dune build --root example --display short
     - name: Compile examples with muen
-      run: MODE=muen opam exec -- dune build --root example
+      run: MODE=muen opam exec -- dune build --root example --display short
     - name: Compile examples with xen
-      run: MODE=xen opam exec -- dune build --root example
+      run: MODE=xen opam exec -- dune build --root example --display short
