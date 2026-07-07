@@ -27,18 +27,20 @@
  * $FreeBSD: head/lib/libc/aarch64/_fpmath.h 281197 2015-04-07 09:52:14Z andrew $
  */
 
+#include <stdint.h>
+
 union IEEEl2bits {
 	long double	e;
 	struct {
-		unsigned long	manl	:64;
-		unsigned long	manh	:48;
+		uint64_t	manl	:64;
+		uint64_t	manh	:48;
 		unsigned int	exp	:15;
 		unsigned int	sign	:1;
 	} bits;
 	/* TODO andrew: Check the packing here */
 	struct {
-		unsigned long	manl	:64;
-		unsigned long	manh	:48;
+		uint64_t	manl	:64;
+		uint64_t	manh	:48;
 		unsigned int	expsign	:16;
 	} xbits;
 };

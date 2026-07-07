@@ -37,8 +37,16 @@
 #else 
 #include "i386_fpmath.h"
 #endif
-#elif defined(__powerpc__)
+#elif defined(__powerpc__) || defined(__POWERPC__)
 #include "powerpc_fpmath.h"
+#elif defined(__mips__)
+#include "mips_fpmath.h"
+#elif defined(__s390__)
+#include "s390_fpmath.h"
+#elif defined(__riscv)
+#include "riscv_fpmath.h"
+#elif defined(__loongarch64)
+#include "loongarch64_fpmath.h"
 #endif
 
 /* Definitions provided directly by GCC and Clang. */
