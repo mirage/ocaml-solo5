@@ -31,6 +31,10 @@ Options:
         (default: \`TARGET-cc -dumpmachine\`-).
     --ocaml-configure-option=OPTION
         Add an option to the OCaml compiler configuration.
+    --toolchain-use-absolute-path
+        Resolve the toolchain binaries to absolute paths, for hosts where they
+        are off PATH when the cross compiler is later used (e.g. Homebrew's
+        keg-only llvm tools on macOS).
 EOM
     exit 1
 }
@@ -57,6 +61,9 @@ while [ $# -gt 0 ]; do
         --ocaml-configure-option=*)
             OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT#*=}"
             ;;
+        --toolchain-use-absolute-path)
+            TOOLCHAIN_ABSOLUTE_PATH=1
+            ;;
         --help)
             usage
             ;;
@@ -77,6 +84,21 @@ TARGET_TRIPLET="$("$CONFIG_TARGET-cc" -dumpmachine)"
 
 MAKECONF_TOOLPREFIX="${MAKECONF_TOOLPREFIX:-$TARGET_TRIPLET-}"
 
+# With --toolchain-use-absolute-path, pin the prefix to where the tools live when
+# they are off PATH (macOS: Homebrew's keg-only llvm). Only when the user asked.
+if [ -n "${TOOLCHAIN_ABSOLUTE_PATH}" ] \
+    && ! command -v "${MAKECONF_TOOLPREFIX}ar" >/dev/null 2>&1; then
+    for bindir in \
+        "$(command -v brew >/dev/null 2>&1 && brew --prefix llvm 2>/dev/null)/bin" \
+        /opt/homebrew/opt/llvm/bin /usr/local/opt/llvm/bin \
+        /opt/local/libexec/llvm-*/bin; do
+        if [ -x "${bindir}/${MAKECONF_TOOLPREFIX}ar" ]; then
+            MAKECONF_TOOLPREFIX="${bindir}/${MAKECONF_TOOLPREFIX}"
+            break
+        fi
+    done
+fi
+
 case "${TARGET_TRIPLET}" in
     amd64-*|x86_64-*)
         TARGET_ARCH="x86_64"
@@ -96,4 +118,5 @@ MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
 MAKECONF_TOOLPREFIX=${MAKECONF_TOOLPREFIX}
 MAKECONF_TARGET_ARCH=${TARGET_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
+MAKECONF_TOOLCHAIN_ABSOLUTE_PATH=${TOOLCHAIN_ABSOLUTE_PATH}
 EOM
