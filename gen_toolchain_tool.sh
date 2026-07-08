@@ -14,11 +14,12 @@ gen_cc() {
 
   CFLAGS="$TOOL_CFLAGS"
   LDFLAGS="$TOOL_LDFLAGS"
-  EXTRALIBS=""
 
+  # GCC lowers aarch64 C11 atomics to libgcc __aarch64_* outline helpers by
+  # default; inline them so the freestanding link needs no compiler runtime.
   case "$ARCH" in
     aarch64)
-      EXTRALIBS="-lgcc"
+      CFLAGS="$CFLAGS -mno-outline-atomics"
       ;;
   esac
 
@@ -60,7 +61,6 @@ if [ -z "\$compiling" ]; then
     -Wl,--start-group \\
     -lnolibc \\
     -lopenlibm \\
-    $EXTRALIBS \\
     -Wl,--end-group
 fi
 
