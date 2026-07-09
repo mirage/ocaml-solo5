@@ -52,7 +52,7 @@ __isnanf(float f)
 	return (u.bits.exp == 255 && u.bits.man != 0);
 }
 
-#ifdef LONG_DOUBLE
+#ifdef OLM_LONG_DOUBLE
 OLM_DLLEXPORT int
 __isnanl(long double e)
 {
@@ -64,4 +64,4 @@ __isnanl(long double e)
 }
 #endif
 
-__weak_reference(__isnanf, isnanf);
+openlibm_weak_reference(__isnanf, isnanf);

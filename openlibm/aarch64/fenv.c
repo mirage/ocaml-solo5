@@ -26,7 +26,6 @@
  * $FreeBSD: src/lib/msun/arm/fenv.c,v 1.3 2011/10/16 05:37:56 das Exp $
  */
 
-#define	__fenv_static
 #include <openlibm_fenv.h>
 
 #ifdef __GNUC_GNU_INLINE__
@@ -37,7 +36,7 @@
  * Hopefully the system ID byte is immutable, so it's valid to use
  * this as a default environment.
  */
-const fenv_t __fe_dfl_env = 0;
+const fenv_t __fe_dfl_env = {0};
 
 extern inline int feclearexcept(int __excepts);
 extern inline int fegetexceptflag(fexcept_t *__flagp, int __excepts);
