@@ -1,14 +1,25 @@
 name: Test
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   test:
     strategy:
       matrix:
+        runner:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
         ocaml-compiler:
-          - 5.4.1
           - 5.5.0
-    name: OCaml ${{ matrix.ocaml-compiler }}
-    runs-on: ubuntu-latest
+        include:
+          - runner: ubuntu-latest
+            ocaml-compiler: 5.4.1
+    name: >-
+      OCaml ${{ matrix.ocaml-compiler }}
+      ${{ case(matrix.runner=='ubuntu-latest', 'x86_64', 'arm64') }}
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v7
     - uses: ocaml/setup-ocaml@v3
@@ -18,7 +29,9 @@ jobs:
           *.opam
           !ocaml-solo5-cross-aarch64.opam
     - name: Install ocaml-solo5 and dune
-      run: opam install ocaml-solo5 conf-libseccomp dune fmt
+      run: |
+        opam install conf-libseccomp dune fmt \
+          ocaml-solo5 --verbose-on=ocaml-solo5
     - name: Show the toolchain configuration
       run: |
         set -x
@@ -26,7 +39,7 @@ jobs:
         opam exec -- ocamlfind -toolchain solo5 printconf
         opam exec -- ocamlfind -toolchain solo5 list
     - name: Compile examples with hvt
-      run: MODE=hvt opam exec -- dune build --root example
+      run: MODE=hvt opam exec -- dune build --root example --display short
     - name: Run the hello example with hvt
       run: |
         set -x
@@ -34,13 +47,17 @@ jobs:
           --context solo5 --no-print-directory ./hello.exe |& tee hello.path
         sudo setfacl -m u:${USER}:rw /dev/kvm
         opam exec -- solo5-hvt -- "example/$(cat hello.path)"
+      if: matrix.runner == 'ubuntu-latest'
     - name: Compile examples with spt
-      run: MODE=spt opam exec -- dune build --root example
+      run: MODE=spt opam exec -- dune build --root example --display short
     - name: Run examples with spt
-      run: MODE=spt opam exec -- dune runtest --root example
+      run: MODE=spt opam exec -- dune runtest --root example _build/solo5
     - name: Compile examples with virtio
-      run: MODE=virtio opam exec -- dune build --root example
+      run: MODE=virtio opam exec -- dune build --root example --display short
+      if: matrix.runner == 'ubuntu-latest'
     - name: Compile examples with muen
-      run: MODE=muen opam exec -- dune build --root example
+      run: MODE=muen opam exec -- dune build --root example --display short
+      if: matrix.runner == 'ubuntu-latest'
     - name: Compile examples with xen
-      run: MODE=xen opam exec -- dune build --root example
+      run: MODE=xen opam exec -- dune build --root example --display short
+      if: matrix.runner == 'ubuntu-latest'
