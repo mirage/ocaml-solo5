@@ -13,6 +13,7 @@ build: [
    "--target=aarch64-solo5-none-static" { arch = "arm64" }
    "--ocaml-configure-option=--disable-flat-float-array" {ocaml-option-no-flat-float-array:installed}
    "--ocaml-configure-option=--enable-flambda" {ocaml-option-flambda:installed}
+   "--ocaml-configure-option=--disable-cfi"
   ]
   [make "-j%{jobs}%"]
   [make "%{name}%.install"]

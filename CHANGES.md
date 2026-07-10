@@ -1,3 +1,8 @@
+## unreleased
+
+- Build the cross-compiler with `--disable-cfi`, dropping the OCaml-emitted CFI
+  (`.eh_frame`, ~0.5 MiB) that unikernels never unwind through (@samoht #182)
+
 ## v1.3.2 (2026-07-06)
 
 - Fix 0003 patch again for Max_domains on 5.5.0 (@hannesm #176, fixes #173)
