@@ -1,3 +1,8 @@
+- Update openlibm to v0.8.7 (was a844d58 - which is just before 0.5.6)
+  See the full changes at https://github.com/JuliaMath/openlibm/compare/a844d58...v0.8.7
+  (@shym #179)
+- Update CI systems (@shym #178 @hannesm #180)
+
 ## v1.3.2 (2026-07-06)
 
 - Fix 0003 patch again for Max_domains on 5.5.0 (@hannesm #176, fixes #173)
