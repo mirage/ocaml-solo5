@@ -35,6 +35,7 @@ gen_cc() {
 # Just like the Solo5 cc, we assume that we are linking, unless we find an
 # argument suggesting we are compiling but we call Solo5' cc regardless
 
+PATH="$PATH_PREPEND\$PATH"
 compiling=
 for arg in "\$@"; do
   case "\$arg" in
@@ -119,9 +120,12 @@ gen_tool() {
 
   cat << EOF
 #!/bin/sh
+PATH="$PATH_PREPEND\$PATH"
 exec $TOOL "\$@"
 EOF
 }
+
+PATH="$PATH_PREPEND$PATH"
 
 case "$1" in
   cc|gcc)
