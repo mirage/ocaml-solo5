@@ -29,6 +29,8 @@ phony-nolibc:
 	+env PATH="$(MAKECONF_PATH_PREPEND)$$PATH" \
 	  $(MAKE) -C nolibc libnolibc.a \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	    "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	    "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
 
 # OPENLIBM
@@ -40,6 +42,8 @@ phony-openlibm:
 	+env PATH="$(MAKECONF_PATH_PREPEND)$$PATH" \
 	  $(MAKE) -C openlibm libopenlibm.a \
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	     "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	     "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	     "CPPFLAGS=$(LIB_CFLAGS)"
 
 # TOOLCHAIN
