@@ -8,17 +8,19 @@
 #   SOLO5_TOOLCHAIN: the target for the wrapped Solo5 toolchain
 #   OTHERTOOLPREFIX: the prefix for tools not in the Solo5 toolchain
 #   TARGET_X: overrides the command for binutil X
+#   TOOLCHAIN_ABSOLUTE_PATH: if set, resolve tools to absolute paths
 
 gen_cc() {
   # Note that -nostdlib is not required, as it is injected by Solo5' cc, ld
 
   CFLAGS="$TOOL_CFLAGS"
   LDFLAGS="$TOOL_LDFLAGS"
-  EXTRALIBS=""
 
+  # GCC lowers aarch64 C11 atomics to libgcc __aarch64_* outline helpers by
+  # default; inline them so the freestanding link needs no compiler runtime.
   case "$ARCH" in
     aarch64)
-      EXTRALIBS="-lgcc"
+      CFLAGS="$CFLAGS -mno-outline-atomics"
       ;;
   esac
 
@@ -60,13 +62,19 @@ if [ -z "\$compiling" ]; then
     -Wl,--start-group \\
     -lnolibc \\
     -lopenlibm \\
-    $EXTRALIBS \\
     -Wl,--end-group
 fi
 
 [ -n "\${__V}" ] && set -x
 exec "$SOLO5_TOOLCHAIN-cc" "\$@"
 EOF
+}
+
+# With TOOLCHAIN_ABSOLUTE_PATH set, resolve to an absolute path, for tools that
+# are off PATH when the cross compiler is later used (keg-only llvm on macOS);
+# otherwise keep the bare name to stay relocatable.
+resolve() {
+  if [ -n "$TOOLCHAIN_ABSOLUTE_PATH" ]; then command -v -- "$1"; else printf %s "$1"; fi
 }
 
 gen_tool() {
@@ -103,15 +111,15 @@ gen_tool() {
   if test "$TARGET_TOOL" ; then
     TOOL="$TARGET_TOOL"
   elif command -v -- "$SOLO5_TOOLCHAIN-$TOOL" > /dev/null; then
-    TOOL="$SOLO5_TOOLCHAIN-$TOOL"
+    TOOL="$(resolve "$SOLO5_TOOLCHAIN-$TOOL")"
   else
     case "$TOOL" in
       as)
-        TOOL="$SOLO5_TOOLCHAIN-cc -c"
+        TOOL="$(resolve "$SOLO5_TOOLCHAIN-cc") -c"
         ;;
       *)
         if command -v -- "$OTHERTOOLPREFIX$TOOL" > /dev/null; then
-          TOOL="$OTHERTOOLPREFIX$TOOL"
+          TOOL="$(resolve "$OTHERTOOLPREFIX$TOOL")"
         fi
         ;;
     esac
