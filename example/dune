@@ -26,6 +26,8 @@
 (rule
  (targets manifest.c)
  (deps manifest.json)
+ (mode promote)
+ (enabled_if %{bin-available:solo5-elftool})
  (action
   (run solo5-elftool gen-manifest manifest.json manifest.c)))
 

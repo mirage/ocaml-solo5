@@ -1,0 +1,118 @@
+name: macOS
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  build:
+    strategy:
+      matrix:
+        runner:
+          - macos-latest
+        ocaml-compiler:
+          - 5.5.0
+    name: >-
+      OCaml ${{ matrix.ocaml-compiler }}, macOS arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+    - uses: actions/checkout@v7
+    - uses: ocaml/setup-ocaml@v3
+      with:
+        ocaml-compiler: ${{ matrix.ocaml-compiler }}
+        opam-local-packages:
+    - name: Install opam packages
+      run: |
+        opam install dune ocamlfind ocaml-src opatch opam-installer
+    - name: Check out Solo5
+      uses: actions/checkout@v7
+      with:
+        repository: shym/solo5
+        ref: macos
+        path: solo5
+    - name: Install dependencies
+      run: brew install llvm lld
+    - name: Build and install Solo5
+      run: |
+        set -x
+        cd solo5
+        ./configure.sh --prefix="$(opam var prefix)" --disable-elftool \
+          --path-prepend="$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:"
+        make -j2
+        make install
+    - name: Build OCaml/Solo5
+      run: |
+        set -x
+        eval $(opam env)
+        pfx="$(opam var prefix)"
+        ./configure.sh --prefix="$pfx" \
+          --sysroot="$pfx/lib/ocaml-solo5" \
+          --target=aarch64-solo5-none-static \
+          --othertoolprefix=llvm- \
+          --ocaml-configure-option=--disable-function-sections \
+          --path-prepend="$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:"
+        make V=1 -j2
+        make install
+    - name: Show the toolchain configuration
+      run: |
+        set -x
+        opam exec -- ocamlfind -toolchain solo5 opt -config
+        opam exec -- ocamlfind -toolchain solo5 printconf
+        opam exec -- ocamlfind -toolchain solo5 list
+
+    # Do not build all the examples as hello is trying to link against an
+    # external fmt library and the opam-installed fmt is incompatible with the
+    # OCaml/Solo5 Stdlib (inconsistent assumptions...)
+    - name: Compile examples with hvt
+      run: |
+        MODE=hvt opam exec -- dune build --root example --display short \
+          config.exe sysfail.exe
+    - name: Compile examples with spt
+      run: |
+        MODE=spt opam exec -- dune build --root example --display short \
+          config.exe sysfail.exe
+    - name: Build an artifact of the spt executables
+      run: |
+        set -x
+        for e in config sysfail; do \
+          cp example/_build/solo5/$e.exe /tmp/$e.spt ; \
+        done
+        cd /tmp
+        tar caf unikernels.tar.zst *.spt
+    - name: Upload artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: unikernels
+        path: /tmp/unikernels.tar.zst
+        retention-days: 1
+
+  run:
+    name: Run unikernels
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y libseccomp-dev pkg-config
+    - name: Check out Solo5
+      uses: actions/checkout@v7
+      with:
+        repository: solo5/solo5
+        ref: v0.12.0
+        path: solo5
+    - name: Build Solo5 tenders
+      run: |
+        set -x
+        cd solo5
+        ./configure.sh --disable-toolchain
+        make -j3
+    - name: Download artifact
+      uses: actions/download-artifact@v8
+      with:
+        name: unikernels
+    - name: Run the spt unikernels
+      run: |
+        set -x
+        tar xaf unikernels.tar.zst
+        solo5/tenders/spt/solo5-spt config.spt
+        ! solo5/tenders/spt/solo5-spt sysfail.spt

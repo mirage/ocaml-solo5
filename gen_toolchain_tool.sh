@@ -14,11 +14,12 @@ gen_cc() {
 
   CFLAGS="$TOOL_CFLAGS"
   LDFLAGS="$TOOL_LDFLAGS"
-  EXTRALIBS=""
 
+  # GCC lowers aarch64 C11 atomics to libgcc __aarch64_* outline helpers by
+  # default; inline them so the freestanding link needs no compiler runtime.
   case "$ARCH" in
     aarch64)
-      EXTRALIBS="-lgcc"
+      CFLAGS="$CFLAGS -mno-outline-atomics"
       ;;
   esac
 
@@ -35,6 +36,7 @@ gen_cc() {
 # Just like the Solo5 cc, we assume that we are linking, unless we find an
 # argument suggesting we are compiling but we call Solo5' cc regardless
 
+PATH="$PATH_PREPEND\$PATH"
 compiling=
 for arg in "\$@"; do
   case "\$arg" in
@@ -60,7 +62,6 @@ if [ -z "\$compiling" ]; then
     -Wl,--start-group \\
     -lnolibc \\
     -lopenlibm \\
-    $EXTRALIBS \\
     -Wl,--end-group
 fi
 
@@ -119,9 +120,12 @@ gen_tool() {
 
   cat << EOF
 #!/bin/sh
+PATH="$PATH_PREPEND\$PATH"
 exec $TOOL "\$@"
 EOF
 }
+
+PATH="$PATH_PREPEND$PATH"
 
 case "$1" in
   cc|gcc)

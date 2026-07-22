@@ -26,8 +26,11 @@ nolibc/libnolibc.a: phony-nolibc
 
 .PHONY: phony-nolibc
 phony-nolibc:
-	$(MAKE) -C nolibc libnolibc.a \
+	+env PATH="$(MAKECONF_PATH_PREPEND)$$PATH" \
+	  $(MAKE) -C nolibc libnolibc.a \
 	    "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	    "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	    "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	    "FREESTANDING_CFLAGS=$(NOLIBC_CFLAGS)"
 
 # OPENLIBM
@@ -36,8 +39,11 @@ openlibm/libopenlibm.a: phony-openlibm
 
 .PHONY: phony-openlibm
 phony-openlibm:
-	$(MAKE) -C openlibm libopenlibm.a \
+	+env PATH="$(MAKECONF_PATH_PREPEND)$$PATH" \
+	  $(MAKE) -C openlibm libopenlibm.a \
 	     "CC=$(MAKECONF_TOOLCHAIN)-cc" \
+	     "AR=$(MAKECONF_TOOLPREFIX)ar" \
+	     "RANLIB=$(MAKECONF_TOOLPREFIX)ranlib" \
 	     "CPPFLAGS=$(LIB_CFLAGS)"
 
 # TOOLCHAIN
@@ -72,6 +78,7 @@ $(TOOLDIR_FOR_BUILD)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 	ARCH="$(MAKECONF_TARGET_ARCH)" \
 	  SOLO5_TOOLCHAIN="$(MAKECONF_TOOLCHAIN)" \
 	  OTHERTOOLPREFIX="$(MAKECONF_TOOLPREFIX)" \
+	  PATH_PREPEND="$(MAKECONF_PATH_PREPEND)" \
 	  TOOL_CFLAGS="$(TOOLCHAIN_BUILD_CFLAGS)" \
 	  TOOL_LDFLAGS="$(TOOLCHAIN_BUILD_LDFLAGS)" \
 	  sh $< $* > $@
@@ -82,6 +89,7 @@ $(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 	ARCH="$(MAKECONF_TARGET_ARCH)" \
 	  SOLO5_TOOLCHAIN="$(MAKECONF_TOOLCHAIN)" \
 	  OTHERTOOLPREFIX="$(MAKECONF_TOOLPREFIX)" \
+	  PATH_PREPEND="$(MAKECONF_PATH_PREPEND)" \
 	  TOOL_CFLAGS="$(TOOLCHAIN_FINAL_CFLAGS)" \
 	  TOOL_LDFLAGS="$(TOOLCHAIN_FINAL_LDFLAGS)" \
 	  sh $< $* > $@

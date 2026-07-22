@@ -17,7 +17,7 @@ jobs:
           - runner: ubuntu-latest
             ocaml-compiler: 5.4.1
     name: >-
-      OCaml ${{ matrix.ocaml-compiler }}
+      OCaml ${{ matrix.ocaml-compiler }}, Linux
       ${{ case(matrix.runner=='ubuntu-latest', 'x86_64', 'arm64') }}
     runs-on: ${{ matrix.runner }}
     steps:

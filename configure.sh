@@ -31,12 +31,17 @@ Options:
         (default: \`TARGET-cc -dumpmachine\`-).
     --ocaml-configure-option=OPTION
         Add an option to the OCaml compiler configuration.
+    --path-prepend=VAL
+        Prepend VAL to PATH in toolchain. For instance:
+        --path-prepend=/usr/local/llvm-21/bin:
+        (note the required explicit ':' separator at the end)
 EOM
     exit 1
 }
 
 OCAML_CONFIGURE_OPTIONS=
 MAKECONF_PREFIX=/usr/local
+MAKECONF_PATH_PREPEND=
 
 while [ $# -gt 0 ]; do
     OPT="$1"
@@ -56,6 +61,9 @@ while [ $# -gt 0 ]; do
             ;;
         --ocaml-configure-option=*)
             OCAML_CONFIGURE_OPTIONS="${OCAML_CONFIGURE_OPTIONS} ${OPT#*=}"
+            ;;
+        --path-prepend=*)
+            MAKECONF_PATH_PREPEND="${OPT#*=}"
             ;;
         --help)
             usage
@@ -96,4 +104,5 @@ MAKECONF_TOOLCHAIN=${CONFIG_TARGET}
 MAKECONF_TOOLPREFIX=${MAKECONF_TOOLPREFIX}
 MAKECONF_TARGET_ARCH=${TARGET_ARCH}
 MAKECONF_OCAML_CONFIGURE_OPTIONS=${OCAML_CONFIGURE_OPTIONS}
+MAKECONF_PATH_PREPEND=${MAKECONF_PATH_PREPEND}
 EOM
