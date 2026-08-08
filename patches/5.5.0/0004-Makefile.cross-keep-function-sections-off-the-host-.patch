@@ -1,0 +1,42 @@
+From e4dbf608b08d03e7af71e123ddddf9ad576e4092 Mon Sep 17 00:00:00 2001
+From: Thomas Gazagnaire <thomas@gazagnaire.org>
+Date: Wed, 8 Jul 2026 23:51:53 -0700
+Subject: [PATCH 4/4] Makefile.cross: keep -function-sections off the host .opt
+ tools
+
+crossopt builds ocamlc.opt/ocamlopt.opt and the *.opt tools with the host
+ocamlopt, but injects the target's OC_NATIVE_COMPFLAGS (which includes
+-function-sections when the target supports it) into every native compile.
+When the target enables function sections but the host does not -- an ELF
+cross target built on a macOS host, whose ocamlopt is Mach-O and rejects
+-function-sections -- crossopt fails building the host tools.
+
+Neutralise OC_NATIVE_COMPFLAGS for those host-only .opt builds; the target
+library/otherlibs phases keep it, so target code is still emitted with
+function sections (and can be garbage-collected by the linker).
+---
+ Makefile.cross | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile.cross b/Makefile.cross
+index cf069212ea..a33ad8f28d 100644
+--- a/Makefile.cross
++++ b/Makefile.cross
+@@ -89,11 +89,15 @@ endif
+ 	$(MAKE) dynlink-all $(CROSS_OVERRIDES) $(OLDS)
+ 	$(MAKE) -C otherlibs all $(CROSS_OVERRIDES) $(OLDS)
+ 	$(MAKE) runtimeopt $(OLDS)
++# Host binaries: drop OC_NATIVE_COMPFLAGS (e.g. -function-sections, which a
++# Mach-O host ocamlopt rejects); the target phases below keep it.
+ 	$(MAKE) ocamlc.opt ocamlopt.opt $(TOOLS_NATIVE_TARGETS) \
+-	  $(CROSS_COMPILER_OVERRIDES) "$(HOST_ZSTD_LIBS)" $(OLDS)
++	  $(CROSS_COMPILER_OVERRIDES) OC_NATIVE_COMPFLAGS= \
++	  "$(HOST_ZSTD_LIBS)" $(OLDS)
+ 	$(MAKE) libraryopt $(CROSS_OVERRIDES) $(OLDS)
+ 	$(MAKE) otherlibrariesopt ocamltoolsopt $(CROSS_OVERRIDES) $(OLDS)
+-	$(MAKE) tools-allopt.opt $(CROSS_COMPILER_OVERRIDES) $(OLDS)
++	$(MAKE) tools-allopt.opt $(CROSS_COMPILER_OVERRIDES) OC_NATIVE_COMPFLAGS= \
++	  $(OLDS)
+ 	# We now build the compiler libs again, but for target this time
+ 	rm -f $(ocamlcommon_NCOBJS) $(ocamlmiddleend_NCOBJS) \
+ 	  $(ocamlbytecomp_NCOBJS) $(ocamloptcomp_NCOBJS) \
