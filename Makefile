@@ -129,9 +129,6 @@ $(OCAML_IS_BUILT): ocaml/Makefile.config | _build
 _build/solo5.conf: gen_solo5_conf.sh $(OCAML_IS_BUILT)
 	PREFIX="$(MAKECONF_PREFIX)" SYSROOT="$(MAKECONF_SYSROOT)" ./gen_solo5_conf.sh > $@
 
-_build/empty-META: | _build
-	echo 'type_of_threads = "posix"' > $@
-
 # INSTALL
 PACKAGES := $(basename $(wildcard *.opam))
 INSTALL_FILES := $(foreach pkg,$(PACKAGES),$(pkg).install)
@@ -168,7 +165,7 @@ distclean: clean
 
 .PHONY: all
 all: $(LIBS) $(OCAML_IS_BUILT) \
-     _build/solo5.conf _build/empty-META \
+     _build/solo5.conf \
      $(TOOLCHAIN_FINAL)
 
 .PHONY: test
