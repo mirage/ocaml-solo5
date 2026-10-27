@@ -16,6 +16,10 @@ LIBS := openlibm/libopenlibm.a nolibc/libnolibc.a
 
 # CFLAGS used to build the nolibc and openlibm libraries
 LIB_CFLAGS=-I$(TOP)/nolibc/include -include _solo5/overrides.h
+ifeq ($(MAKECONF_TARGET_ARCH),x86_64)
+# Avoid -march=x86-64-v3 on certain platforms (like our CI)
+LIB_CFLAGS+=-march=x86-64
+endif
 
 # NOLIBC
 # Use a phony target indirection, so that nolibc/Makefile is always checked to

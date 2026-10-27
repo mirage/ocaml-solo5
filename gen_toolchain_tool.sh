@@ -20,6 +20,11 @@ gen_cc() {
     aarch64)
       EXTRALIBS="-lgcc"
       ;;
+    x86_64)
+      # Force x86-64 and avoid x86-64-v3 (default on some platforms)
+      # which brings AVX instructions
+      CFLAGS="-march=x86-64 $CFLAGS"
+      ;;
   esac
 
   # Add the -Wno-unused-command-line-argument option for clang, as we always
