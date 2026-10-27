@@ -87,7 +87,7 @@ application manifest and a startup file to initialize the libc.
 
 ## Supported compiler versions
 
-Tested against OCaml version 5.5.0. Other versions would require specific
+Tested against OCaml version 5.5.2. Other versions would require specific
 patches (see the `patches` directory).
 
 ## Porting to a different (uni)kernel base layer

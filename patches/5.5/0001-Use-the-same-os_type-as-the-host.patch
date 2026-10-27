@@ -12,7 +12,7 @@ diff --git a/configure b/configure
 index b159afee80..0ce6c1a1c2 100755
 --- a/configure
 +++ b/configure
-@@ -16461,7 +16461,7 @@ esac
+@@ -16507,7 +16507,7 @@ esac
    gcc-*,powerpc-*-linux*) :
      oc_ldflags="-mbss-plt" ;; #(
    *,*-*-none|*,*-*-elf*) :
@@ -25,7 +25,7 @@ diff --git a/configure.ac b/configure.ac
 index 167629fbbf..a92274bf43 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1348,7 +1348,7 @@ AS_CASE([$ocaml_cc_vendor,$target],
+@@ -1354,7 +1354,7 @@ AS_CASE([$ocaml_cc_vendor,$target],
    [gcc-*,powerpc-*-linux*],
      [oc_ldflags="-mbss-plt"],
    [*,*-*-none|*,*-*-elf*],

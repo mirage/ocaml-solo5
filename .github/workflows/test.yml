@@ -12,7 +12,7 @@ jobs:
           - ubuntu-latest
           - ubuntu-24.04-arm
         ocaml-compiler:
-          - 5.5.0
+          - 5.5.2
     name: >-
       OCaml ${{ matrix.ocaml-compiler }}
       ${{ case(matrix.runner=='ubuntu-latest', 'x86_64', 'arm64') }}
