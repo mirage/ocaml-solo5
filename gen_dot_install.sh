@@ -39,10 +39,6 @@ main() {
   walk_tree openlibm/include include
   walk_tree openlibm/src include .h
   install_file openlibm/libopenlibm.a lib/libopenlibm.a
-  # dummy packages
-  for pkg in nolibc threads is_solo5; do
-    install_file _build/empty-META lib/$pkg/META
-  done
   printf ']\n'
 }
 
