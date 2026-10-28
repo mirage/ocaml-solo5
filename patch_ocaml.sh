@@ -16,13 +16,8 @@ esac
 # Solo5 is single-core with no scheduler, so avoid the useless memory
 # waste
 #
-# Note that since PR#13272 the maximum number of domains can set using a
-# parameter in `OCAMLRUNPARAM` so a patchless implementation could be to
-# add to `nolibc`:
-# - a `secure_getenv` returning `"d=1"` for the `OCAMLRUNPARAM` value,
-# - a `sscanf`; it could be hard-coded version just for that use case
-#   (namely recover the `1`)
-# but this would still be rather brittle
+# We have in examples/startup.c a test whether this was successful:
+# - we check Max_domains_{def,max} as well as caml_params->max_domains to be 1
 
 sed -i$sep'' \
   -e 's/#define Max_domains_def 128/#define Max_domains_def 1/' \
@@ -30,6 +25,10 @@ sed -i$sep'' \
   ocaml/runtime/caml/domain.h
 
 # PATCH 2: Use the same os_type as the host
+#
+# The examples/hello.exe tests this behaviour, since OCaml will complain if
+# the host-provided "fmt" package is compiled with a differently checksummed
+# Stdlib.
 
 sed -i$sep'' \
   -e 's/ostype="None"/ostype="$(ocamlc -config-var os_type)"/' \
