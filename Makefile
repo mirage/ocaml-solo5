@@ -91,17 +91,13 @@ $(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 toolchains: $(TOOLCHAIN_FOR_BUILD) $(TOOLCHAIN_FINAL)
 
 # OCAML
-# Extract sources from the ocaml-src package and apply patches if there any in
-# `patches/<OCaml version>/`
+# Extract sources from the ocaml-src package and apply our patches
 ocaml:
 # First make sure the ocaml directory doesn't exist, otherwise the cp would
 # create an ocaml-src subdirectory
 	test ! -d $@
 	cp -r "$$(ocamlfind query ocaml-src)" $@
-	VERSION="$$(head -n1 ocaml/VERSION | cut -d '.' -f 1-2)" ; \
-	if test -d "patches/$$VERSION" ; then \
-	  opatch -v -C $@ "patches/$$VERSION"/*; \
-	fi
+	./patch_ocaml.sh
 
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
 	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" ; \
