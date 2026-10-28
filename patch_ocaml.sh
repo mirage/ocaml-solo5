@@ -32,5 +32,5 @@ sed -i$sep'' \
 # PATCH 2: Use the same os_type as the host
 
 sed -i$sep'' \
-  -e 's/ostype="None"/ostype="$$(ocamlc -config-var os_type)"/' \
+  -e 's/ostype="None"/ostype="$(ocamlc -config-var os_type)"/' \
   ocaml/configure
