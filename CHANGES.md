@@ -1,7 +1,7 @@
 ## v1.3.5 (2026-10-28)
 
 - do not install empty META files (@hannesm #187)
-- adapt patch for 5.5.2 (#189 @hannesm @dinosaure)
+- adapt patch for 5.5.2 (#189 @hannesm @dinosaure, fixes #188)
 
 ## v1.3.4 (2026-08-14)
 
