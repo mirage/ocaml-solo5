@@ -91,21 +91,15 @@ $(TOOLDIR_FINAL)/$(MAKECONF_TARGET_ARCH)-solo5-ocaml-%: \
 toolchains: $(TOOLCHAIN_FOR_BUILD) $(TOOLCHAIN_FINAL)
 
 # OCAML
-# Extract sources from the ocaml-src package
+# Extract sources from the ocaml-src package and apply our patches
 ocaml:
 # First make sure the ocaml directory doesn't exist, otherwise the cp would
 # create an ocaml-src subdirectory
 	test ! -d $@
 	cp -r "$$(ocamlfind query ocaml-src)" $@
+	./patch_ocaml.sh
 
 ocaml/Makefile.config: $(LIBS) $(TOOLCHAIN_FOR_BUILD) | ocaml
-	sed -e 's/#define Max_domains_def 128/#define Max_domains_def 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/domain.h.sed && \
-		mv ocaml/runtime/caml/domain.h.sed ocaml/runtime/caml/domain.h
-	sed -e 's/#define Max_domains_max 4096/#define Max_domains_max 1/' ocaml/runtime/caml/domain.h > ocaml/runtime/caml/domain.h.sed && \
-		mv ocaml/runtime/caml/domain.h.sed ocaml/runtime/caml/domain.h
-	sed -e 's/ostype="None"/ostype="$$(ocamlc -config-var os_type)"/' ocaml/configure > ocaml/configure.sed && \
-		mv ocaml/configure.sed ocaml/configure
-	chmod +x ocaml/configure
 	PATH="$$PWD/$(TOOLDIR_FOR_BUILD):$$PATH" ; \
 	cd ocaml && \
 	  ./configure \
